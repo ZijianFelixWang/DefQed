@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<!-- Use the defqed diagnostic database for this. -->
+<defqed>
+	<connection>
+		<user>DefQed</user>
+		<passwd>oClg2%[TenbL86V+rsC3</passwd>
+		<database>defqed</database>
+	</connection>
+	<environment>
+		<enroll category="item">x</enroll>
+		<enroll category="item">y</enroll>
+		<enroll category="item">z</enroll>
+
+		<force>
+			<let category="item">x</let>
+			<be category="item">y</be>
+		</force>
+
+		<force>
+			<let category="item">y</let>
+			<be category="item">z</be>
+		</force>
+	</environment>
+	<statement>
+		<prove>
+			<that category="==">
+				<that category="item">x</that>
+				<that category="item">z</that>
+			</that>
+		</prove>
+	</statement>
+</defqed>

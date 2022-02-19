@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<defqed>
+	<!-- This is the example source file -->
+	<connection>
+		<!-- MySQL connection setup -->
+		<user>DefQed</user>
+		<passwd>oClg2%[TenbL86V+rsC3</passwd>
+		<database>defqed</database>
+	</connection>
+	<environment>
+		<enroll category="point">A</enroll>
+		<enroll category="point">B</enroll>
+		<enroll category="point">C</enroll>
+		<enroll category="triangle">ABC</enroll>
+		
+		<!-- Well, in this version Symbol Extension feature is not implemented. -->
+		<!-- UNDONE: Symbol Extension -->
+		<enroll category="segment">AB</enroll>
+		<enroll category="segment">AC</enroll>
+		<enroll category="segment">BC</enroll>
+		<enroll category="segment">BA</enroll>
+		<enroll category="segment">CA</enroll>
+		<enroll category="segment">CB</enroll>
+
+		<enroll category="angle">ABC</enroll>
+		<enroll category="angle">ACB</enroll>
+		<enroll category="angle">BAC</enroll>
+		<enroll category="angle">BCA</enroll>
+		<enroll category="angle">CAB</enroll>
+		<enroll category="angle">CBA</enroll>
+
+		<enroll category="triangle">ACB</enroll>"
+		<enroll category="triangle">BAC</enroll>"
+		<enroll category="triangle">BCA</enroll>"
+		<enroll category="triangle">CAB</enroll>"
+		<enroll category="triangle">CBA</enroll>"
+
+		<force>
+			<let category="angle">BAC</let>
+			<be category="degree">90</be>
+		</force>
+	</environment>
+	<statement>
+		<prove>
+			<that category="==">
+				<that category="+">
+					<that category="square">
+						<that category="length">AB</that>
+					</that>
+					<that category="square">
+						<that category="length">AC</that>
+					</that>
+				</that>
+				<that category="square">
+					<that category="length">BC</that>
+				</that>
+			</that>
+		</prove>
+	</statement>
+</defqed>
