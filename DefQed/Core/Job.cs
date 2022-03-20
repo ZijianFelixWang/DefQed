@@ -1,5 +1,11 @@
 ﻿// For debugging the module.
+#if DEBUG
 #define __USE_INLINE_XML_URI__
+#define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
+#define __CTRL_G_TO_RUN__
+#define __AUTO_XML_SUBMIT__
+//#define __NO_TEE_AFTER_PROOF__
+#endif
 
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -12,12 +18,16 @@ using Environment = System.Environment;
 using TimeSpan = System.TimeSpan;
 using Exception = System.Exception;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace DefQed.Core
 {
     internal class Job
     {
         // Description: Job is the class that stores everything related to a DefQed utilization.
+
+        // Maybe some time later the ui codes and job codes should be separated.
+
         public string XMLFileName = "";
         public KBase KnowledgeBase = new();
         public int TimeOut = 365 * 24 * 3600;   // A year's proof hah
@@ -29,7 +39,7 @@ namespace DefQed.Core
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public ProgressBar PulseBar;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        private bool PulseNow = false;
+        //private bool PulseNow = false;
 
         //public void Initialize()
         //{
@@ -51,23 +61,32 @@ namespace DefQed.Core
             PerformProof(TimeOut);
         }
 
+        // TODO: fix transistor logic.. there's a mess.
+
         private void PerformProof(int TimeOut)
         {
             PulseBar.Pulse();
             try
             {
                 _ = MessageBox.Query("PerformProof called.", "Start proving...", "Ok");
+
+                // Load reflections...
+                KnowledgeBase.LoadReflections();
+                PulseBar.Pulse();
+
                 ProofTask = new(() =>
                 {
                     if (!ProofPalsed)
                     {
                         while (!KnowledgeBase.TryBridging())
                         {
-                            if (PulseNow = !PulseNow)
-                            {
-                                PulseBar.Pulse();
-                            }
+                            Console.Log(LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
                             KnowledgeBase.ScanPools();
+                            //if (PulseNow = !PulseNow)
+                            //{
+                            Console.Log(LogLevel.Diagnostic, "UI pulse");
+                            PulseBar.Pulse();
+                            //}
                         }
                     }
                 });
@@ -83,37 +102,40 @@ namespace DefQed.Core
                     //Console.WriteLine("Proof process has finished!");
                     Console.Log(LogLevel.Information, "Proof process has finished.");
                     _ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
+#if !__NO_TEE_AFTER_PROOF__
                     #region commented stuff decomment after debug
-                    //Console.WriteLine("Below is report generated:");
-                    //Console.WriteLine(KnowledgeBase.GenerateReport());
-                    //Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
-                    //while (true)
-                    //{
-                    //    string? sel = Console.ReadLine();
-                    //    if ((sel == null) || (sel.Trim().ToUpper() == "N"))
-                    //    {
-                    //        break;
-                    //    }
+                    Console.WriteLine("Below is report generated:");
+                    Console.WriteLine(KnowledgeBase.GenerateReport());
+                    Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
+                    while (true)
+                    {
+                        string? sel = Console.ReadLine();
+                        if ((sel == null) || (sel.Trim().ToUpper() == "N"))
+                        {
+                            break;
+                        }
 
-                    //    sel = sel.Trim().ToUpper();
-                    //    if (sel == "S")
-                    //    {
-                    //        TeeSerializedKBase();
-                    //        break;
-                    //    }
-                    //    if (sel == "T")
-                    //    {
-                    //        TeeProofText();
-                    //        break;
-                    //    }
-                    //    if (sel == "B")
-                    //    {
-                    //        TeeSerializedKBase();
-                    //        TeeProofText();
-                    //        break;
-                    //    }
-                    //    Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
+                        sel = sel.Trim().ToUpper();
+                        if (sel == "S")
+                        {
+                            TeeSerializedKBase();
+                            break;
+                        }
+                        if (sel == "T")
+                        {
+                            TeeProofText();
+                            break;
+                        }
+                        if (sel == "B")
+                        {
+                            TeeSerializedKBase();
+                            TeeProofText();
+                            break;
+                        }
+                        Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
+                    }
                     #endregion
+#endif
                 }
                 else
                 {
@@ -140,9 +162,8 @@ namespace DefQed.Core
             {
                 // This error handling is very lazy here. No categoring of errors umm.
                 // Something more may be added later.
-                Console.WriteLine($"Error: Exception envountered. Exception Category: {ex.GetType()}");
-                Console.WriteLine($"Exception Message: {ex.Message}");
-                Console.WriteLine("You can now save the dump file. Use CTRL+C to terminate the program.");
+                Console.Log(LogLevel.Error, $"Exception envountered. Exception Category: {ex.GetType()}\nException Message: {ex.Message}");
+                Console.WriteLine("You can now save the dump file or terminate the program.");
                 TeeSerializedKBase();
             }
         }
@@ -151,6 +172,11 @@ namespace DefQed.Core
         public void SetLogLevelUI()
 #pragma warning restore CA1822 // Mark members as static
         {
+            // The ctrl-G...
+#if __CTRL_G_TO_RUN__
+            LoadXMLUI();
+            PerformProof();
+#else
             Button confirm = new("Ok", is_default: true);
             Button cancel = new("Cancel", is_default: false);
             RadioGroup sel = new(2, 2, new ustring[] { "Diagnostic", "Information", "Warning", "Error" }, 1);
@@ -164,6 +190,8 @@ namespace DefQed.Core
                     3 => LogLevel.Error,
                     _ => LogLevel.Information
                 };
+
+                Console.Log(LogLevel.Information, "Log level set to " + Console.LogLevel);
 
                 Console.Log(LogLevel.Diagnostic, "Diagnostic example.");
                 Console.Log(LogLevel.Information, "Information example.");
@@ -185,6 +213,7 @@ namespace DefQed.Core
             ui.Add(sel);
             Application.Run(ui);
             // Now the loop is finished.
+#endif
         }
 
         public void KBaseInsertRowUI()
@@ -199,7 +228,7 @@ namespace DefQed.Core
             };
             confirm.Clicked += () =>
             {
-                switch(sel.SelectedItem)
+                switch (sel.SelectedItem)
                 {
                     case 0:
                         // Notations
@@ -216,7 +245,15 @@ namespace DefQed.Core
                         int id = MySQLDriver.GetMaxId(TableType.Notations) + 1;
 
 #pragma warning disable CS8601 // Possible null reference assignment.
-                        MySQLDriver.InsertRow(TableType.Notations, new List<string>(new string[] { "ID", "TITLE", "ORIGIN", "OPACITY" }), new List<string>(new string[] { id.ToString(), title, origin, opacity }));
+                        try
+                        {
+                            MySQLDriver.InsertRow(TableType.Notations, new List<string>(new string[] { "ID", "TITLE", "ORIGIN", "OPACITY" }), new List<string>(new string[] { id.ToString(), title, origin, opacity }));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            return;
+                        }
 #pragma warning restore CS8601 // Possible null reference assignment.
                         break;
 
@@ -232,10 +269,27 @@ namespace DefQed.Core
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
                         // Get next id
-                        int id1 = MySQLDriver.GetMaxId(TableType.Reflections) + 1;
+                        int id1;
+                        try
+                        {
+                            id1 = MySQLDriver.GetMaxId(TableType.Reflections) + 1;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            return;
+                        }
 
 #pragma warning disable CS8601 // Possible null reference assignment.
-                        MySQLDriver.InsertRow(TableType.Reflections, new List<string>(new string[] { "ID", "CASES", "THUSES", "OPACITY" }), new List<string>(new string[] { id1.ToString(), cases, thuses, opacity1 }));
+                        try
+                        {
+                            MySQLDriver.InsertRow(TableType.Reflections, new List<string>(new string[] { "ID", "CASES", "THUSES", "OPACITY" }), new List<string>(new string[] { id1.ToString(), cases, thuses, opacity1 }));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            return;
+                        }
 #pragma warning restore CS8601 // Possible null reference assignment.
                         break;
 
@@ -247,10 +301,26 @@ namespace DefQed.Core
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
                         // Get next id
-                        int id2 = MySQLDriver.GetMaxId(TableType.Registries) + 1;
-
+                        int id2;
+                        try
+                        {
+                            id2 = MySQLDriver.GetMaxId(TableType.Registries) + 1;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            return;
+                        }
 #pragma warning disable CS8601 // Possible null reference assignment.
-                        MySQLDriver.InsertRow(TableType.Registries, new List<string>(new string[] { "ID", "CONTENT" }), new List<string>(new string[] { id2.ToString(), content }));
+                        try
+                        {
+                            MySQLDriver.InsertRow(TableType.Registries, new List<string>(new string[] { "ID", "CONTENT" }), new List<string>(new string[] { id2.ToString(), content }));
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            return;
+                        }
 #pragma warning restore CS8601 // Possible null reference assignment.
                         break;
 
@@ -275,10 +345,167 @@ namespace DefQed.Core
             // Now the loop is finished.
         }
 
+#if __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
+#pragma warning disable CA1822 // Mark members as static
         public void SerializeDiagnosticBrackets()
+#pragma warning restore CA1822 // Mark members as static
         {
+            _ = MessageBox.Query("DIAG", "This should be commented after this debug.");
+            #region serialize cond
+            //_ = MessageBox.Query("DIAG", "Serializing debug condition.");
+            Formula cond = new();
 
+            cond.TopLevel.BracketType = BracketType.BracketHolder;
+            cond.TopLevel.Connector = new Notation
+            {
+                Name = "AND",
+                Id = 2,
+                Origin = NotationOrigin.Internal
+            };
+            cond.TopLevel.SubBrackets = new Bracket[2];
+            cond.TopLevel.SubBrackets[0] = new();
+            cond.TopLevel.SubBrackets[1] = new();
+
+            cond.TopLevel.SubBrackets[0] = new Bracket
+            {
+                BracketType = BracketType.StatementHolder,
+                MicroStatement = new MicroStatement
+                {
+                    Brackets = new Bracket[2],
+                    Connector = new Notation
+                    {
+                        Name = "==",
+                        Id = 1,
+                        Origin = NotationOrigin.Internal
+                    }
+                }
+            };
+            cond.TopLevel.SubBrackets[1] = new Bracket
+            {
+                BracketType = BracketType.StatementHolder,
+                MicroStatement = new MicroStatement
+                {
+                    Brackets = new Bracket[2],
+                    Connector = new Notation
+                    {
+                        Name = "==",
+                        Id = 1,
+                        Origin = NotationOrigin.Internal
+                    }
+                }
+            };
+
+            // Fix unexpected error...
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            if (cond.TopLevel.SubBrackets[0].MicroStatement.Brackets == null)
+            {
+                cond.TopLevel.SubBrackets[0].MicroStatement.Brackets = new Bracket[2];
+            };
+            if (cond.TopLevel.SubBrackets[1].MicroStatement.Brackets == null)
+            {
+                cond.TopLevel.SubBrackets[1].MicroStatement.Brackets = new Bracket[2];
+            };
+            cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[0] = new();
+            cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[1] = new();
+            
+            cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[0].BracketType = BracketType.SymbolHolder;
+            cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[0].Symbol = new(0, new Notation
+            {
+                Name = "item",
+                Id = 0,
+                Origin = NotationOrigin.External
+            }, "a");
+            cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[1].BracketType = BracketType.SymbolHolder;
+            cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[1].Symbol = new(1, new Notation
+            {
+                Name = "item",
+                Id = 0,
+                Origin = NotationOrigin.External
+            }, "b");
+            
+            cond.TopLevel.SubBrackets[1] = new Bracket
+            {
+                BracketType = BracketType.StatementHolder,
+                MicroStatement = new MicroStatement
+                {
+                    Brackets = new Bracket[2],
+                    Connector = new Notation
+                    {
+                        Name = "==",
+                        Id = 1,
+                        Origin = NotationOrigin.Internal
+                    }
+                }
+            };
+            cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[0] = new();
+            cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[1] = new();
+            
+            cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[0].BracketType = BracketType.SymbolHolder;
+            cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[0].Symbol = new(1, new Notation
+            {
+                Name = "item",
+                Id = 1,
+                Origin = NotationOrigin.External
+            }, "b");
+            cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[1].BracketType = BracketType.SymbolHolder;
+            cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[1].Symbol = new(2, new Notation
+            {
+                Name = "item",
+                Id = 2,
+                Origin = NotationOrigin.External
+            }, "c");
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+            JsonSerializerOptions op = new()
+            {
+                IncludeFields = true,
+                MaxDepth = 1024
+            };
+
+            string json1 = JsonSerializer.Serialize(cond, op);
+
+
+            //_ = MessageBox.Query("DIAG", "OK, see it in log console.");
+            Console.Log(LogLevel.Information, json1);
+
+            #endregion
+            #region serialize conc
+            //_ = MessageBox.Query("DIAG", "Serializing debug conclusion.");
+            List<MicroStatement> conc = new();
+            conc.Add(new MicroStatement
+            {
+                Connector = new Notation
+                {
+                    Name = "==",
+                    Id = 1,
+                    Origin = NotationOrigin.Internal
+                },
+                Brackets = new Bracket[2]
+            });
+            conc[0].Brackets[0] = new();
+            conc[0].Brackets[1] = new();
+            conc[0].Brackets[0].BracketType = BracketType.SymbolHolder;
+            conc[0].Brackets[0].Symbol = new(0, new Notation
+            {
+                Name = "item",
+                Id = 0,
+                Origin = NotationOrigin.External
+            }, "a");
+            conc[0].Brackets[1].BracketType = BracketType.SymbolHolder;
+            conc[0].Brackets[1].Symbol = new(2, new Notation
+            {
+                Name = "item",
+                Id = 2,
+                Origin = NotationOrigin.External
+            }, "c");
+
+            json1 = JsonSerializer.Serialize(conc, op);
+
+            //_ = MessageBox.Query("DIAG", "OK, see it in log console.");
+            Console.Log(LogLevel.Information, json1);
+            #endregion
         }
+#endif
 
         private void TextInputBoxInnerUI(ustring hintText)
         {
@@ -346,7 +573,7 @@ namespace DefQed.Core
                 Application.RequestStop();
             };
             Dialog ui = new("Request input.", 50, 20, confirm, cancel);
-            Label hint = new(1, 1, "Input the DefQed XML file's full filename here. Click Ok to confirm, Click cancel to go back.");
+            Label hint = new(1, 1, "Input timeout value. (ms)");
 
             ui.Add(hint);
             ui.Add(field);
@@ -356,6 +583,28 @@ namespace DefQed.Core
 
         public void LoadXMLUI()
         {
+#if __AUTO_XML_SUBMIT__
+            XMLFileName = @"C:\Users\felix\Documents\projects\DefQed\DefQed\Examples\Diagnostic.xml";
+            bool err = false;
+            KBase temp = new();
+
+            Stopwatch watch = new();
+            watch.Start();
+            XMLParser.ParseXML(XMLFileName, ref temp, ref err);
+            watch.Stop();
+            Console.Log(LogLevel.Information, $"XML parsing done in {watch.ElapsedMilliseconds} ms.");
+
+            if (err)
+            {
+                _ = MessageBox.ErrorQuery("Error.", "XML parse failure.\nFor more details, see the log console.", new ustring[] { "Ok" });
+            }
+            else
+            {
+                KnowledgeBase = temp;
+                Console.Log(LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
+            }
+
+#else
             Button confirm = new("Ok", is_default: true);
             Button cancel = new("Cancel", is_default: false);
             TextField field = new()
@@ -364,9 +613,9 @@ namespace DefQed.Core
                 Y = 2,
                 Width = 40,
 #if __USE_INLINE_XML_URI__
-                Text = @"C:\Users\felix\Documents\projects\DefQed\DefQed\example.xml"
+                Text = @"C:\Users\felix\Documents\projects\DefQed\DefQed\Examples\Diagnostic.xml"
 #endif
-        };
+            };
             Dialog ui = new("Request input.", 50, 8, confirm, cancel);
             confirm.Clicked += () =>
             {
@@ -379,7 +628,11 @@ namespace DefQed.Core
                     bool err = false;
                     KBase temp = new();
 
+                    Stopwatch watch = new();
+                    watch.Start();
                     XMLParser.ParseXML(XMLFileName, ref temp, ref err);
+                    watch.Stop();
+                    Console.Log(LogLevel.Information, $"XML parsing done in {watch.ElapsedMilliseconds} ms.");
 
 #pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning restore CS8601 // Possible null reference assignment.
@@ -391,7 +644,8 @@ namespace DefQed.Core
                     else
                     {
                         KnowledgeBase = temp;
-                        _ = MessageBox.Query("Congratulations.", "XMML parse and DB connect success.", "Ok");
+                        _ = MessageBox.Query("Congratulations.", "XML parse and DB connect success.", "Ok");
+                        Console.Log(LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
                     }
                 }
                 else
@@ -409,6 +663,7 @@ namespace DefQed.Core
             ui.Add(field);
             Application.Run(ui);
             // Now the loop is finished.
+#endif
         }
 
         public void RenewInstanceUI()
@@ -425,7 +680,8 @@ namespace DefQed.Core
                     MySQLDriver.Terminate();
                 }
                 XMLFileName = "";
-                KnowledgeBase = new();
+                KnowledgeBase.Dispose();
+                Console.Log(LogLevel.Information, "Instance refreshed.");
             }
         }
 
@@ -437,6 +693,7 @@ namespace DefQed.Core
                 if ((ProofTask != null) && (!ProofTask.IsCompleted))
                 {
                     ProofTask.Dispose();
+                    Console.Log(LogLevel.Information, "Proof disposed successfully.");
                 }
                 else
                 {
@@ -467,10 +724,11 @@ namespace DefQed.Core
         {
             if ((ProofTask == null) || (ProofTask.IsCompleted))
             {
-                _ = MessageBox.Query("Invalid operation.", "There is nothing to pause or resume.", "Ok");
+                _ = MessageBox.ErrorQuery("Invalid operation.", "There is nothing to pause or resume.", "Ok");
             }
 
             ProofPalsed = !ProofPalsed;
+            Console.Log(LogLevel.Information, "Negated task successfully.");
         }
 
         private void TeeSerializedKBase()
@@ -497,7 +755,9 @@ namespace DefQed.Core
 #pragma warning restore CS8604 // Possible null reference argument.
         }
 
+#pragma warning disable IDE0051 // Remove unused private members
         private void TeeProofText()
+#pragma warning restore IDE0051 // Remove unused private members
         {
             string? filename;
             while (true)

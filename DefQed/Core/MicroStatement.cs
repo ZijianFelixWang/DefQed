@@ -2,13 +2,26 @@
 
 namespace DefQed.Core
 {
-    internal class MicroStatement
+    internal class MicroStatement : IDisposable
     {
         // a microstatement is firstly generated from E&S by other things...
 
         // These brackets allow type BH 1 , SYH 4
         public Bracket[] Brackets = new Bracket[2]; // L, R
         public Notation Connector = new(); // M
+
+        public MicroStatement()
+        {
+            Brackets[0] = new();
+            Brackets[1] = new();
+        }
+
+        public void Dispose()
+        {
+            Brackets[0].Dispose();
+            Brackets[1].Dispose();
+            Connector.Dispose();
+        }
 
         // Then how to evaluate it?
         // L    M   R

@@ -1,4 +1,9 @@
-﻿using System;
+﻿#if DEBUG
+#define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
+#define __NO_WELCOME_SCREEN__
+#endif
+
+using System;
 using System.Text;
 using System.Runtime.InteropServices;
 using Terminal.Gui;
@@ -12,8 +17,17 @@ namespace DefQed
         {
             Console.WriteLine("DefQed.");
 
+            Console.Title = "DefQed Version 0.01\tStill in development\tby felix_wzj@yahoo.com";
+            Console.ResetColor();
+
             Console.OutputEncoding = Encoding.Unicode;
             Console.WriteLine($"OS: {RuntimeInformation.OSDescription}");
+
+            if (args.Length > 0)
+            {
+                Console.WriteLine("Warning: Command line arguments not supported in this version. Press enter to continue.");
+                _ = Console.ReadLine();
+            }
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -70,12 +84,16 @@ namespace DefQed
                 new("_Configuration", new MenuItem[]
                 {
                     new("Set _Timeout", "Configure the timeout deadline of the proof.", CurrentJob.SetTimeoutUI, shortcut: Key.CtrlMask | Key.T),
-                    new("Set Lo_g Level", "Configure the log level.", CurrentJob.SetLogLevelUI, shortcut: Key.CtrlMask | Key.G)
+                    new("Set Lo_g Level", "Configure the log level.", CurrentJob.SetLogLevelUI, shortcut: Key.CtrlMask | Key.G),
+                    new("_Insert Into KBase", "For diagnostic use only.", CurrentJob.KBaseInsertRowUI, shortcut: Key.CtrlMask | Key.K),
+#if __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
+                    new("Seriali_ze Diagnostic Brackets", "Should be removed after debug", CurrentJob.SerializeDiagnosticBrackets, shortcut: Key.CtrlMask | Key.Z)
+#endif
                 }),
                 new("_Help", new MenuItem[]
                 {
                     new("D_ocumentation", "This will be available somewhen later...", () => { _ = MessageBox.Query("Not implemented...", "No documentation available in this version."); }, shortcut: Key.CtrlMask | Key.O),
-                    new("_About", "Version information", () => { _ = MessageBox.Query("DefQed", "Version 0.01\nCopyright Zijian Felix Wang. All rights reserved.\n This should be licensed under MIT license."); }, shortcut: Key.CtrlMask | Key.V)
+                    new("_About", "Version information", () => { _ = MessageBox.Query("DefQed", "Version 0.01\nCopyright Zijian Felix Wang. All rights reserved.\nEmail: felix_wzj@yahoo.com\n This should be licensed under MIT license."); }, shortcut: Key.CtrlMask | Key.V)
                 })
             });
 
@@ -92,7 +110,7 @@ namespace DefQed
             // Well, Terminal.Gui.FakeConsole is not implemented by its author.
             // So I need to implement my own LogConsole.
             //LogConsole.Initialize(Pos.Left(hint2), Pos.Bottom(hint2), 80, 80);
-            LogConsole.Initialize(45, 4, 80, 60);
+            LogConsole.Initialize(45, 4, 120, 60);
 
             window.Add(hint);
             window.Add(hint2);
@@ -100,6 +118,9 @@ namespace DefQed
             window.Add(LogConsole.Display);
             top.Add(window);
             top.Add(Menu);
+#if !__NO_WELCOME_SCREEN__
+            MessageBox.Query("Welcome!", "Welcome to DefQed version 0.01.\nPress ESC to close this dialog.");
+#endif
             Application.Run(top);
         }
     }

@@ -161,6 +161,7 @@ namespace DefQed.Data
             }
             MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
 
+            #region commented stuff
             //// Let's connect now.
             //while (!MySQLDriver.Initialize())
             //{
@@ -169,6 +170,7 @@ namespace DefQed.Data
             //    while (string.IsNullOrWhiteSpace(temp)) { }
             //    MySQLDriver.connStr = temp;
             //}
+            #endregion
 
             if (!MySQLDriver.Initialize())
             {
@@ -332,6 +334,14 @@ namespace DefQed.Data
                         situ.Brackets[1].BracketType = BracketType.SymbolHolder;
                         #endregion
 
+                        // initialize left pool
+                        if (kbase.LeftPool == null)
+                        {
+                            kbase.LeftPool = new();
+                        }
+
+                        kbase.LeftPool.Add(situ);
+
                         break;
                 }
             }
@@ -343,6 +353,9 @@ namespace DefQed.Data
             {
                 return;
             }
+
+            // Debug feb.26.2022
+            // failure to parse "that": everything null.
 
             foreach (XmlNode child in node.ChildNodes)
             {
@@ -396,7 +409,14 @@ namespace DefQed.Data
                 ParseProveBracket(child.ChildNodes[0].ChildNodes[1], ref kbase, ref toProve.Brackets[1], ref error);
 #pragma warning restore CS8604 // Possible null reference argument.
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+                if (kbase.RightPool == null)
+                {
+                    kbase.RightPool = new();
+                }
+                kbase.RightPool.Add(toProve);
             }
+            return;
         }
 
         private static void ParseProveBracket(XmlNode node, ref KBase kbase, ref Bracket bracket, ref bool error)
@@ -419,13 +439,18 @@ namespace DefQed.Data
                 bracket = new();
             }
 
-            if (node.ChildNodes.Count == 0)
+            // Bug insider: XmlNode != XmlElement
+            // A blabla text is also a XmlNode...
+
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+            if ((node.ChildNodes.Count == 1) && (node.FirstChild.GetType() == typeof(XmlText)))
             {
                 // Symbol holder
                 bracket.BracketType = BracketType.SymbolHolder;
                 if (SymbolBank.ContainsKey(node.InnerText))
                 {
                     bracket.Symbol = SymbolBank[node.InnerText];
+                    return;
                 }
                 else
                 {
@@ -434,6 +459,7 @@ namespace DefQed.Data
                     return;
                 }
             }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
             if ((node.Attributes != null) && (node.Attributes.GetNamedItem("category").Value.Trim().ToLower() == "negated"))
@@ -452,6 +478,7 @@ namespace DefQed.Data
 #pragma warning disable CS8604 // Possible null reference argument.
                 ParseProveBracket(node.ChildNodes[0], ref kbase, ref bracket.SubBrackets[0], ref error);
 #pragma warning restore CS8604 // Possible null reference argument.
+                return;
             }
 
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -486,6 +513,8 @@ namespace DefQed.Data
 
                 bracket.SubBrackets[0] = left;
                 bracket.SubBrackets[1] = right;
+
+                return;
             }
         }
     }

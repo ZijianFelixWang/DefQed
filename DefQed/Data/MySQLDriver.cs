@@ -1,4 +1,6 @@
-﻿//#define __USE_INLINE_CONNSTR__
+﻿#if DEBUG
+//#define __USE_INLINE_CONNSTR__
+#endif
 
 using System;
 using System.Collections.Generic;
@@ -91,7 +93,8 @@ namespace DefQed.Data
         {
             List<List<string>> result = new();
 
-            string sql = $"SELECT {List2Str(askedColumns)} FROM {TableType2Str(tableType)} WHERE {keyColumn} = \"{keyValue}\";";
+            // if has quotes here MySQL will return something useless.
+            string sql = $"SELECT {List2Str(askedColumns, false)} FROM {TableType2Str(tableType)} WHERE {keyColumn} = \"{keyValue}\";";
             MySql.Data.MySqlClient.MySqlCommand cmd = new(sql, conn);
             MySql.Data.MySqlClient.MySqlDataReader reader = cmd.ExecuteReader();
 
@@ -171,12 +174,12 @@ namespace DefQed.Data
             _ = cmd.ExecuteNonQuery();
         }
 
-        private static string List2Str(List<string> list)
+        private static string List2Str(List<string> list, bool quotes = true)
         {
             string res = "";
             for (int i = 0; i < list.Count; i++)
             {
-                if ((!int.TryParse(list[i].Trim(), out _)) && (!double.TryParse(list[i].Trim(), out _)))
+                if ((!int.TryParse(list[i].Trim(), out _)) && (!double.TryParse(list[i].Trim(), out _)) && quotes)
                 {
                     // Is a string
                     res += $"\"{list[i].Trim()}\"";

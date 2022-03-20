@@ -2,7 +2,7 @@
 
 namespace DefQed.Core
 {
-    internal class Symbol
+    internal class Symbol : IDisposable
     {
         // Symbol -- the 'newed' notation
         // if 'ABC' as Name, okay but what if evaluation pops out '12'
@@ -14,6 +14,14 @@ namespace DefQed.Core
         public override string ToString()
         {
             return $"Symbol(Notation = {Notation}, [{Id}]({Name.ToUpper()}), Value = {DirectValue});";
+        }
+
+        public Symbol()
+        {
+            // for Deserialization
+            Id = default;
+            Name = "UntitledSymbol";
+            Notation = new();
         }
 
         public Symbol(int id, Notation notation, string name = "")
@@ -29,6 +37,11 @@ namespace DefQed.Core
             Name = Convert.ToString(dVal);
             Notation = notation;
             DirectValue = dVal;
+        }
+
+        public void Dispose()
+        {
+            Notation.Dispose();
         }
     }
 }

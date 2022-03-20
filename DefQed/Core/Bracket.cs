@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace DefQed.Core
 {
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
-    internal class Bracket
+    internal class Bracket : IDisposable
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         // Bracket -- the minimized structure that holds
@@ -24,7 +24,30 @@ namespace DefQed.Core
 
         public bool Satisfied = false;  // This is for DefQed.Core.Formula.Validate().
 
-        public static bool CheckIsomorphism(Bracket b0, Bracket b1, ref Dictionary<Symbol, Symbol> transitors, TransitorOrientation bias)
+        // Will cause stack overflow
+        //public Bracket()
+        //{
+        //    SubBrackets[0] = new();
+        //    SubBrackets[1] = new();
+        //}
+
+        public void Dispose()
+        {
+            MicroStatement = null;
+            Symbol = null;
+            Connector = null;
+            if (SubBrackets[0] != null)
+            {
+                SubBrackets[0].Dispose();
+            }
+            if (SubBrackets[1] != null)
+            {
+                SubBrackets[1].Dispose();
+            }
+            BracketType = null;
+        }
+
+        public static bool CheckIsomorphism(Bracket b0, Bracket b1, ref Dictionary<Symbol, Symbol> transistors, TransistorOrientation bias)
         {
             // Isomorphism means the two brackets are with the same structure.
             // This has no sense about the Symbol's actual Name, Id, DV but Notation (aka, Symbol type) must be equal.
@@ -40,10 +63,10 @@ namespace DefQed.Core
                 {
                     return false;
                 }
-                return (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[0], ref transitors, bias) &&
-                    CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[1], ref transitors, bias)) ||
-                    (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[1], ref transitors, bias) &&
-                    CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[0], ref transitors, bias));    // Symmetry safe ensured.
+                return (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[0], ref transistors, bias) &&
+                    CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[1], ref transistors, bias)) ||
+                    (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[1], ref transistors, bias) &&
+                    CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[0], ref transistors, bias));    // Symmetry safe ensured.
             }
 
             if (b0.BracketType == Core.BracketType.SymbolHolder)
@@ -53,29 +76,29 @@ namespace DefQed.Core
                     return false;
                 }
 
-                // okay, true. Now let's build transitor now.
+                // okay, true. Now let's build transistor now.
                 
                 (Symbol, Symbol) tuple = (bias switch
                 {
-                    TransitorOrientation.LeftIndex => b0.Symbol,
-                    TransitorOrientation.RightIndex => b1.Symbol,
+                    TransistorOrientation.LeftIndex => b0.Symbol,
+                    TransistorOrientation.RightIndex => b1.Symbol,
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                    _ => throw new ArgumentOutOfRangeException("Invalid TransitorOrientation encountered.")
+                    _ => throw new ArgumentOutOfRangeException("Invalid TransistorOrientation encountered.")
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 }, bias switch
                 {
-                    TransitorOrientation.LeftIndex => b0.Symbol,
-                    TransitorOrientation.RightIndex => b1.Symbol,
+                    TransistorOrientation.LeftIndex => b0.Symbol,
+                    TransistorOrientation.RightIndex => b1.Symbol,
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                    _ => throw new ArgumentOutOfRangeException("Invalid TransitorOrientation encountered.")
+                    _ => throw new ArgumentOutOfRangeException("Invalid TransistorOrientation encountered.")
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 });
 
-                if (!transitors.ContainsKey(tuple.Item1))
+                if (!transistors.ContainsKey(tuple.Item1))
                 {
-                    transitors.Add(tuple.Item1, tuple.Item2);
+                    transistors.Add(tuple.Item1, tuple.Item2);
                 }
-                // We add transitors just and the rest job is not ours.
+                // We add transistors just and the rest job is not ours.
             }
 
             return true;
@@ -143,7 +166,7 @@ namespace DefQed.Core
         SymbolHolder        // mode 4
     };
 
-    internal enum TransitorOrientation
+    internal enum TransistorOrientation
     {
         LeftIndex,  // b0 is index
         RightIndex  // b1 is index

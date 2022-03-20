@@ -5,6 +5,7 @@
 
 using Terminal.Gui;
 using DateTime = System.DateTime;
+using System.Diagnostics;
 
 namespace DefQed
 {
@@ -54,6 +55,8 @@ namespace DefQed
                 WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
             }
 
+            Debug.WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
+
             if (level == LogLevel.Error)
             {
                 _ = MessageBox.ErrorQuery("Error.", info, "Ok");
@@ -73,6 +76,7 @@ namespace DefQed
         {
             Display.Text += "\n";
             Display.MoveEnd();
+            Display.Redraw(new Rect());
         }
 
         public static void WriteLine(string str)
@@ -93,6 +97,11 @@ namespace DefQed
             {
                 WriteLine();
             }
+        }
+
+        public static void Beep()
+        {
+            System.Console.Beep();
         }
 
         public static string ReadLine()
@@ -117,8 +126,6 @@ namespace DefQed
             return Display.Text.ToString()[startFrom..].Trim();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
-
-        public static void Beep() => System.Console.Beep();
     }
 
     internal enum LogLevel

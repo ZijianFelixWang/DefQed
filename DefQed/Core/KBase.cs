@@ -70,12 +70,16 @@ namespace DefQed.Core
             // ScanPool -- This method overviews the two pools and then check if they can satisfy some reflections.
             // Then it adds the reflected things to the pools.
             // Call hrc: ScanPools -> Reflection.Scan()
+            Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning left pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref LeftPool);
+            Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning right pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref RightPool);
+            Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory= {ReflectionHistory}");
         }
 
         // HowTo: Update reflections from just done. This is the principle for the self learning procedure.
         // This includes two parts: Compose [multiple available] all routes -> Insert into reflection records.
+        // UNDONE: Self-learning
 
         // Hey! These things should be done after [bridging] procedure.
         public bool TryBridging()
@@ -84,6 +88,12 @@ namespace DefQed.Core
             {
                 if (!LeftPool.Contains(item))
                 {
+                    JsonSerializerOptions op = new()
+                    {
+                        IncludeFields = true,
+                        MaxDepth = 1024
+                    };
+                    Console.Log(LogLevel.Diagnostic, $"TryBridging: Left pool doesn't contain {JsonSerializer.Serialize(item, op)}.");
                     return false;
                 }
             }
@@ -93,6 +103,8 @@ namespace DefQed.Core
         // Utilities
         public void LoadReflections()
         {
+            Console.Log(LogLevel.Information, "Loading reflections.");
+
             List<List<string>> query = MySQLDriver.AcquireWholeTable(TableType.Reflections);
             foreach (List<string> row in query)
             {
@@ -117,49 +129,63 @@ namespace DefQed.Core
                 List<List<string>> query2 = MySQLDriver.QueryTable(TableType.Registries, "ID", condId, new List<string>(new string[] { "CONTENT" }));
                 foreach (List<string> cRow in query2)
                 {
-                    if (cRow.Count < 2)
+                    if (cRow.Count < 1)
                     {
                         throw new FormatException("Table registries in DefQed database is invalid.");
                     }
 
-                    if ((row == null) || (row[1] == null))
+                    if ((row == null) || (row[0] == null))
                     {
                         throw new NullReferenceException("Null row queryed in reflections' loading process.");
                     }
 
-                    condJson = cRow[1];
+                    condJson = cRow[0];
                 }
 
                 query2 = MySQLDriver.QueryTable(TableType.Registries, "ID", concId, new List<string>(new string[] { "CONTENT" }));
                 foreach (List<string> cRow in query2)
                 {
-                    if (cRow.Count < 2)
+                    if (cRow.Count < 1)
                     {
                         throw new FormatException("Table registries in DefQed database is invalid.");
                     }
 
-                    if ((row == null) || (row[1] == null))
+                    if ((row == null) || (row[0] == null))
                     {
                         throw new NullReferenceException("Null row queryed in reflections' loading process.");
                     }
 
-                    concJson = cRow[1];
+                    concJson = cRow[0];
                 }
+
+                Console.Log(LogLevel.Diagnostic, $"Deserializing reflection {Reflections.Count}.");
+                
+                JsonSerializerOptions op = new()
+                {
+                    IncludeFields = true,
+                    MaxDepth = 1024
+                };
 
                 Reflections.Add(new Reflection()
                 {
 #pragma warning disable CS8601 // Possible null reference assignment.
-                    Condition = JsonSerializer.Deserialize<Formula>(condJson),
-                    Conclusion = JsonSerializer.Deserialize<List<MicroStatement>>(concJson)
+                    Condition = JsonSerializer.Deserialize<Formula>(condJson, op),
+                    Conclusion = JsonSerializer.Deserialize<List<MicroStatement>>(concJson, op)
 #pragma warning restore CS8601 // Possible null reference assignment.
                 });
+
+                Console.Log(LogLevel.Diagnostic, $"Reflection {Reflections.Count} loaded.");
             }
         }
 
         // Check notation via name, and give notation id back.
         public static bool VerifyNotation(ref Notation notation)
         {
-            if (notation == null) return false;
+            if (notation == null)
+            {
+                return false;
+            }
+
             List<string> tmp = new();
             tmp.Add("ID");
             List<List<string>> query = MySQLDriver.QueryTable(TableType.Notations, "TITLE", notation.Name.ToUpper().Trim(), tmp);
