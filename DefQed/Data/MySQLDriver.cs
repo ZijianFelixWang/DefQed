@@ -14,8 +14,8 @@ namespace DefQed.Data
     {
         private static MySql.Data.MySqlClient.MySqlConnection? conn;
 
-        // TODO: Remove the inline connstr when releasing.
 #if __USE_INLINE_CONNSTR__
+        // TODO: Remove the inline connstr when releasing.
         // Should use for debug only.
         // Remove this line of code when release.
         public static string connStr = @"server=127.0.0.1;uid=DefQed;pwd=oClg2%[TenbL86V+rsC3;database=defqed";

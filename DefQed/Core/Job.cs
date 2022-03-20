@@ -61,8 +61,6 @@ namespace DefQed.Core
             PerformProof(TimeOut);
         }
 
-        // TODO: fix transistor logic.. there's a mess.
-
         private void PerformProof(int TimeOut)
         {
             PulseBar.Pulse();
