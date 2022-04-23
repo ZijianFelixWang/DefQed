@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if DEBUG
+#define __HIDE_REFLECT_HISTORY__
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using DefQed.Data;
@@ -74,7 +78,11 @@ namespace DefQed.Core
             ReflectionHistory += Reflection.Scan(Reflections, ref LeftPool);
             Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning right pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref RightPool);
+#if __HIDE_REFLECT_HISTORY__
+            Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory is hiden. RH size is {ReflectionHistory.Length}");
+#else
             Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory= {ReflectionHistory}");
+#endif
         }
 
         // HowTo: Update reflections from just done. This is the principle for the self learning procedure.
@@ -88,12 +96,8 @@ namespace DefQed.Core
             {
                 if (!LeftPool.Contains(item))
                 {
-                    JsonSerializerOptions op = new()
-                    {
-                        IncludeFields = true,
-                        MaxDepth = 1024
-                    };
-                    Console.Log(LogLevel.Diagnostic, $"TryBridging: Left pool doesn't contain {JsonSerializer.Serialize(item, op)}.");
+                    // To make it more human-readable...
+                    Console.Log(LogLevel.Diagnostic, $"TryBridging: Left pool doesn't contain the following: {item.ToFriendlyString()}");
                     return false;
                 }
             }

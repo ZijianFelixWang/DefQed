@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Console = DefQed.LogConsole;
 
 namespace DefQed.Core
 {
@@ -63,6 +64,9 @@ namespace DefQed.Core
                 {
                     return false;
                 }
+
+                Console.Log(LogLevel.Diagnostic, "Isomorphism checker: entering lower level.");
+
                 return (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[0], ref transistors, bias) &&
                     CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[1], ref transistors, bias)) ||
                     (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[1], ref transistors, bias) &&
@@ -78,6 +82,8 @@ namespace DefQed.Core
 
                 // okay, true. Now let's build transistor now.
                 
+                // real   fake
+                // xyz    abc
                 (Symbol, Symbol) tuple = (bias switch
                 {
                     TransistorOrientation.LeftIndex => b0.Symbol,
@@ -87,8 +93,8 @@ namespace DefQed.Core
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
                 }, bias switch
                 {
-                    TransistorOrientation.LeftIndex => b0.Symbol,
-                    TransistorOrientation.RightIndex => b1.Symbol,
+                    TransistorOrientation.LeftIndex => b1.Symbol,
+                    TransistorOrientation.RightIndex => b0.Symbol,
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
                     _ => throw new ArgumentOutOfRangeException("Invalid TransistorOrientation encountered.")
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
@@ -99,6 +105,7 @@ namespace DefQed.Core
                     transistors.Add(tuple.Item1, tuple.Item2);
                 }
                 // We add transistors just and the rest job is not ours.
+                Console.Log(LogLevel.Diagnostic, $"New transistor (r,f) = ({tuple.Item1.Name}, {tuple.Item2.Name})");
             }
 
             return true;
@@ -152,6 +159,20 @@ namespace DefQed.Core
                 Core.BracketType.NegatedHolder => $"Negated({SubBrackets[0]}););",
                 Core.BracketType.StatementHolder => $"{MicroStatement});",
                 Core.BracketType.SymbolHolder => $"{Symbol});",
+                _ => ");",
+            };
+            return res;
+        }
+
+        public string ToFriendlyString()
+        {
+            string res = "Bracket(";
+            res += BracketType switch
+            {
+                Core.BracketType.BracketHolder => $"{SubBrackets[0].ToFriendlyString()} {Connector.Name} {SubBrackets[1].ToFriendlyString()});",
+                Core.BracketType.NegatedHolder => $"!({SubBrackets[0].ToFriendlyString()}););",
+                Core.BracketType.StatementHolder => $"{MicroStatement.ToFriendlyString()});",
+                Core.BracketType.SymbolHolder => $"{Symbol.Name});",
                 _ => ");",
             };
             return res;

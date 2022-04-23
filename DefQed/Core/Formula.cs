@@ -56,7 +56,11 @@ namespace DefQed.Core
                 MaxDepth = 1024
             };
 
-            Console.Log(LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= {JsonSerializer.Serialize(bracket, op)}, situation= {JsonSerializer.Serialize(situation, op)}, transistors= {Transistors2Str(transistors)}");
+#if __NO_VERBOSE_SERIALIZATION__
+            Console.Log(LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= ..., situation= ..., transistors= ...");
+#else
+            Console.Log(LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= {bracket.ToFriendlyString()}, situation= {MicroStatement.ToFriendlyStringList(situation)}, transistors= {Transistors2Str(transistors)}");
+#endif
 
             // Initially bracket = TopLevel
 
@@ -116,11 +120,19 @@ namespace DefQed.Core
                         }
 
                         // In the following perspective, the b0 bracket should be... the top br of a MicroStatement's brs.
-                        if (!Bracket.CheckIsomorphism(bracket.MicroStatement.Brackets[0], candidates[i].Brackets[0], ref transistors, TransistorOrientation.LeftIndex))
+                        if (!Bracket.CheckIsomorphism(
+                            bracket.MicroStatement.Brackets[0],
+                            candidates[i].Brackets[0],
+                            ref transistors,
+                            TransistorOrientation.LeftIndex))
                         {
                             candidates.RemoveAt(i);
                         }
-                        if (!Bracket.CheckIsomorphism(bracket.MicroStatement.Brackets[1], candidates[i].Brackets[1], ref transistors, TransistorOrientation.LeftIndex))
+                        if (!Bracket.CheckIsomorphism(
+                            bracket.MicroStatement.Brackets[1],
+                            candidates[i].Brackets[1],
+                            ref transistors,
+                            TransistorOrientation.LeftIndex))
                         {
                             candidates.RemoveAt(i);
                         }

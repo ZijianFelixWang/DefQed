@@ -191,6 +191,9 @@ namespace DefQed.Core
                     break;
                 case BracketType.SymbolHolder:
                     Bracket br = bracket;
+
+                    // For a pair of titem, value is abc (formula things, to be replaced), key is xyz (real things)
+
                     //br.Symbol = ((List<Symbol>)(from t in transistors where t.Value == br.Symbol select t.Key))[0];
                     foreach (var t in transistors)
                     {
