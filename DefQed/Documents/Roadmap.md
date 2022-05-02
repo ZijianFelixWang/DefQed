@@ -8,13 +8,12 @@
 - [x] Main Loop
 - [x] Data Structures
 - [x] Isomorphism Checker
-- [ ] Transistor Applier `Very Buggy Now... Working on it.`
+- [x] Transistor Applier `Very Buggy Now... Working on it.`
 - [ ] RH Generator `Very difficult for humans to read.`
 ### Nearly Completed System
 - [ ] Self Learning Logic
 - [ ] Teaching Logic
 - [ ] Forgetting Logic
-- [ ] A Less Buggy UI
 - [ ] Configuration Storage
 ### Server-Client System
 - [ ] Communication Protocol
@@ -30,5 +29,5 @@
 ### Documents and Examples
 - [ ] Readme File
 - [ ] Documentation
-- [ ] Example Codes
+- [ ] Example Codes (runnable)
 - [x] Diagnostic Example
