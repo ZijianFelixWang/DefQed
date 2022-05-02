@@ -5,14 +5,15 @@
 #define __CTRL_G_TO_RUN__
 #define __AUTO_XML_SUBMIT__
 //#define __NO_TEE_AFTER_PROOF__
+//#define __INSERT_LINE_UI__ //Deprec!
 #endif
 
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using DefQed.Data;
-using Terminal.Gui;
-using NStack;
+////using Terminal.Gui
+////using NStack
 using Console = DefQed.LogConsole;
 using Environment = System.Environment;
 using TimeSpan = System.TimeSpan;
@@ -36,9 +37,9 @@ namespace DefQed.Core
         private bool ProofPalsed = false;
 
         // Remark: if give a default value will lead into an excpetion...
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public ProgressBar PulseBar;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        //#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        //        public ProgressBar PulseBar;
+        //#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         //private bool PulseNow = false;
 
         //public void Initialize()
@@ -63,14 +64,16 @@ namespace DefQed.Core
 
         private void PerformProof(int TimeOut)
         {
-            PulseBar.Pulse();
+            //PulseBar.Pulse();
             try
             {
-                _ = MessageBox.Query("PerformProof called.", "Start proving...", "Ok");
+                //_ = MessageBox.Query("PerformProof called.", "Start proving...", "Ok");
+                Console.Log(LogLevel.Information, "Start proving...");
 
                 // Load reflections...
                 KnowledgeBase.LoadReflections();
-                PulseBar.Pulse();
+                //PulseBar.Pulse();
+                Console.Log(LogLevel.Diagnostic, "Pulse.");
 
                 ProofTask = new(() =>
                 {
@@ -82,9 +85,10 @@ namespace DefQed.Core
                             KnowledgeBase.ScanPools();
                             //if (PulseNow = !PulseNow)
                             //{
-                            Console.Log(LogLevel.Diagnostic, "UI pulse");
-                            PulseBar.Pulse();
+                            //Console.Log(LogLevel.Diagnostic, "UI pulse");
+                            //Console.Log(LogLevel.Diagnostic, "Pulse.");
                             //}
+                            System.Console.ReadLine();
                         }
                     }
                 });
@@ -99,7 +103,8 @@ namespace DefQed.Core
                 {
                     //Console.WriteLine("Proof process has finished!");
                     Console.Log(LogLevel.Information, "Proof process has finished.");
-                    _ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
+                    //_ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
+                    
 #if !__NO_TEE_AFTER_PROOF__
                     #region commented stuff decomment after debug
                     Console.WriteLine("Below is report generated:");
@@ -163,57 +168,60 @@ namespace DefQed.Core
                 Console.Log(LogLevel.Error, $"Exception envountered. Exception Category: {ex.GetType()}\nException Message: {ex.Message}");
                 Console.WriteLine("You can now save the dump file or terminate the program.");
                 TeeSerializedKBase();
+
+                Environment.Exit(-2);
             }
         }
 
 #pragma warning disable CA1822 // Mark members as static
-        public void SetLogLevelUI()
-#pragma warning restore CA1822 // Mark members as static
-        {
-            // The ctrl-G...
-#if __CTRL_G_TO_RUN__
-            LoadXMLUI();
-            PerformProof();
-#else
-            Button confirm = new("Ok", is_default: true);
-            Button cancel = new("Cancel", is_default: false);
-            RadioGroup sel = new(2, 2, new ustring[] { "Diagnostic", "Information", "Warning", "Error" }, 1);
-            confirm.Clicked += () =>
-            {
-                Console.LogLevel = sel.SelectedItem switch
-                {
-                    0 => LogLevel.Diagnostic,
-                    1 => LogLevel.Information,
-                    2 => LogLevel.Warning,
-                    3 => LogLevel.Error,
-                    _ => LogLevel.Information
-                };
+//        public void SetLogLevelUI()
+//#pragma warning restore CA1822 // Mark members as static
+//        {
+//            // The ctrl-G...
+//#if __CTRL_G_TO_RUN__
+//            LoadXMLUI();
+//            PerformProof();
+//#else
+//            Button confirm = new("Ok", is_default: true);
+//            Button cancel = new("Cancel", is_default: false);
+//            RadioGroup sel = new(2, 2, new ustring[] { "Diagnostic", "Information", "Warning", "Error" }, 1);
+//            confirm.Clicked += () =>
+//            {
+//                Console.LogLevel = sel.SelectedItem switch
+//                {
+//                    0 => LogLevel.Diagnostic,
+//                    1 => LogLevel.Information,
+//                    2 => LogLevel.Warning,
+//                    3 => LogLevel.Error,
+//                    _ => LogLevel.Information
+//                };
 
-                Console.Log(LogLevel.Information, "Log level set to " + Console.LogLevel);
+//                Console.Log(LogLevel.Information, "Log level set to " + Console.LogLevel);
 
-                Console.Log(LogLevel.Diagnostic, "Diagnostic example.");
-                Console.Log(LogLevel.Information, "Information example.");
-                Console.Log(LogLevel.Warning, "Warning example.");
-                Console.Log(LogLevel.Error, "Error example.");
+//                Console.Log(LogLevel.Diagnostic, "Diagnostic example.");
+//                Console.Log(LogLevel.Information, "Information example.");
+//                Console.Log(LogLevel.Warning, "Warning example.");
+//                Console.Log(LogLevel.Error, "Error example.");
 
 
-                Application.RequestStop();
-            };
-            cancel.Clicked += () =>
-            {
-                Application.RequestStop();
-            };
+//                Application.RequestStop();
+//            };
+//            cancel.Clicked += () =>
+//            {
+//                Application.RequestStop();
+//            };
 
-            Dialog ui = new("Request input.", 50, 20, confirm, cancel);
-            Label hint = new(1, 1, "Select the log level. The default option is information. Click Ok to confirm, Click cancel to go back.");
+//            Dialog ui = new("Request input.", 50, 20, confirm, cancel);
+//            Label hint = new(1, 1, "Select the log level. The default option is information. Click Ok to confirm, Click cancel to go back.");
 
-            ui.Add(hint);
-            ui.Add(sel);
-            Application.Run(ui);
-            // Now the loop is finished.
-#endif
-        }
+//            ui.Add(hint);
+//            ui.Add(sel);
+//            Application.Run(ui);
+//            // Now the loop is finished.
+//#endif
+//        }
 
+#if __INSERT_LINE_UI__
         public void KBaseInsertRowUI()
         {
             Button confirm = new("Ok", is_default: true);
@@ -233,8 +241,10 @@ namespace DefQed.Core
                         string title = "";
                         string origin = "";
                         string opacity = "";
+//#endif
+
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-                        title = TextInputBoxUI("Input for \"title\" column.").ToString();
+        title = TextInputBoxUI("Input for \"title\" column.").ToString();
                         origin = TextInputBoxUI("Input for \"origin\" column.").ToString();
                         opacity = TextInputBoxUI("Input for \"opacity\" column.").ToString(); ;
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
@@ -342,14 +352,15 @@ namespace DefQed.Core
             Application.Run(ui);
             // Now the loop is finished.
         }
+#endif
 
 #if __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
-#pragma warning disable CA1822 // Mark members as static
+//#pragma warning disable CA1822 // Mark members as static
         public void SerializeDiagnosticBrackets()
-#pragma warning restore CA1822 // Mark members as static
+//#pragma warning restore CA1822 // Mark members as static
         {
-            _ = MessageBox.Query("DIAG", "This should be commented after this debug.");
-            #region serialize cond
+            //_ = MessageBox.Query("DIAG", "This should be commented after this debug.");
+#region serialize cond
             //_ = MessageBox.Query("DIAG", "Serializing debug condition.");
             Formula cond = new();
 
@@ -394,18 +405,19 @@ namespace DefQed.Core
             };
 
             // Fix unexpected error...
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+#pragma warning disable IDE0079 // Remove unnecessary suppression
             if (cond.TopLevel.SubBrackets[0].MicroStatement.Brackets == null)
             {
                 cond.TopLevel.SubBrackets[0].MicroStatement.Brackets = new Bracket[2];
             };
+#pragma warning restore IDE0079 // Remove unnecessary suppression
             if (cond.TopLevel.SubBrackets[1].MicroStatement.Brackets == null)
             {
                 cond.TopLevel.SubBrackets[1].MicroStatement.Brackets = new Bracket[2];
             };
             cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[0] = new();
             cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[1] = new();
-            
+
             cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[0].BracketType = BracketType.SymbolHolder;
             cond.TopLevel.SubBrackets[0].MicroStatement.Brackets[0].Symbol = new(0, new Notation
             {
@@ -420,7 +432,7 @@ namespace DefQed.Core
                 Id = 0,
                 Origin = NotationOrigin.External
             }, "b");
-            
+
             cond.TopLevel.SubBrackets[1] = new Bracket
             {
                 BracketType = BracketType.StatementHolder,
@@ -437,7 +449,7 @@ namespace DefQed.Core
             };
             cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[0] = new();
             cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[1] = new();
-            
+
             cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[0].BracketType = BracketType.SymbolHolder;
             cond.TopLevel.SubBrackets[1].MicroStatement.Brackets[0].Symbol = new(1, new Notation
             {
@@ -452,8 +464,6 @@ namespace DefQed.Core
                 Id = 2,
                 Origin = NotationOrigin.External
             }, "c");
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
             JsonSerializerOptions op = new()
             {
                 IncludeFields = true,
@@ -466,8 +476,8 @@ namespace DefQed.Core
             //_ = MessageBox.Query("DIAG", "OK, see it in log console.");
             Console.Log(LogLevel.Information, json1);
 
-            #endregion
-            #region serialize conc
+#endregion
+#region serialize conc
             //_ = MessageBox.Query("DIAG", "Serializing debug conclusion.");
             List<MicroStatement> conc = new();
             conc.Add(new MicroStatement
@@ -501,88 +511,72 @@ namespace DefQed.Core
 
             //_ = MessageBox.Query("DIAG", "OK, see it in log console.");
             Console.Log(LogLevel.Information, json1);
-            #endregion
+#endregion
         }
 #endif
 
-        private void TextInputBoxInnerUI(ustring hintText)
-        {
+        //private void TextInputBoxInnerUI(ustring hintText)
+        //{
 
-            Button confirm = new("Ok", is_default: true);
-            Button cancel = new("Cancel", is_default: false);
-            TextField field = new()
-            {
-                X = 2,
-                Y = 2,
-                Width = 40
-            };
+        //    Button confirm = new("Ok", is_default: true);
+        //    Button cancel = new("Cancel", is_default: false);
+        //    TextField field = new()
+        //    {
+        //        X = 2,
+        //        Y = 2,
+        //        Width = 40
+        //    };
 
-            confirm.Clicked += () =>
-            {
-                JustNowTextInput = field.Text;
-                Application.RequestStop();
-            };
-            cancel.Clicked += () =>
-            {
-                Application.RequestStop();
-            };
-            Dialog ui = new("Request input.", 50, 20, confirm, cancel);
-            Label hint = new(1, 1, hintText);
+        //    confirm.Clicked += () =>
+        //    {
+        //        JustNowTextInput = field.Text;
+        //        Application.RequestStop();
+        //    };
+        //    cancel.Clicked += () =>
+        //    {
+        //        Application.RequestStop();
+        //    };
+        //    Dialog ui = new("Request input.", 50, 20, confirm, cancel);
+        //    Label hint = new(1, 1, hintText);
 
-            ui.Add(hint);
-            ui.Add(field);
-            Application.Run(ui);
-            // Now the loop is finished.
-        }
+        //    ui.Add(hint);
+        //    ui.Add(field);
+        //    Application.Run(ui);
+        //    // Now the loop is finished.
+        //}
 
-        private ustring TextInputBoxUI(ustring hint)
-        {
-            TextInputBoxInnerUI(hint);
-            return JustNowTextInput;
-        }
+        //private ustring TextInputBoxUI(ustring hint)
+        //{
+        //    TextInputBoxInnerUI(hint);
+        //    return JustNowTextInput;
+        //}
 
-        // What a ugly line of code here.
-        private ustring JustNowTextInput = "";
+        //// What a ugly line of code here.
+        //private ustring JustNowTextInput = "";
 
         public void SetTimeoutUI()
         {
-            Button confirm = new("Ok", is_default: true);
-            Button cancel = new("Cancel", is_default: false);
-            TextField field = new()
+            //Button confirm = new("Ok", is_default: true);
+            //Button cancel = new("Cancel", is_default: false);
+            //TextField field = new()
+            //{
+            //    X = 2,
+            //    Y = 2,
+            //    Width = 40
+            //};
+            string? field = System.Console.ReadLine();
+            if (!int.TryParse(field, out TimeOut))
             {
-                X = 2,
-                Y = 2,
-                Width = 40
-            };
-            confirm.Clicked += () =>
-            {
-                if (field.Text.ToString() != null)
-                {
-                    if (!int.TryParse(field.Text.ToString(), out TimeOut))
-                    {
-                        // parse error.
-                        _ = MessageBox.ErrorQuery("Bad data format.", "The timeout value is not a valid int.", "Ok");
-                    }
-                }
-                Application.RequestStop();
-            };
-            cancel.Clicked += () =>
-            {
-                Application.RequestStop();
-            };
-            Dialog ui = new("Request input.", 50, 20, confirm, cancel);
-            Label hint = new(1, 1, "Input timeout value. (ms)");
-
-            ui.Add(hint);
-            ui.Add(field);
-            Application.Run(ui);
-            // Now the loop is finished.
+                // parse error.
+                //_ = MessageBox.ErrorQuery("Bad data format.", "The timeout value is not a valid int.", "Ok");
+                Console.Log(LogLevel.Error, "Bad data format. The timeout value is not a valid int.");
+            }
         }
 
-        public void LoadXMLUI()
+        public void LoadXMLUI(string filename)
         {
 #if __AUTO_XML_SUBMIT__
-            XMLFileName = @"C:\Users\felix\Documents\projects\DefQed\DefQed\Examples\Diagnostic.xml";
+            XMLFileName = filename.Trim();
             bool err = false;
             KBase temp = new();
 
@@ -594,7 +588,7 @@ namespace DefQed.Core
 
             if (err)
             {
-                _ = MessageBox.ErrorQuery("Error.", "XML parse failure.\nFor more details, see the log console.", new ustring[] { "Ok" });
+                Console.Log(LogLevel.Error, "XML parse failure.");
             }
             else
             {
@@ -666,7 +660,19 @@ namespace DefQed.Core
 
         public void RenewInstanceUI()
         {
-            int choice = MessageBox.Query("Are you sure?", "This operation will dispose the current job and cannot be restored.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
+            //int choice = MessageBox.Query("Are you sure?", "This operation will dispose the current job and cannot be restored.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
+            int choice;
+            Console.WriteLine("This operation will dispose the current job and cannot be restored. (y,N)");
+            string? field = System.Console.ReadLine();
+            choice = field switch
+            {
+                null => 1,
+                "y" => 0,
+                "Y" => 0,
+                "n" => 1,
+                "N" => 1,
+                _ => 1
+            };
             if (choice == 0)
             {
                 if ((ProofTask != null) && (!ProofTask.IsCompleted))
@@ -685,7 +691,18 @@ namespace DefQed.Core
 
         public void DisposeProofUI()
         {
-            int choice = MessageBox.Query("Are you sure?", "This operation will dispose the current proof and cannot be restored.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
+            //int choice = MessageBox.Query("Are you sure?", "This operation will dispose the current proof and cannot be restored.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
+            Console.WriteLine("This operation will dispose the current proof and cannot be restored. (y,N)");
+            string? field = System.Console.ReadLine();
+            int choice = field switch
+            {
+                null => 1,
+                "y" => 0,
+                "Y" => 0,
+                "n" => 1,
+                "N" => 1,
+                _ => 1
+            };
             if (choice == 0)
             {
                 if ((ProofTask != null) && (!ProofTask.IsCompleted))
@@ -695,14 +712,26 @@ namespace DefQed.Core
                 }
                 else
                 {
-                    MessageBox.Query("Invalid operation.", "There is nothing to dispose.", "Ok");
+                    //MessageBox.Query("Invalid operation.", "There is nothing to dispose.", "Ok");
+                    Console.Log(LogLevel.Error, "There is nothing to dispose.");
                 }
             }
         }
 
         public void QuitUI()
         {
-            int choice = MessageBox.Query("Are you sure?", "This will terminate the application.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
+            //int choice = MessageBox.Query("Are you sure?", "This will terminate the application.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
+            Console.WriteLine("This operation will terminate the operation. (y,N)");
+            string? field = System.Console.ReadLine();
+            int choice = field switch
+            {
+                null => 1,
+                "y" => 0,
+                "Y" => 0,
+                "n" => 1,
+                "N" => 1,
+                _ => 1
+            };
             if (choice == 0)
             {
                 if ((ProofTask != null) && (!ProofTask.IsCompleted))
@@ -713,7 +742,7 @@ namespace DefQed.Core
                 {
                     MySQLDriver.Terminate();
                 }
-                Application.Shutdown();
+                //Application.Shutdown();
                 Environment.Exit(0);
             }
         }
@@ -722,7 +751,7 @@ namespace DefQed.Core
         {
             if ((ProofTask == null) || (ProofTask.IsCompleted))
             {
-                _ = MessageBox.ErrorQuery("Invalid operation.", "There is nothing to pause or resume.", "Ok");
+                Console.Log(LogLevel.Error, "There is nothing to pause or resume.");
             }
 
             ProofPalsed = !ProofPalsed;
@@ -735,47 +764,36 @@ namespace DefQed.Core
             string? filename;
             while (true)
             {
-                Console.WriteLine("Asking: (Json Serialized KBase) File name.");
-                filename = TextInputBoxUI("Where to save the serialized KBase?").ToString();
+                System.Console.Write("Asking: (Json Serialized KBase) File name: ");
+                filename = System.Console.ReadLine();
                 if ((filename != null) && (filename.Length > 0))
                 {
                     break;
                 }
-
-                int sel = MessageBox.Query("Cancel or not", "Do you want to cancel?", new ustring[] { "Yes", "No" });
-                if (sel == 0)
-                {
-                    break;
-                }
             }
-#pragma warning disable CS8604 // Possible null reference argument.
+//#pragma warning disable CS8604 // Possible null reference argument.
             File.WriteAllText(filename, serialization);
-#pragma warning restore CS8604 // Possible null reference argument.
+//#pragma warning restore CS8604 // Possible null reference argument.
         }
 
-#pragma warning disable IDE0051 // Remove unused private members
+//#pragma warning disable IDE0051 // Remove unused private members
         private void TeeProofText()
-#pragma warning restore IDE0051 // Remove unused private members
+//#pragma warning restore IDE0051 // Remove unused private members
         {
             string? filename;
             while (true)
             {
                 Console.WriteLine("Asking: (Proof Text) File name.");
-                filename = TextInputBoxUI("Where to save the proof?").ToString();
+                System.Console.Write("Where to save the proof?  ");
+                filename = Console.ReadLine();
                 if ((filename != null) && (filename.Length > 0))
                 {
                     break;
                 }
-
-                int sel = MessageBox.Query("Cancel or not", "Do you want to cancel?", new ustring[] { "Yes", "No" });
-                if (sel == 0)
-                {
-                    break;
-                }
             }
-#pragma warning disable CS8604 // Possible null reference argument.
+//#pragma warning disable CS8604 // Possible null reference argument.
             File.WriteAllText(filename, KnowledgeBase.GenerateReport());
-#pragma warning restore CS8604 // Possible null reference argument.
+//#pragma warning restore CS8604 // Possible null reference argument.
         }
     }
 }

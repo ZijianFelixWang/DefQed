@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using DefQed.Data;
-using Terminal.Gui;
+//using Terminal.Gui
 using Console = DefQed.LogConsole;
 
 namespace DefQed.Core
@@ -55,13 +55,14 @@ namespace DefQed.Core
             int id = MySQLDriver.GetMaxId(TableType.Notations);
             if (id == -1)
             {
-                LogConsole.Log(LogLevel.Warning, "Using next notation id zero. Do not perform proof.");
+                Console.Log(LogLevel.Warning, "Using next notation id zero. Do not perform proof.");
                 return 0;   // Ignored.
             }
             if (id == -2)
             {
                 // To abort protocol.
-                MessageBox.ErrorQuery("Error.", "Error signal -2 received.");
+                Console.Log(LogLevel.Error, "Error signal -2 received.");
+
                 return -1;
             }
 

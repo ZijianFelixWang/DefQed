@@ -17,11 +17,11 @@ namespace DefQed.Data
         public static KBase ParseXMLAsync(string filename)
         {
             Console.Log(LogLevel.Diagnostic, $"ParseXMLAsync() Thread {Environment.CurrentManagedThreadId}");
-            Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message A1");
+            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message A1");
             //KBase k = await ParseXMLTask(filename);
             //var r = ParseXMLTask(filename);
             KBase k = ParseXMLTask(filename).Result;
-            Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message A2");
+            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message A2");
             return k;
         }
 
@@ -43,7 +43,7 @@ namespace DefQed.Data
                     return new();
                 }
             });
-            Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message T2");
+            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message T2");
             return task;
         }
 
@@ -197,7 +197,7 @@ namespace DefQed.Data
                 {
                     case "enroll":
                         #region parse enroll
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                         if ((child.Attributes.Count != 1) || (child.Attributes == null))
                         {
                             Console.Log(LogLevel.Error, "XML Parse Error in enroll tag.");
@@ -205,7 +205,7 @@ namespace DefQed.Data
                             return;
                         }
                         string? category = child.Attributes["category"].Value;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                         string title = child.InnerText;
 
                         Notation notation = new()
@@ -247,7 +247,7 @@ namespace DefQed.Data
                             switch (forceChild.Name.Trim().ToLower())
                             {
                                 case "let":
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                                     if ((forceChild.Attributes.Count != 1) || (forceChild.Attributes == null))
                                     {
                                         Console.Log(LogLevel.Error, "XML Parse Error in let tag.");
@@ -255,11 +255,11 @@ namespace DefQed.Data
                                         return;
                                     }
                                     letCategory = forceChild.Attributes["category"].Value;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                                     letItem = forceChild.InnerText;
                                     break;
                                 case "be":
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                                     if ((forceChild.Attributes.Count != 1) || (forceChild.Attributes == null))
                                     {
                                         Console.Log(LogLevel.Error, "XML Parse Error in let tag.");
@@ -267,7 +267,7 @@ namespace DefQed.Data
                                         return;
                                     }
                                     beCategory = forceChild.Attributes["category"].Value;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                                     beItem = forceChild.InnerText;
                                     break;
                             }
@@ -376,7 +376,7 @@ namespace DefQed.Data
                     return;
                 }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (child.ChildNodes[0].Name.Trim().ToLower() != "that")
                 {
                     Console.Log(LogLevel.Error, "Unexpected tag encountered in prove tag.");
@@ -408,7 +408,7 @@ namespace DefQed.Data
                 ParseProveBracket(child.ChildNodes[0].ChildNodes[0], ref kbase, ref toProve.Brackets[0], ref error);
                 ParseProveBracket(child.ChildNodes[0].ChildNodes[1], ref kbase, ref toProve.Brackets[1], ref error);
 #pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 if (kbase.RightPool == null)
                 {
@@ -442,7 +442,7 @@ namespace DefQed.Data
             // Bug insider: XmlNode != XmlElement
             // A blabla text is also a XmlNode...
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if ((node.ChildNodes.Count == 1) && (node.FirstChild.GetType() == typeof(XmlText)))
             {
                 // Symbol holder
@@ -459,11 +459,11 @@ namespace DefQed.Data
                     return;
                 }
             }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if ((node.Attributes != null) && (node.Attributes.GetNamedItem("category").Value.Trim().ToLower() == "negated"))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
             {
                 // Negated holder
                 bracket.BracketType = BracketType.NegatedHolder;
@@ -481,17 +481,17 @@ namespace DefQed.Data
                 return;
             }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if ((node.ChildNodes.Count == 2) && (node.Attributes != null) && (new List<string>(new string[] {"==", ">", "<", ">=", "<="})).Contains(node.Attributes["category"].Value))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
             {
                 // Bracket holder
                 bracket.BracketType = BracketType.BracketHolder;
                 Notation connector = new()
                 {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     Name = node.Attributes["category"].Value,
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     Origin = NotationOrigin.Internal
                 };
                 if (!KBase.VerifyNotation(ref connector))

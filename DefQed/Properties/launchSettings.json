@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DefQed": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\felix\\Documents\\projects\\DefQed\\DefQed\\Examples\\Diagnostic.xml\"",
+      "workingDirectory": "C:\\Users\\felix\\Documents\\projects\\DefQed\\DefQed\\Examples"
+    }
+  }
+}

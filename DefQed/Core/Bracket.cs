@@ -23,7 +23,7 @@ namespace DefQed.Core
 
         public BracketType? BracketType = null;
 
-        public bool Satisfied = false;  // This is for DefQed.Core.Formula.Validate().
+        public Satisfaction Satisfied = Satisfaction.Unknown;  // This is for DefQed.Core.Formula.Validate().
 
         // Will cause stack overflow
         //public Bracket()
@@ -117,9 +117,7 @@ namespace DefQed.Core
 
             if ((BracketType == Core.BracketType.StatementHolder) || (MicroStatement == null))
             {
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 return MicroStatement.Evaluate();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
             }
 
             if (BracketType == Core.BracketType.NegatedHolder)
@@ -191,5 +189,12 @@ namespace DefQed.Core
     {
         LeftIndex,  // b0 is index
         RightIndex  // b1 is index
+    };
+
+    internal enum Satisfaction
+    {
+        Unknown,
+        False,
+        True
     };
 }

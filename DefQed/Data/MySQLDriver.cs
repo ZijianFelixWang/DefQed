@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using Console = DefQed.LogConsole;
-using Terminal.Gui;
-using NStack;
+//using Terminal.Gui
+//using NStack
 
 namespace DefQed.Data
 {
@@ -70,7 +70,7 @@ namespace DefQed.Data
             MySql.Data.MySqlClient.MySqlCommand cmd = new("SHOW TABLES;", conn);
             MySql.Data.MySqlClient.MySqlDataReader reader = cmd.ExecuteReader();
 
-            List<string> tables = new List<string>();
+            List<string> tables = new();
 
             while (reader.Read())
             {
@@ -151,8 +151,20 @@ namespace DefQed.Data
             }
             catch (System.Data.SqlTypes.SqlNullValueException ex)
             {
-                int choice = MessageBox.ErrorQuery(ex.ToString(), $"Exception details:\n{ex}\n\nAbort: end process; Ignore: continue (diagnostic only).", new ustring[] { "Abort", "Ignore" });
-                if (choice == 0)
+                //int choice = MessageBox.ErrorQuery(ex.ToString(), $"Exception details:\n{ex}\n\nAbort: end process; Ignore: continue (diagnostic only).", new ustring[] { "Abort", "Ignore" });
+                int choice;
+                Console.Log(LogLevel.Error, ex.ToString() + $"Exception details:\n{ex}");
+                System.Console.Write("A = Abort; I = Ignore");
+              choice = System.Console.ReadLine()  switch
+            {
+                null => 1,
+                "A" => 0,
+                "a" => 0,
+                "I" => 1,
+                "i" => 1,
+                _ => 1
+            };
+            if (choice == 0)
                 {
                     // I admit that this error handling is a bit ugly.
                     t = -2;
@@ -168,10 +180,12 @@ namespace DefQed.Data
 
         public static void InsertRow(TableType tableType, List<string> columns, List<string> values)
         {
-            string sql = $"INSERT INTO ({List2Str(columns)}) VALUES ({List2Str(values)});";
+            string sql = $"INSERT INTO {TableType2Str(tableType)} ({List2Str(columns)}) VALUES ({List2Str(values)});";
 
             MySql.Data.MySqlClient.MySqlCommand cmd = new(sql, conn);
             _ = cmd.ExecuteNonQuery();
+
+            Console.Log(LogLevel.Diagnostic, $"Insert row. SQL: {sql}");
         }
 
         private static string List2Str(List<string> list, bool quotes = true)

@@ -62,16 +62,16 @@ namespace DefQed.Core
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if ((Brackets[0].Symbol.DirectValue == null) || (Brackets[1].Symbol.DirectValue == null))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     {
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if (Brackets[0].Symbol.DirectValue > Brackets[0].Symbol.DirectValue) return true;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     return false;
                 case "<":
                     // Only responsible for direct numbers' check, other is of reflectors' job.
@@ -85,16 +85,16 @@ namespace DefQed.Core
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if ((Brackets[0].Symbol.DirectValue == null) || (Brackets[1].Symbol.DirectValue == null))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     {
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if (Brackets[0].Symbol.DirectValue < Brackets[0].Symbol.DirectValue) return true;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     return false;
                 case ">=":
                     // Only responsible for direct numbers' check, other is of reflectors' job.
@@ -108,16 +108,16 @@ namespace DefQed.Core
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if ((Brackets[0].Symbol.DirectValue == null) || (Brackets[1].Symbol.DirectValue == null))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     {
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if (Brackets[0].Symbol.DirectValue >= Brackets[0].Symbol.DirectValue) return true;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     return false;
                 case "<=":
                     // Only responsible for direct numbers' check, other is of reflectors' job.
@@ -131,16 +131,16 @@ namespace DefQed.Core
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if ((Brackets[0].Symbol.DirectValue == null) || (Brackets[1].Symbol.DirectValue == null))
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     {
                         return false;
                     }
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+////////#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     if (Brackets[0].Symbol.DirectValue <= Brackets[0].Symbol.DirectValue) return true;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     return false;
                 default:
                     return false;

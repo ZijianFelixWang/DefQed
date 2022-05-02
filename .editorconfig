@@ -19,6 +19,9 @@ csharp_space_around_binary_operators = before_and_after
 # IDE0008: Use explicit type
 dotnet_diagnostic.IDE0008.severity = silent
 
+# CS8602: Dereference of a possibly null reference.
+dotnet_diagnostic.CS8602.severity = silent
+
 [*.{cs,vb}]
 #### Naming styles ####
 

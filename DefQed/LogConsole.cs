@@ -3,7 +3,7 @@
 // For debug only
 #define __DIAGNOSTIC_AS_DEFAULT__
 
-using Terminal.Gui;
+//using Terminal.Gui
 using DateTime = System.DateTime;
 using System.Diagnostics;
 
@@ -12,9 +12,9 @@ namespace DefQed
     internal static class LogConsole
     {
         // Usage: using Console = DefQed.LogConsole
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public static TextView Display;
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+//#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+//        public static TextView Display;
+//#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 #pragma warning disable CS0649 // Never assigned to value.
 #if __DIAGNOSTIC_AS_DEFAULT__
@@ -29,60 +29,48 @@ namespace DefQed
         public static void SetLogLevel(LogLevel lv) => LogLevel = lv;
 #endif
 
-        public static void Initialize(int X, int Y, int width, int height)
-        {
-            //SetLogLevel(LogLevel.Information);
-            Display = new(new Rect(X, Y, width, height));
-            Display.ReadOnly = true;
-            Display.AllowsTab = false;
-            Display.DesiredCursorVisibility = CursorVisibility.Box;
-            Display.WordWrap = true;
-            //Display.AllowsReturn = false;
-            //Display.ColorNormal();
-
-            if (Display.Text == null)
-            {
-                Display.Text = "";
-            }
-            Display.Text += "LogConsole initialized successfully.\n";
-            //WriteLine("This is a writeline call.");
-        }
-
         public static void Log(LogLevel level, string info)
         {
             if (LogLevel <= level)
             {
-                WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
+                var fc = System.Console.ForegroundColor;
+                System.Console.ForegroundColor = level switch
+                {
+                    LogLevel.Diagnostic => System.ConsoleColor.Blue,
+                    LogLevel.Information => System.ConsoleColor.White,
+                    LogLevel.Warning => System.ConsoleColor.Yellow,
+                    LogLevel.Error => System.ConsoleColor.Red,
+                    _ => fc
+                };
+
+                //WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
+                System.Console.Write($"[{LogLevel2Str(level)}]");
+
+                System.Console.ForegroundColor = fc;
+
+                WriteLine($"[{DateTime.Now}] {info}");
             }
 
-            Debug.WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
-
-            if (level == LogLevel.Error)
-            {
-                _ = MessageBox.ErrorQuery("Error.", info, "Ok");
-            }
+            //Debug.WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
         }
 
         private static string LogLevel2Str(LogLevel lev) => lev switch
         {
-            LogLevel.Diagnostic => "DIAGNOSTIC",
+            LogLevel.Diagnostic =>  "   DEBUG   ",
             LogLevel.Information => "INFORMATION",
-            LogLevel.Warning => "WARNING",
-            LogLevel.Error => "ERROR",
+            LogLevel.Warning =>     "  WARNING  ",
+            LogLevel.Error =>       "   ERROR   ",
             _ => ""
         };
 
         public static void WriteLine()
         {
-            Display.Text += "\n";
-            Display.MoveEnd();
-            Display.Redraw(new Rect());
+            System.Console.WriteLine();
         }
 
         public static void WriteLine(string str)
         {
-            Display.Text += str;
-            WriteLine();
+            System.Console.WriteLine(str);
         }
 
         public static void WriteLine(object obj)
@@ -106,25 +94,35 @@ namespace DefQed
 
         public static string ReadLine()
         {
-            Display.ReadOnly = false;
-            Display.AllowsReturn = true;
-            Display.Multiline = false;
-            int lines = Display.Lines;
-            int startFrom = Display.Text.Length;
+//            Display.ReadOnly = false;
+//            Display.AllowsReturn = true;
+//            Display.Multiline = false;
+//            int lines = Display.Lines;
+//            int startFrom = Display.Text.Length;
 
-            while (Display.Lines <= lines + 1) { }
+//            while (Display.Lines <= lines + 1) { }
 
-            Display.Multiline = true;
-            Display.AllowsReturn = false;
-            Display.ReadOnly = true;
-            if (Display.Text.ToString() == null)
+//            Display.Multiline = true;
+//            Display.AllowsReturn = false;
+//            Display.ReadOnly = true;
+//            if (Display.Text.ToString() == null)
+//            {
+//                return "";
+//            }
+
+////#pragma warning disable CS8602 // Dereference of a possibly null reference.
+//            return Display.Text.ToString()[startFrom..].Trim();
+////#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
+            string? rl = System.Console.ReadLine();
+            if (rl == null)
             {
                 return "";
             }
-
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            return Display.Text.ToString()[startFrom..].Trim();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            else
+            {
+                return rl;
+            }
         }
     }
 
