@@ -51,7 +51,7 @@ namespace DefQed
                 WriteLine($"[{DateTime.Now}] {info}");
             }
 
-            //Debug.WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
+            Debug.WriteLine($"[{DateTime.Now}] {info}");
         }
 
         private static string LogLevel2Str(LogLevel lev) => lev switch

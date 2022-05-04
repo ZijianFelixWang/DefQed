@@ -35,16 +35,16 @@ namespace DefQed.Data
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                Console.WriteLine("Fatal error encountered when attempting to connect to database.");
-                Console.WriteLine(ex.Message);
+                Console.Log(LogLevel.Error, "Fatal error encountered when attempting to connect to database.");
+                Console.Log(LogLevel.Error, ex.Message);
                 return false;
             }
 
-            Console.WriteLine($"Connection state: {conn.State}");
+            Console.Log(LogLevel.Information, $"Connection state: {conn.State}");
 
             if (!PerformTableCheck())
             {
-                Console.WriteLine("Warning: Table structure may contain error.");
+                Console.Log(LogLevel.Warning, "Warning: Table structure may contain error.");
             }
 
             return true;
@@ -55,12 +55,12 @@ namespace DefQed.Data
             if (conn != null)
             {
                 conn.Close();
-                Console.WriteLine($"Connection state: {conn.State}");
+                Console.Log(LogLevel.Information, $"Connection state: {conn.State}");
                 return true;
             }
             else
             {
-                Console.WriteLine("Cannot terminate connection as connection is null.");
+                Console.Log(LogLevel.Error, "Cannot terminate connection as connection is null.");
                 return false;
             }
         }

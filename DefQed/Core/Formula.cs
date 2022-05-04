@@ -52,7 +52,7 @@ namespace DefQed.Core
         // We need to fix it. But... what if invlove in a binary tree?
         // TopLevel is a stmt holder.(type 3)
 
-        public bool Validate(List<MicroStatement> situation, ref Dictionary<Bracket, Bracket> transistors)
+        public bool Validate(List<MicroStatement> situation, ref List<(Bracket, Bracket)> transistors)
         {
             var tBackup = transistors;
 
@@ -96,13 +96,13 @@ namespace DefQed.Core
             return rete;
         }
 
-        private static void RecurseCheckMicroStatementFamily(Bracket br, List<MicroStatement> situation, ref Dictionary<Bracket, Bracket> transistors)
+        private static void RecurseCheckMicroStatementFamily(Bracket br, List<MicroStatement> situation, ref List<(Bracket, Bracket)> transistors)
         {
             if ((br.BracketType == BracketType.BracketHolder) && (br.SubBrackets[0] != null) && (br.SubBrackets[1] != null))
             {
                 // We need to view its children microstatements.
-                RecurseCheckMicroStatementFamily(br.SubBrackets[0], situation, ref transistors);
-                RecurseCheckMicroStatementFamily(br.SubBrackets[1], situation, ref transistors);
+                RecurseCheckMicroStatementFamily(br.SubBrackets[0], situation, ref transistors);    // a==b
+                RecurseCheckMicroStatementFamily(br.SubBrackets[1], situation, ref transistors);    // b==c
                 bool br0 = br.SubBrackets[0].Satisfied switch
                 {
                     Satisfaction.Unknown => false,
@@ -165,9 +165,13 @@ namespace DefQed.Core
             }
         }
 
-        private static bool ValidateMicroStatement(MicroStatement req, List<MicroStatement> situation, ref Dictionary<Bracket, Bracket> transistors)
+        private static bool ValidateMicroStatement(MicroStatement req, List<MicroStatement> situation, ref List<(Bracket, Bracket)> transistors)
         {
             // This function validate if a microstatement is a subtree of one of the situations.
+            foreach (var t in situation)
+            {
+                Console.Log(LogLevel.Diagnostic, $"REQ: {req.ToFriendlyString()} SITUATION: {t.ToFriendlyString()}");
+            }
             List<bool> res = new();
             for (int i = 0; i < situation.Count; i++)
             {
@@ -184,7 +188,7 @@ namespace DefQed.Core
             return ret;
         }
 
-        private static bool ValidateMicroStatement(MicroStatement req, MicroStatement situ, ref Dictionary<Bracket, Bracket> transistors)
+        private static bool ValidateMicroStatement(MicroStatement req, MicroStatement situ, ref List<(Bracket, Bracket)> transistors)
         {
             // This function checks whether some part of situ can be 'seen as' req.
             // Example: req: A==B,      situ x==y       (ok)
@@ -198,7 +202,7 @@ namespace DefQed.Core
                 && ValidateMicroStatement(req.Brackets[1], situ.Brackets[1], ref transistors);
         }
 
-        private static bool ValidateMicroStatement(Bracket req, Bracket situ, ref Dictionary<Bracket, Bracket> transistors)
+        private static bool ValidateMicroStatement(Bracket req, Bracket situ, ref List<(Bracket, Bracket)> transistors)
         {
             // This function checks whether some part of situ can be 'seen as' req directly!
             if (req.BracketType != BracketType.SymbolHolder)
@@ -227,9 +231,36 @@ namespace DefQed.Core
 
             // Now we encounter a symbol holder!
             // It seems that we need to rewrite all TST logics.
-            // Can this be done before 22:00?
-            transistors.Add(req, situ);
+
+            //if (!transistors.ContainsKey(req))
+            //{
+            //    if (!transistors.ContainsValue(situ))
+            //    {
+            //        transistors.Add(req, situ);
+            //        Console.Log(LogLevel.Diagnostic, $"New TST pair: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
+            //    }
+            //    else
+            //    {
+            //        // Bad guy...
+            //        Console.Log(LogLevel.Diagnostic, $"TST pair violation: Multiple value: {situ.GetHashCode()} Scan failed;");
+            //        return false;
+            //    }
+            //}
+            //else if(transistors[req].GetHashCode() == situ.GetHashCode())
+            //{
+            //    // Great job!
+            //    Console.Log(LogLevel.Diagnostic, $"TST pair already exists in array: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
+            //}
+            //else
+            //{
+            //    // Bad guy...
+            //    Console.Log(LogLevel.Diagnostic, $"TST pair violation: Hashcode: ({transistors[req].GetHashCode()}, {situ.GetHashCode()}) Scan failed;");
+            //    return false;
+            //}
+
+            transistors.Add((req, situ));
             Console.Log(LogLevel.Diagnostic, $"New TST pair: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
+
             return true;
         }
 

@@ -33,7 +33,7 @@ namespace DefQed.Core
         // as it is unlimited. We then must have built in notations (Origin = 0)
 
         // Well... Evaluation should return a boolean.
-        public bool Evaluate()
+        /*public bool Evaluate()
         {
             // Simplification & evaluation of brackets on both side
             // must be done before this (using Reflections).
@@ -145,7 +145,7 @@ namespace DefQed.Core
                 default:
                     return false;
             }
-        }
+        }*/
 
         public override string ToString() => $"MicroStatement({Brackets[0]} {Connector} {Brackets[1]});";
 

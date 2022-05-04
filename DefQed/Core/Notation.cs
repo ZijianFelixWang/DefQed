@@ -38,7 +38,7 @@ namespace DefQed.Core
                 MaxDepth = 1024
             };
 
-            var sha3 = new Sha3Digest(512);
+            var sha3 = new Sha1Digest();
 
             byte[] input = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(this, op));
             sha3.BlockUpdate(input, 0, input.Length);
@@ -47,12 +47,13 @@ namespace DefQed.Core
 
             string hashString = BitConverter.ToString(output);
             hashString = hashString.Replace("-", "").ToLowerInvariant();
+            hashString = hashString.Replace("0", "").ToLowerInvariant();
 
-            if (int.TryParse(hashString, out int res))
+            try
             {
-                return res;
+                return int.Parse(hashString.AsSpan(0, 8), System.Globalization.NumberStyles.HexNumber);
             }
-            else
+            catch (Exception)
             {
                 return -1;
             }

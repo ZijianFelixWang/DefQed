@@ -79,11 +79,11 @@ namespace DefQed.Core
             ReflectionHistory += Reflection.Scan(Reflections, ref LeftPool);
             Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning right pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref RightPool);
-#if __HIDE_REFLECT_HISTORY__
+//#if __HIDE_REFLECT_HISTORY__
             Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory is hiden. RH size is {ReflectionHistory.Length}");
-#else
-            Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory= {ReflectionHistory}");
-#endif
+//#else
+  //          Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory= {ReflectionHistory}");
+//#endif
         }
 
         // HowTo: Update reflections from just done. This is the principle for the self learning procedure.
@@ -93,16 +93,30 @@ namespace DefQed.Core
         // Hey! These things should be done after [bridging] procedure.
         public bool TryBridging()
         {
+            bool occur = true;
             foreach (var item in RightPool)
             {
-                if (!LeftPool.Contains(item))
+                //if (!LeftPool.Contains(item))
+                //{
+                //    // To make it more human-readable...
+                //    Console.Log(LogLevel.Diagnostic, $"TryBridging: Left pool doesn't contain the following: {item.ToFriendlyString()}");
+                //    return false;
+                //}
+                var hash = item.ToFriendlyString();
+                bool subOccur = false;
+                foreach (var l in LeftPool)
                 {
-                    // To make it more human-readable...
-                    Console.Log(LogLevel.Diagnostic, $"TryBridging: Left pool doesn't contain the following: {item.ToFriendlyString()}");
-                    return false;
+                    if (l.ToFriendlyString() == hash)
+                    {
+                        subOccur = true;
+                    }
+                }
+                if (!subOccur)
+                {
+                    occur = false;
                 }
             }
-            return true;
+            return occur;
         }
 
         // Utilities

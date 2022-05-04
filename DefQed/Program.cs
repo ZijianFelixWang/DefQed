@@ -2,6 +2,7 @@
 #define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
 #define __NO_WELCOME_SCREEN__
 #define __TEST_LOG__
+//#define __SERIALIZE_DEBUG_JSON__
 #endif
 
 using System;
@@ -94,6 +95,11 @@ namespace DefQed
             //                    new("_About", "Version information", () => { _ = MessageBox.Query("DefQed", "Version 0.01\nCopyright Zijian Felix Wang. All rights reserved.\nEmail: felix_wzj@yahoo.com\n This should be licensed under MIT license."); }, shortcut: Key.CtrlMask | Key.V)
             //                })
             //            });
+
+#if __SERIALIZE_DEBUG_JSON__
+            CurrentJob.SerializeDiagnosticBrackets();
+            Console.ReadLine();
+#endif
 
             // A better ui will be added later....
             CurrentJob.LoadXMLUI(arg);

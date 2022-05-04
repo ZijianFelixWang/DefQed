@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Org.BouncyCastle.Crypto.Digests;
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.Json;
 using Console = DefQed.LogConsole;
 
 namespace DefQed.Core
@@ -111,41 +114,46 @@ namespace DefQed.Core
             return true;
         }
 
-        public bool Evaluate()
-        {
-            if (BracketType == Core.BracketType.SymbolHolder) return false;
+        //public bool Evaluate()
+        //{
+        //    if (BracketType == Core.BracketType.SymbolHolder) return false;
 
-            if ((BracketType == Core.BracketType.StatementHolder) || (MicroStatement == null))
-            {
-                return MicroStatement.Evaluate();
-            }
+        //    if ((BracketType == Core.BracketType.StatementHolder) || (MicroStatement == null))
+        //    {
+        //        return MicroStatement.Evaluate();
+        //    }
 
-            if (BracketType == Core.BracketType.NegatedHolder)
-                return !SubBrackets[0].Evaluate();
+        //    if (BracketType == Core.BracketType.NegatedHolder)
+        //        return !SubBrackets[0].Evaluate();
 
-            if (Connector == null) return false;
+        //    if (Connector == null) return false;
 
-            if (BracketType == Core.BracketType.BracketHolder)
-            {
-                return Connector.Name.ToUpper().Trim() switch
-                {
-                    "AND" => SubBrackets[0].Evaluate() && SubBrackets[1].Evaluate(),
-                    "OR" => SubBrackets[0].Evaluate() || SubBrackets[1].Evaluate(),
-                    _ => false,
-                };
-            }
+        //    if (BracketType == Core.BracketType.BracketHolder)
+        //    {
+        //        return Connector.Name.ToUpper().Trim() switch
+        //        {
+        //            "AND" => SubBrackets[0].Evaluate() && SubBrackets[1].Evaluate(),
+        //            "OR" => SubBrackets[0].Evaluate() || SubBrackets[1].Evaluate(),
+        //            _ => false,
+        //        };
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
+
+        //public override bool Equals(object? obj)
+        //{
+        //    return obj is Bracket bracket &&
+        //           EqualityComparer<MicroStatement?>.Default.Equals(MicroStatement, bracket.MicroStatement) &&
+        //           EqualityComparer<Symbol?>.Default.Equals(Symbol, bracket.Symbol) &&
+        //           EqualityComparer<Notation?>.Default.Equals(Connector, bracket.Connector) &&
+        //           EqualityComparer<Bracket[]>.Default.Equals(SubBrackets, bracket.SubBrackets) &&
+        //           BracketType == bracket.BracketType;
+        //}
 
         public override bool Equals(object? obj)
         {
-            return obj is Bracket bracket &&
-                   EqualityComparer<MicroStatement?>.Default.Equals(MicroStatement, bracket.MicroStatement) &&
-                   EqualityComparer<Symbol?>.Default.Equals(Symbol, bracket.Symbol) &&
-                   EqualityComparer<Notation?>.Default.Equals(Connector, bracket.Connector) &&
-                   EqualityComparer<Bracket[]>.Default.Equals(SubBrackets, bracket.SubBrackets) &&
-                   BracketType == bracket.BracketType;
+            return GetHashCode() == obj.GetHashCode();
         }
 
         public override string ToString()
@@ -174,6 +182,57 @@ namespace DefQed.Core
                 _ => ");",
             };
             return res;
+        }
+
+        private Bracket GetHashableBracket()
+        {
+            return new Bracket
+            {
+                BracketType = BracketType,
+                Connector = Connector,
+                MicroStatement = MicroStatement,
+                SubBrackets = SubBrackets,
+                Symbol = Symbol
+            };
+        }
+
+        public override int GetHashCode()
+        {
+            //return base.GetHashCode();
+            JsonSerializerOptions op = new()
+            {
+                IncludeFields = true,
+                MaxDepth = 1024
+            };
+
+            var sha3 = new Sha1Digest();
+
+            byte[] input = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(GetHashableBracket(), op));
+            sha3.BlockUpdate(input, 0, input.Length);
+            byte[] output = new byte[64];
+            sha3.DoFinal(output, 0);
+
+            string hashString = BitConverter.ToString(output);
+            hashString = hashString.Replace("-", "").ToLowerInvariant();
+            hashString = hashString.Replace("0", "").ToLowerInvariant();
+
+            //if (int.TryParse(hashString.AsSpan(0,8), System.Globalization.NumberStyles.HexNumber, out int res))
+            //{
+            //    return res;
+            //}
+            //else
+            //{
+            //    return -1;
+            //}
+
+            try
+            {
+                return int.Parse(hashString.AsSpan(0, 8), System.Globalization.NumberStyles.HexNumber);
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
     }
 

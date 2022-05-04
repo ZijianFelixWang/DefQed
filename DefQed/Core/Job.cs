@@ -4,6 +4,7 @@
 #define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
 #define __CTRL_G_TO_RUN__
 #define __AUTO_XML_SUBMIT__
+#define __DONT_HANDLE_EXCEPTION__
 //#define __NO_TEE_AFTER_PROOF__
 //#define __INSERT_LINE_UI__ //Deprec!
 #endif
@@ -18,7 +19,7 @@ using Console = DefQed.LogConsole;
 using Environment = System.Environment;
 using TimeSpan = System.TimeSpan;
 using Exception = System.Exception;
-using System.Collections.Generic;
+//using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace DefQed.Core
@@ -65,6 +66,103 @@ namespace DefQed.Core
         private void PerformProof(int TimeOut)
         {
             //PulseBar.Pulse();
+#if __DONT_HANDLE_EXCEPTION__
+            Console.Log(LogLevel.Information, "Start proving...");
+
+            // Load reflections...
+            KnowledgeBase.LoadReflections();
+            //PulseBar.Pulse();
+            Console.Log(LogLevel.Diagnostic, "Pulse.");
+
+            ProofTask = new(() =>
+            {
+                if (!ProofPalsed)
+                {
+                    while (!KnowledgeBase.TryBridging())
+                    {
+                        Console.Log(LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
+                        KnowledgeBase.ScanPools();
+                        //if (PulseNow = !PulseNow)
+                        //{
+                        //Console.Log(LogLevel.Diagnostic, "UI pulse");
+                        //Console.Log(LogLevel.Diagnostic, "Pulse.");
+                        //}
+                        //System.Console.ReadLine();
+                    }
+                }
+            });
+
+            //_ = MessageBox.Query("PerformProof called.", "DMessage", "Ok");
+
+            Console.Log(LogLevel.Information, "PerformProof called: Start proving");
+
+            ProofTask.Start();
+
+            if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
+            {
+                //Console.WriteLine("Proof process has finished!");
+                Console.Log(LogLevel.Information, "Proof process has finished.");
+                //_ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
+
+#if !__NO_TEE_AFTER_PROOF__
+                #region commented stuff decomment after debug
+                //Console.WriteLine("Below is report generated:");
+                //Console.WriteLine(KnowledgeBase.GenerateReport());
+
+                var forDbg = KnowledgeBase.GenerateReport();
+
+                Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
+                while (true)
+                {
+                    string? sel = Console.ReadLine();
+                    if ((sel == null) || (sel.Trim().ToUpper() == "N"))
+                    {
+                        break;
+                    }
+
+                    sel = sel.Trim().ToUpper();
+                    if (sel == "S")
+                    {
+                        TeeSerializedKBase();
+                        break;
+                    }
+                    if (sel == "T")
+                    {
+                        TeeProofText();
+                        break;
+                    }
+                    if (sel == "B")
+                    {
+                        TeeSerializedKBase();
+                        TeeProofText();
+                        break;
+                    }
+                    Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
+                }
+                #endregion
+#endif
+            }
+            else
+            {
+                // timeout termination encountered.
+                Console.WriteLine("Proof terminated because of timeout. Dump current KBase? Y/N(Default)");
+                while (true)
+                {
+                    string? sel = Console.ReadLine();
+                    if ((sel == null) || (sel.Trim().ToUpper() == "N"))
+                    {
+                        break;
+                    }
+
+                    sel = sel.Trim().ToUpper();
+                    if (sel == "Y")
+                    {
+                        TeeSerializedKBase();
+                        break;
+                    }
+                }
+            }
+#else
             try
             {
                 //_ = MessageBox.Query("PerformProof called.", "Start proving...", "Ok");
@@ -88,7 +186,7 @@ namespace DefQed.Core
                             //Console.Log(LogLevel.Diagnostic, "UI pulse");
                             //Console.Log(LogLevel.Diagnostic, "Pulse.");
                             //}
-                            System.Console.ReadLine();
+                            //System.Console.ReadLine();
                         }
                     }
                 });
@@ -106,9 +204,9 @@ namespace DefQed.Core
                     //_ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
                     
 #if !__NO_TEE_AFTER_PROOF__
-                    #region commented stuff decomment after debug
-                    Console.WriteLine("Below is report generated:");
-                    Console.WriteLine(KnowledgeBase.GenerateReport());
+            #region commented stuff decomment after debug
+                    //Console.WriteLine("Below is report generated:");
+                    //Console.WriteLine(KnowledgeBase.GenerateReport());
                     Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
                     while (true)
                     {
@@ -137,7 +235,7 @@ namespace DefQed.Core
                         }
                         Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
                     }
-                    #endregion
+            #endregion
 #endif
                 }
                 else
@@ -171,9 +269,10 @@ namespace DefQed.Core
 
                 Environment.Exit(-2);
             }
+#endif
         }
 
-#pragma warning disable CA1822 // Mark members as static
+//#pragma warning disable CA1822 // Mark members as static
 //        public void SetLogLevelUI()
 //#pragma warning restore CA1822 // Mark members as static
 //        {
@@ -575,7 +674,7 @@ namespace DefQed.Core
 
         public void LoadXMLUI(string filename)
         {
-#if __AUTO_XML_SUBMIT__
+//#if __AUTO_XML_SUBMIT__
             XMLFileName = filename.Trim();
             bool err = false;
             KBase temp = new();
@@ -596,66 +695,6 @@ namespace DefQed.Core
                 Console.Log(LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
             }
 
-#else
-            Button confirm = new("Ok", is_default: true);
-            Button cancel = new("Cancel", is_default: false);
-            TextField field = new()
-            {
-                X = 2,
-                Y = 2,
-                Width = 40,
-#if __USE_INLINE_XML_URI__
-                Text = @"C:\Users\felix\Documents\projects\DefQed\DefQed\Examples\Diagnostic.xml"
-#endif
-            };
-            Dialog ui = new("Request input.", 50, 8, confirm, cancel);
-            confirm.Clicked += () =>
-            {
-                if (field.Text.ToString() != null)
-                {
-#pragma warning disable CS8601 // Possible null reference assignment.
-#pragma warning disable CS8604 // Possible null reference argument.
-                    XMLFileName = field.Text.ToString();
-                    Application.RequestStop();
-                    bool err = false;
-                    KBase temp = new();
-
-                    Stopwatch watch = new();
-                    watch.Start();
-                    XMLParser.ParseXML(XMLFileName, ref temp, ref err);
-                    watch.Stop();
-                    Console.Log(LogLevel.Information, $"XML parsing done in {watch.ElapsedMilliseconds} ms.");
-
-#pragma warning restore CS8604 // Possible null reference argument.
-#pragma warning restore CS8601 // Possible null reference assignment.
-
-                    if (err)
-                    {
-                        _ = MessageBox.ErrorQuery("Error.", "XML parse failure.\nFor more details, see the log console.", new ustring[] { "Ok" });
-                    }
-                    else
-                    {
-                        KnowledgeBase = temp;
-                        _ = MessageBox.Query("Congratulations.", "XML parse and DB connect success.", "Ok");
-                        Console.Log(LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
-                    }
-                }
-                else
-                {
-                    Application.RequestStop();
-                }
-            };
-            cancel.Clicked += () =>
-            {
-                Application.RequestStop();
-            };
-            Label hint = new(1, 1, "Input the DefQed XML file's full filename here. Click Ok to confirm, Click cancel to go back.");
-
-            ui.Add(hint);
-            ui.Add(field);
-            Application.Run(ui);
-            // Now the loop is finished.
-#endif
         }
 
         public void RenewInstanceUI()
@@ -783,7 +822,6 @@ namespace DefQed.Core
             string? filename;
             while (true)
             {
-                Console.WriteLine("Asking: (Proof Text) File name.");
                 System.Console.Write("Where to save the proof?  ");
                 filename = Console.ReadLine();
                 if ((filename != null) && (filename.Length > 0))
