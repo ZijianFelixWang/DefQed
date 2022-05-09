@@ -29,11 +29,7 @@ namespace DefQed.Core
         public Satisfaction Satisfied = Satisfaction.Unknown;  // This is for DefQed.Core.Formula.Validate().
 
         // Will cause stack overflow
-        //public Bracket()
-        //{
-        //    SubBrackets[0] = new();
-        //    SubBrackets[1] = new();
-        //}
+        //Lines of code removed here.
 
         public void Dispose()
         {
@@ -114,43 +110,6 @@ namespace DefQed.Core
             return true;
         }
 
-        //public bool Evaluate()
-        //{
-        //    if (BracketType == Core.BracketType.SymbolHolder) return false;
-
-        //    if ((BracketType == Core.BracketType.StatementHolder) || (MicroStatement == null))
-        //    {
-        //        return MicroStatement.Evaluate();
-        //    }
-
-        //    if (BracketType == Core.BracketType.NegatedHolder)
-        //        return !SubBrackets[0].Evaluate();
-
-        //    if (Connector == null) return false;
-
-        //    if (BracketType == Core.BracketType.BracketHolder)
-        //    {
-        //        return Connector.Name.ToUpper().Trim() switch
-        //        {
-        //            "AND" => SubBrackets[0].Evaluate() && SubBrackets[1].Evaluate(),
-        //            "OR" => SubBrackets[0].Evaluate() || SubBrackets[1].Evaluate(),
-        //            _ => false,
-        //        };
-        //    }
-
-        //    return false;
-        //}
-
-        //public override bool Equals(object? obj)
-        //{
-        //    return obj is Bracket bracket &&
-        //           EqualityComparer<MicroStatement?>.Default.Equals(MicroStatement, bracket.MicroStatement) &&
-        //           EqualityComparer<Symbol?>.Default.Equals(Symbol, bracket.Symbol) &&
-        //           EqualityComparer<Notation?>.Default.Equals(Connector, bracket.Connector) &&
-        //           EqualityComparer<Bracket[]>.Default.Equals(SubBrackets, bracket.SubBrackets) &&
-        //           BracketType == bracket.BracketType;
-        //}
-
         public override bool Equals(object? obj)
         {
             return GetHashCode() == obj.GetHashCode();
@@ -215,15 +174,6 @@ namespace DefQed.Core
             string hashString = BitConverter.ToString(output);
             hashString = hashString.Replace("-", "").ToLowerInvariant();
             hashString = hashString.Replace("0", "").ToLowerInvariant();
-
-            //if (int.TryParse(hashString.AsSpan(0,8), System.Globalization.NumberStyles.HexNumber, out int res))
-            //{
-            //    return res;
-            //}
-            //else
-            //{
-            //    return -1;
-            //}
 
             try
             {
