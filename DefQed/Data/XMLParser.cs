@@ -17,11 +17,8 @@ namespace DefQed.Data
         public static KBase ParseXMLAsync(string filename)
         {
             Console.Log(LogLevel.Diagnostic, $"ParseXMLAsync() Thread {Environment.CurrentManagedThreadId}");
-            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message A1");
-            //KBase k = await ParseXMLTask(filename);
-            //var r = ParseXMLTask(filename);
+            // LCMP
             KBase k = ParseXMLTask(filename).Result;
-            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message A2");
             return k;
         }
 
@@ -43,7 +40,6 @@ namespace DefQed.Data
                     return new();
                 }
             });
-            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message T2");
             return task;
         }
 
@@ -57,33 +53,25 @@ namespace DefQed.Data
                 IgnoreWhitespace = true
             };
 
-            //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p1");
-
             try
             {
                 doc.Load(XmlReader.Create(filename, settings));
             }
             catch (FileNotFoundException ex)
             {
-                //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p3");
                 Console.Log(LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
-                //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p2");
                 error = true;
                 return;
             }
             catch (IOException ex)
             {
-                //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p3");
                 Console.Log(LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
-                //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p2");
                 error = true;
                 return;
             }
             catch (ArgumentException ex)
             {
-                //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p3");
                 Console.Log(LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
-                //Terminal.Gui.MessageBox.Query("DIAG", "Diagnostic message p2");
                 error = true;
                 return;
             }
@@ -162,14 +150,6 @@ namespace DefQed.Data
             MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
 
             #region commented stuff
-            //// Let's connect now.
-            //while (!MySQLDriver.Initialize())
-            //{
-            //    Console.Log(LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.\nTry a different connstr: ");
-            //    string? temp = Console.ReadLine();
-            //    while (string.IsNullOrWhiteSpace(temp)) { }
-            //    MySQLDriver.connStr = temp;
-            //}
             #endregion
 
             if (!MySQLDriver.Initialize())
@@ -197,7 +177,6 @@ namespace DefQed.Data
                 {
                     case "enroll":
                         #region parse enroll
-//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                         if ((child.Attributes.Count != 1) || (child.Attributes == null))
                         {
                             Console.Log(LogLevel.Error, "XML Parse Error in enroll tag.");
@@ -205,7 +184,6 @@ namespace DefQed.Data
                             return;
                         }
                         string? category = child.Attributes["category"].Value;
-//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                         string title = child.InnerText;
 
                         Notation notation = new()
@@ -247,7 +225,6 @@ namespace DefQed.Data
                             switch (forceChild.Name.Trim().ToLower())
                             {
                                 case "let":
-//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                                     if ((forceChild.Attributes.Count != 1) || (forceChild.Attributes == null))
                                     {
                                         Console.Log(LogLevel.Error, "XML Parse Error in let tag.");
@@ -255,11 +232,9 @@ namespace DefQed.Data
                                         return;
                                     }
                                     letCategory = forceChild.Attributes["category"].Value;
-//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                                     letItem = forceChild.InnerText;
                                     break;
                                 case "be":
-//#pragma warning disable CS8602 // Dereference of a possibly null reference.
                                     if ((forceChild.Attributes.Count != 1) || (forceChild.Attributes == null))
                                     {
                                         Console.Log(LogLevel.Error, "XML Parse Error in let tag.");
@@ -267,7 +242,6 @@ namespace DefQed.Data
                                         return;
                                     }
                                     beCategory = forceChild.Attributes["category"].Value;
-//#pragma warning restore CS8602 // Dereference of a possibly null reference.
                                     beItem = forceChild.InnerText;
                                     break;
                             }
@@ -442,7 +416,6 @@ namespace DefQed.Data
             // Bug insider: XmlNode != XmlElement
             // A blabla text is also a XmlNode...
 
-//#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if ((node.ChildNodes.Count == 1) && (node.FirstChild.GetType() == typeof(XmlText)))
             {
                 // Symbol holder
@@ -459,11 +432,7 @@ namespace DefQed.Data
                     return;
                 }
             }
-//#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
-//#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if ((node.Attributes != null) && (node.Attributes.GetNamedItem("category").Value.Trim().ToLower() == "negated"))
-//#pragma warning restore CS8602 // Dereference of a possibly null reference.
             {
                 // Negated holder
                 bracket.BracketType = BracketType.NegatedHolder;
