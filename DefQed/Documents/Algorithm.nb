@@ -1,0 +1,1099 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     42516,       1091]
+NotebookOptionsPosition[     37652,       1020]
+NotebookOutlinePosition[     38048,       1037]
+CellTagsIndexPosition[     38005,       1034]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Algorithm Specification", "Title",
+ CellChangeTimes->{{3.8591403658521814`*^9, 3.8591403723116093`*^9}, {
+  3.859142291273099*^9, 3.8591423140969286`*^9}, {3.859163768451906*^9, 
+  3.859163769504056*^9}},ExpressionUUID->"70f19d4e-1a52-4fa6-870d-\
+69edefc8da9f"],
+
+Cell["\<\
+Author: Zijian Wang
+Email: felix_wzj@yahoo.com
+Website: https://nuaptan.github.io\
+\>", "Author",
+ CellChangeTimes->{{3.8591634512607*^9, 3.8591634846698008`*^9}, {
+  3.860307795613699*^9, 
+  3.8603078052726235`*^9}},ExpressionUUID->"6798f7d3-752e-4ac4-9dc6-\
+97723bc517a9"],
+
+Cell["\<\
+Abstract
+Automatic statement prover algorithm implemented with category theory.\
+\>", "Abstract",
+ CellChangeTimes->{{3.8591403974003296`*^9, 3.8591404311563363`*^9}, {
+  3.8591637623731394`*^9, 
+  3.8591637656335773`*^9}},ExpressionUUID->"6f7103d9-615e-473d-80d2-\
+e4162c12a8be"],
+
+Cell[TextData[{
+ StyleBox["IMPORTANT: READ THE PASSAGE BELOW IF YOU AGREE WITH THIS LICENSE.",
+  FontWeight->"Bold"],
+ "\nThis work is licensed under the Creative Commons \
+Attribution-NonCommercial 4.0 International License. To view a copy of this \
+license, visit http://creativecommons.org/licenses/by-nc/4.0/ or send a \
+letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA."
+}], "Text",
+ CellChangeTimes->{{3.8591633714706163`*^9, 3.8591634075511913`*^9}},
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"fc0cc334-2904-42d0-bcd4-de966a47323d"],
+
+Cell[TextData[{
+ StyleBox["DRAFT",
+  FontWeight->"Bold"],
+ "\nThis work is neither a formal publishable release nor the finished \
+version. This work may contain information that needs correction and \
+justification. Do not cite this work until it is completed."
+}], "Text",
+ CellChangeTimes->{{3.8591633714706163`*^9, 3.8591634075511913`*^9}, {
+  3.859600698783866*^9, 3.8596008120456915`*^9}},
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"35915078-ee3c-46af-8b90-340ae969d3a4"],
+
+Cell[CellGroupData[{
+
+Cell["---", "Text",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.8603051393906174`*^9, 
+  3.8603051465006733`*^9}},ExpressionUUID->"650bcc22-bac0-49c6-916b-\
+baf4a8e71bf9"],
+
+Cell[TextData[{
+ StyleBox["DFRM NOTICE: NO NEED TO FOLLOW THIS NOTICE UNLESS IN DFRM.",
+  FontWeight->"Bold"],
+ "\nAccording to DOCE Framework Specification: Interaction with DOM \
+Admission, any draft-form mathematical work in the Democratic Federal \
+Republic of Mathematics\[CloseCurlyQuote]s controlled region is copyleft for \
+ADP class, unless it contain data which satisfy DOCE Framework Specification: \
+Information Pipe Limitations: Ultimate Secret Protection Guidelines."
+}], "Text",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.8591633714706163`*^9, 3.8591634075511913`*^9}, {
+   3.859600698783866*^9, 3.859601089706483*^9}, 3.8603051465032034`*^9},
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"eb0fa15a-be78-4c48-b913-0c803cd5e559"],
+
+Cell["", "Text",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{
+  3.8603051465032034`*^9},ExpressionUUID->"8783ab7f-25d6-4878-91c8-\
+5ffbedef3ab7"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Notation table", "Section",
+ CellChangeTimes->{{3.859163793163862*^9, 
+  3.8591637963546505`*^9}},ExpressionUUID->"d393e966-172d-43ec-9148-\
+607da92fb1e4"],
+
+Cell[TextData[{
+ "Notation table:\n",
+ Cell[BoxData[GridBox[{
+    {"\[ScriptCapitalC]", 
+     StyleBox["Category",
+      FontFamily->"Source Sans Pro"]},
+    {Cell["Mor",ExpressionUUID->"b1d67719-bd8b-47e7-9f1c-db0d44870574"], 
+     StyleBox[
+      RowBox[{"Morphism", " ", "collection"}],
+      FontFamily->"Source Sans Pro"]},
+    {"Hom", 
+     StyleBox[
+      RowBox[{"Hom", "-", "collection"}],
+      FontFamily->"Source Sans Pro"]},
+    {"\[ScriptCapitalU]", 
+     StyleBox[
+      RowBox[{"Forgetful", " ", "functor"}],
+      FontFamily->"Source Sans Pro"]},
+    {
+     RowBox[{"s", 
+      RowBox[{"(", "f", ")"}]}], 
+     StyleBox[
+      RowBox[{
+      "The", " ", "source", " ", "object", " ", "of", " ", "morphism", " ", 
+       "f"}],
+      FontFamily->"Source Sans Pro"]},
+    {
+     RowBox[{"t", 
+      RowBox[{"(", "f", ")"}]}], 
+     StyleBox[
+      RowBox[{
+      "The", " ", "target", " ", "object", " ", "of", " ", "morphism", " ", 
+       "f"}],
+      FontFamily->"Source Sans Pro"]}
+   },
+   GridBoxDividers->{"Columns" -> {{True}}, "Rows" -> {{True}}}]], "Text",
+  ExpressionUUID->"28ef0059-1290-4702-97e0-aa6317f1a7cb"],
+ "\nWe select ZFC as our set theory system."
+}], "Text",
+ CellChangeTimes->{{3.8591435611479278`*^9, 3.859143608236411*^9}, {
+  3.859143670730747*^9, 3.8591437668284273`*^9}, {3.8591441625873756`*^9, 
+  3.8591441809248886`*^9}, {3.859155790723256*^9, 3.859155837030587*^9}, {
+  3.859599505435504*^9, 
+  3.859599509887371*^9}},ExpressionUUID->"034809ff-35d0-4a8d-a6a2-\
+29e34230318d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Main thoughts", "Section",
+ CellChangeTimes->{{3.8591638050186787`*^9, 3.859163808821754*^9}, {
+  3.8595995156993585`*^9, 
+  3.859599519227766*^9}},ExpressionUUID->"cd64146f-58de-4f77-9153-\
+32b41ffea686"],
+
+Cell[TextData[{
+ "We see the ",
+ StyleBox["micro-statement pool",
+  FontWeight->"Bold"],
+ " as a category ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalC]", TraditionalForm]],ExpressionUUID->
+  "910f6b34-213c-4028-9150-b1d1e3483d89"],
+ " with ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Ob", "(", "\[ScriptCapitalC]", ")"}], TraditionalForm]],
+  ExpressionUUID->"ede979f1-ca92-49e3-b9ec-d09f01040c1e"],
+ " is the current pool set of micro-statements and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"Mor", "(", "\[ScriptCapitalC]", ")"}], TraditionalForm]],
+  ExpressionUUID->"c9a05bdd-3163-470a-a4be-d77cc15e960e"],
+ " is the set of morphisms. As the morphisms indicate implication, obviously \
+we have"
+}], "Text",
+ CellChangeTimes->{{3.8591404388974032`*^9, 3.8591405189848547`*^9}, {
+  3.859140566355667*^9, 3.859140693624544*^9}, {3.859141095562674*^9, 
+  3.8591411349171896`*^9}, {3.8591441840198846`*^9, 
+  3.8591441877949286`*^9}},ExpressionUUID->"02bdc4e7-e48e-4b37-8838-\
+d9aa4fb8ab86"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"\[ForAll]", "X"}], ",", 
+  RowBox[{"Y", " ", "\[Element]", 
+   RowBox[{"Ob", 
+    RowBox[{"(", "\[ScriptCapitalC]", ")"}]}]}], ",", 
+  RowBox[{"\[ForAll]", 
+   RowBox[{"h", "\[Element]", 
+    RowBox[{
+     SubscriptBox["Hom", "\[ScriptCapitalC]"], 
+     RowBox[{"(", 
+      RowBox[{"X", ",", "Y"}], ")"}]}]}]}], ",", 
+  RowBox[{"|", "h", "|", 
+   RowBox[{"\[Equal]", "1"}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.8591411499990234`*^9, 3.8591412063443832`*^9}, {
+  3.859141246330418*^9, 
+  3.8591412762798758`*^9}},ExpressionUUID->"60244d9e-4d80-4787-899a-\
+5433cd0e7a99"],
+
+Cell[TextData[{
+ "because for each ",
+ Cell[BoxData[
+  FormBox["p", TraditionalForm]],ExpressionUUID->
+  "ce970a6b-f900-4fec-bafa-460c42e5b0e3"],
+ " and ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],ExpressionUUID->
+  "6103a16e-5e04-4efa-9966-79fb2bc5c89b"],
+ ", we only need one arrow for ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "\[Implies]", "q"}], TraditionalForm]],ExpressionUUID->
+  "a89198e5-58cb-4690-bac0-166c0a27e37c"],
+ ". We declare each step\[CloseCurlyQuote]s ",
+ StyleBox["recursion functor",
+  FontWeight->"Bold"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalF]", "t"], TraditionalForm]],ExpressionUUID->
+  "1dc8288a-497c-4898-b202-1b822d7ac3a0"],
+ " which is not pure to do the things described below."
+}], "Text",
+ CellChangeTimes->{{3.8591414745994434`*^9, 3.859141516174204*^9}, {
+  3.8591418828967843`*^9, 3.8591418951460123`*^9}, {3.859141943406027*^9, 
+  3.8591420004061418`*^9}, {3.859142046714218*^9, 3.859142058364091*^9}, {
+  3.8591422610995493`*^9, 
+  3.8591422870689106`*^9}},ExpressionUUID->"cb6e7249-011a-4d8e-b01f-\
+7a5d9af258e1"],
+
+Cell[BoxData[
+ RowBox[{
+  SubscriptBox["\[ScriptCapitalC]", 
+   RowBox[{"t", "+", "1"}]], ":=", 
+  RowBox[{
+   SubscriptBox["\[ScriptCapitalF]", "t"], 
+   SubscriptBox["\[ScriptCapitalC]", "t"]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.859142453823225*^9, 3.8591424679778833`*^9}, {
+  3.859142565485568*^9, 
+  3.859142574297179*^9}},ExpressionUUID->"b50eaa26-c75f-4a47-afba-\
+4641a138fcf6"],
+
+Cell[TextData[{
+ "Significantly, ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalC]", "t"], TraditionalForm]],ExpressionUUID->
+  "af3f04e0-804b-4720-862f-0694ce2d5eb6"],
+ " is a subcategory of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalC]", 
+    RowBox[{"t", "+", "1"}]], TraditionalForm]],ExpressionUUID->
+  "40143f83-6b6a-4437-a711-f4d5cfaa9b77"],
+ ". All ",
+ StyleBox["reflection functors",
+  FontWeight->"Bold"],
+ " form a functor category ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalR]", TraditionalForm]],ExpressionUUID->
+  "827e8c33-4c9c-4f02-a763-4c3a1a2bb67a"],
+ ". We note each such functor with ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalK]", "i"], TraditionalForm]],ExpressionUUID->
+  "c0b3a576-58c7-4ef4-b034-af7d50a5c8f5"],
+ ".Because of Zermelo\[CloseCurlyQuote]s Well-Ordering Theorem, ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalU]\[ScriptCapitalR]", TraditionalForm]],
+  ExpressionUUID->"f9dac7fa-8d7d-4171-8e52-12d109ab1a97"],
+ " can be put in order (this is significant because the count is smaller than \
+",
+ Cell[BoxData[
+  FormBox["\[Omega]", TraditionalForm]],ExpressionUUID->
+  "f368c1bc-40fe-4375-a02c-8018a0a9c862"],
+ ")."
+}], "Text",
+ CellChangeTimes->{{3.859142821003956*^9, 3.8591428607391376`*^9}, {
+  3.859142893370586*^9, 3.8591428973536987`*^9}, {3.8591431629355035`*^9, 
+  3.859143253453964*^9}, {3.8591433388691854`*^9, 3.8591433413768215`*^9}, {
+  3.8591440493310113`*^9, 3.8591440515076137`*^9}, {3.8591441903421984`*^9, 
+  3.859144230824236*^9}, {3.8591443186203985`*^9, 3.8591443505486193`*^9}, {
+  3.8591444458273125`*^9, 
+  3.8591444938547935`*^9}},ExpressionUUID->"aa93db92-95a5-4a5f-86fc-\
+faee4d463847"],
+
+Cell[TextData[{
+ "Initially, the functors of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalR]", TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "bff17801-8b4e-4544-8b4c-cf38783cb025"],
+ " as put in a loop shown below."
+}], "Text",
+ CellChangeTimes->{{3.8591443765645404`*^9, 3.8591444160616746`*^9}, {
+  3.8591444962778015`*^9, 
+  3.859144499797222*^9}},ExpressionUUID->"0317cbc1-af5e-4f44-a41c-\
+fc0dbb765a3e"],
+
+Cell[CellGroupData[{
+
+Cell["Wolfram Language code...", "Text",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.8591552528958554`*^9, 3.8591552712971954`*^9}},
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"379cde30-6821-43f4-ae7e-fc65d0052ebe"],
+
+Cell[BoxData[
+ RowBox[{"GraphPlot", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"1", "\[Rule]", "2"}], ",", 
+     RowBox[{"2", "\[Rule]", "3"}], ",", 
+     RowBox[{"3", "\[Rule]", "4"}], ",", 
+     RowBox[{"4", "\[Rule]", "5"}], ",", 
+     RowBox[{"5", "\[Rule]", "6"}], ",", 
+     RowBox[{"6", "\[Rule]", "7"}], ",", 
+     RowBox[{"7", "\[Rule]", "8"}], ",", 
+     RowBox[{"8", "\[Rule]", "9"}], ",", " ", 
+     RowBox[{"Labeled", "[", 
+      RowBox[{
+       RowBox[{"9", "\[Rule]", "10"}], ",", "\"\<......\>\""}], "]"}], ",", 
+     RowBox[{"10", "\[Rule]", "1"}]}], "}"}], ",", 
+   RowBox[{"DirectedEdges", "\[Rule]", "True"}], ",", 
+   RowBox[{"GraphLayout", "\[Rule]", "\"\<CircularEmbedding\>\""}], ",", 
+   RowBox[{"VertexLabels", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+      "1", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(1\)]\)\>\""}], ",", 
+      RowBox[{
+      "2", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(2\)]\)\>\""}], ",", 
+      RowBox[{
+      "3", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(3\)]\)\>\""}], ",", 
+      RowBox[{
+      "4", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(4\)]\)\>\""}], ",", 
+      RowBox[{
+      "5", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(5\)]\)\>\""}], ",", 
+      RowBox[{
+      "6", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(6\)]\)\>\""}], ",", 
+      RowBox[{
+      "7", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(7\)]\)\>\""}], ",", 
+      RowBox[{
+      "8", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(8\)]\)\>\""}], ",", 
+      RowBox[{
+      "9", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(9\)]\)\>\""}], ",", 
+      RowBox[{
+      "10", "\[Rule]", 
+       "\"\<\!\(\*SubscriptBox[\(\[ScriptCapitalK]\), \(n\)]\)\>\""}]}], 
+     "}"}]}]}], "]"}]], "Input",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.},
+ CellChangeTimes->{{3.8591531992562685`*^9, 3.8591532349607887`*^9}, {
+   3.8591533289958816`*^9, 3.8591533391620045`*^9}, {3.859153375167281*^9, 
+   3.8591533881142797`*^9}, {3.85915348572956*^9, 3.8591534969992723`*^9}, {
+   3.859153642138091*^9, 3.85915372460928*^9}, {3.8591538269299297`*^9, 
+   3.8591538709894238`*^9}, {3.859153901057086*^9, 3.8591539395721245`*^9}, {
+   3.8591540950188546`*^9, 3.8591540954841146`*^9}, 3.8591552712971954`*^9},
+ CellLabel->"In[17]:=",ExpressionUUID->"01d8a675-a370-4981-b5e9-f09eecb5c690"]
+}, Closed]],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Hue[0.6, 0.7, 0.5], Opacity[0.7], Arrowheads[Medium], 
+    ArrowBox[{{-0.5877852522924737, 0.809016994374948}, {-0.9510565162951538, 
+     0.3090169943749484}}, 0.02261146496815286], 
+    ArrowBox[{{-0.9510565162951538, 
+     0.3090169943749484}, {-0.9510565162951534, -0.30901699437494645`}}, 
+     0.02261146496815286], 
+    ArrowBox[{{-0.9510565162951534, -0.30901699437494645`}, \
+{-0.5877852522924726, -0.8090169943749468}}, 0.02261146496815286], 
+    ArrowBox[{{-0.5877852522924726, -0.8090169943749468}, {
+     6.049014748177263*^-16, -1.}}, 0.02261146496815286], 
+    ArrowBox[{{6.049014748177263*^-16, -1.}, {
+     0.5877852522924738, -0.8090169943749481}}, 0.02261146496815286], 
+    ArrowBox[{{0.5877852522924738, -0.8090169943749481}, {
+     0.9510565162951539, -0.3090169943749485}}, 0.02261146496815286], 
+    ArrowBox[{{0.9510565162951539, -0.3090169943749485}, {0.9510565162951533, 
+     0.30901699437494634`}}, 0.02261146496815286], 
+    ArrowBox[{{0.9510565162951533, 0.30901699437494634`}, {0.5877852522924726,
+      0.8090169943749468}}, 0.02261146496815286], 
+    {Thickness[0.0002], Dashing[{Small, Small}], StrokeForm[Opacity[1.]], 
+     EdgeForm[Opacity[1.]], EdgeForm[None], FaceForm[Opacity[0]], 
+     StyleBox[
+      ArrowBox[{{0.5794711349271621, 
+       0.8090169943749468}, {-0.008314117365310812, 1.}}, 0.02261146496815286],
+      FontSize->8,
+      FontOpacity->0,
+      Background->RGBColor[1., 1., 1., 0]]}, 
+    {Dashing[{Small, Small}], StrokeForm[Opacity[0.98]], EdgeForm[Opacity[
+     1.]], EdgeForm[None], 
+     ArrowBox[{{-0.004157058682655628, 1.}, {-0.5919423109751284, 
+      0.809016994374948}}, 0.02261146496815286]}}, 
+   {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[
+    0.7]}], {DiskBox[{-0.5877852522924737, 0.809016994374948}, 
+      0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(1\\)]\\)\
+\"\>", Offset[{2, 2}, {-0.5651737873243208, 0.8316284593431009}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{-0.9510565162951538, 0.3090169943749484}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(2\\)]\\)\
+\"\>", Offset[{2, 2}, {-0.9284450513270008, 0.33162845934310126}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{-0.9510565162951534, -0.30901699437494645}, 
+      0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(3\\)]\\)\
+\"\>", Offset[{2, 2}, {-0.9284450513270006, -0.2864055294067936}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{-0.5877852522924726, -0.8090169943749468}, 0.02261146496815286],
+      InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \
+\\(4\\)]\\)\"\>", Offset[{2, 2}, {-0.5651737873243197, -0.786405529406794}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{6.049014748177263*^-16, -1.}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(5\\)]\\)\
+\"\>", Offset[{2, 2}, {0.022611464968153465, -0.9773885350318472}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{0.5877852522924738, -0.8090169943749481}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(6\\)]\\)\
+\"\>", Offset[{2, 2}, {0.6103967172606266, -0.7864055294067953}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{0.9510565162951539, -0.3090169943749485}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(7\\)]\\)\
+\"\>", Offset[{2, 2}, {0.9736679812633067, -0.28640552940679564}], 
+      ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{0.9510565162951533, 0.30901699437494634}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(8\\)]\\)\
+\"\>", Offset[{2, 2}, {0.9736679812633062, 0.3316284593430992}], ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{0.5877852522924726, 0.8090169943749468}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(9\\)]\\)\
+\"\>", Offset[{2, 2}, {0.6103967172606255, 0.8316284593430996}], ImageScaled[{0, 0}],
+      BaseStyle->"Graphics"]}, {
+     DiskBox[{-7.044813998280222*^-16, 1.}, 0.02261146496815286], 
+     InsetBox["\<\"\\!\\(\\*SubscriptBox[\\(\[ScriptCapitalK]\\), \\(n\\)]\\)\
+\"\>", Offset[{1.9999999999999878, 1.9999999999999678}, \
+{-0.016528236985292155, 0.8399595225187343}], 
+      ImageScaled[{0, 0}], {0.13046567317815674, 0.319640899286484}, {{1., 
+      0.}, {0., 1.}},
+      BaseStyle->"Graphics"]}}},
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageMargins->0.,
+  ImagePadding->{{0., 11.457726}, {0.714286, 8.165131}},
+  ImageSize->{245.00000000000261`, Automatic},
+  PlotRange->{{-1.014237480482611, 1.014237480482611}, {-1.061558184218685, 
+   1.061558184218685}},
+  PlotRangePadding->Automatic]], "Input",
+ CellChangeTimes->{{3.8591541343829308`*^9, 3.85915413703152*^9}, 
+   3.8591541716480303`*^9, {3.859154325739484*^9, 3.85915433759568*^9}, {
+   3.859154402301046*^9, 3.8591544329919443`*^9}, {3.8591544895667086`*^9, 
+   3.8591545276041884`*^9}, {3.8591627837858505`*^9, 3.859162818718569*^9}, {
+   3.8591628573768363`*^9, 3.8591629155650363`*^9}, {3.8591629695482693`*^9, 
+   3.8591630057819166`*^9}},ExpressionUUID->"ec42e0ae-a511-4bb5-a2fc-\
+05df912a351c"],
+
+Cell[TextData[{
+ "When ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalK]", "i"], TraditionalForm]],ExpressionUUID->
+  "3418b4bf-e38b-4f5f-ac27-2f366341466f"],
+ " is encountered, first perform an ",
+ StyleBox["isomorphism check",
+  FontWeight->"Bold"],
+ ". That is, for the following reflection functor"
+}], "Text",
+ CellChangeTimes->{{3.859155358121026*^9, 3.8591554148066673`*^9}, {
+  3.8591554511812286`*^9, 
+  3.8591554825771675`*^9}},ExpressionUUID->"0ab2ad0b-cb91-4dfd-a6aa-\
+7ea45aae6093"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox["\[ScriptCapitalK]", "i"], ":", 
+   SubscriptBox["P", "i"]}], "\[Rule]", 
+  SubscriptBox["Q", "i"]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.859155518726266*^9, 
+  3.8591555977907395`*^9}},ExpressionUUID->"0a9905c4-1e4e-4e5a-ab4a-\
+56f6919b4e41"],
+
+Cell[TextData[{
+ "Obviously isomorphism check success means the following expression is ",
+ Cell[BoxData[
+  FormBox["T", TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "4176320f-4aae-4556-8825-a42e18c1a62a"],
+ "."
+}], "Text",
+ CellChangeTimes->{{3.8591560192952375`*^9, 3.859156043296366*^9}, {
+  3.8591560770370035`*^9, 3.8591560824248857`*^9}, {3.859156976673889*^9, 
+  3.8591569956983147`*^9}},ExpressionUUID->"33af6b0e-8e0a-4de2-93a1-\
+c3b8b474d63a"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"ic", 
+    RowBox[{"(", "i", ")"}]}], ":=", 
+   RowBox[{"\[Exists]", 
+    RowBox[{
+     RowBox[{"\[ScriptCapitalC]", "'"}], "\[SubsetEqual]", 
+     "\[ScriptCapitalC]"}]}]}], ",", 
+  RowBox[{
+   RowBox[{"\[ScriptCapitalC]", "'"}], "\[TildeEqual]", 
+   RowBox[{"s", 
+    RowBox[{"(", 
+     SubscriptBox["\[ScriptCapitalK]", "i"], 
+     ")"}]}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.8591556720728097`*^9, 3.8591557448158216`*^9}, {
+  3.859155982783883*^9, 3.8591560016759*^9}, {3.85915662109125*^9, 
+  3.8591566324236145`*^9}},ExpressionUUID->"b8e3116d-be1b-4437-ad55-\
+850be22af7c5"],
+
+Cell[TextData[{
+ "If success, we give the two categories a same object indexing system ",
+ Cell[BoxData[
+  FormBox["J", TraditionalForm]],ExpressionUUID->
+  "6d005e94-cf2f-4137-94de-de2132ebc9b0"],
+ " and give the morphisms a same indexing system ",
+ Cell[BoxData[
+  FormBox["S", TraditionalForm]],ExpressionUUID->
+  "163037a5-e8d8-4d7a-a2a5-af579b43dffe"],
+ ". Note that if there exists some kinds of symmetry, the procedure should be \
+repeated. Additionally, we apply the same index to ",
+ Cell[BoxData[
+  FormBox["Q", TraditionalForm]],ExpressionUUID->
+  "4c0e1e36-0374-424c-9030-92ccd8d87812"],
+ StyleBox["\[CloseCurlyQuote]s",
+  IgnoreSpellCheck->True],
+ " objects if they are equal to ",
+ Cell[BoxData[
+  FormBox["P", TraditionalForm]],ExpressionUUID->
+  "3a4ff595-161a-4a46-8551-2b80aae758a9"],
+ "\[CloseCurlyQuote]s. To perform operation, we declare ",
+ StyleBox["transform array",
+  FontWeight->"Bold"],
+ " as"
+}], "Text",
+ CellChangeTimes->{{3.859156288766712*^9, 3.8591563400801005`*^9}, {
+  3.8591563885660467`*^9, 3.859156425683054*^9}, {3.8591564561101246`*^9, 
+  3.859156525760545*^9}, {3.8591565660231886`*^9, 3.8591565729664106`*^9}, {
+  3.859156653094124*^9, 3.8591566550702257`*^9}, {3.8591570033425283`*^9, 
+  3.859157059030102*^9}, {3.8591575128784466`*^9, 
+  3.859157542253541*^9}},ExpressionUUID->"233cdf67-8f01-405f-870a-\
+725cec0b5a6f"],
+
+Cell[BoxData[
+ RowBox[{
+  SubscriptBox["T", "1"], ":=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"Ob", 
+       SubscriptBox[
+        RowBox[{"(", 
+         RowBox[{"\[ScriptCapitalC]", "'"}], ")"}], "j"]}], ",", 
+      RowBox[{"Ob", 
+       SubscriptBox[
+        RowBox[{"(", 
+         RowBox[{"s", 
+          RowBox[{"(", 
+           SubscriptBox["\[ScriptCapitalK]", "i"], ")"}]}], ")"}], "j"]}]}], 
+     ")"}], "|", 
+    RowBox[{"j", "\[Element]", "J", "\[Subset]", 
+     SubscriptBox["\[DoubleStruckCapitalZ]", 
+      RowBox[{">", "0"}]]}]}], "}"}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.859156594508152*^9, 3.859156705129821*^9}, {
+  3.859157459369746*^9, 3.8591574901468234`*^9}, {3.859157551514347*^9, 
+  3.859157589430706*^9}, {3.8591577614309425`*^9, 
+  3.8591577625350037`*^9}},ExpressionUUID->"b92acfe0-00fb-4342-8895-\
+1c6bc901805b"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox["T", "2"], ":=", 
+   RowBox[{"{", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"Mor", 
+       SubscriptBox[
+        RowBox[{"(", 
+         RowBox[{"\[ScriptCapitalC]", "'"}], ")"}], "j"]}], ",", 
+      RowBox[{
+       RowBox[{"Mor", 
+        SubscriptBox[
+         RowBox[{"(", 
+          RowBox[{"s", 
+           RowBox[{"(", 
+            SubscriptBox["\[ScriptCapitalK]", "i"], ")"}]}], ")"}], "j"]}], 
+       "|", 
+       RowBox[{"s", "\[Element]", "S", "\[Subset]", 
+        SubscriptBox["\[DoubleStruckCapitalZ]", 
+         RowBox[{">", "0"}]]}]}]}]}]}]}], "}"}]], "DisplayFormulaNumbered",Exp\
+ressionUUID->"04ed1f96-4705-49ef-ad9a-b683d84c12d0"],
+
+Cell[TextData[{
+ "Conveniently, we use notation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"T", "[", "m", "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "f1b9cd25-3192-4c67-9d0c-f4b934514122"],
+ " to get the first left object whose right object is such ",
+ Cell[BoxData[
+  FormBox["m", TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "96a2d14a-44b8-4373-b5a6-c18055f20eeb"],
+ ". Then we apply such to category ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", "(", 
+    SubscriptBox["\[ScriptCapitalK]", "i"], ")"}], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "b37958e1-76ff-4bd4-ace1-b9841cda1241"],
+ " so that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["Q", "i"], "'"}], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "91fe8bf2-f76b-4e73-b578-dff065f7309e"],
+ " becomes below. We write ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    RowBox[{"Ob", "(", "\[ScriptCapitalA]", ")"}], "i"], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "a9826b4b-d0e7-469d-92c0-3bdeca7c3b79"],
+ " as the short form for ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    RowBox[{"(", 
+     RowBox[{"Ob", "(", "\[ScriptCapitalA]", ")"}], ")"}], "i"], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "f7c6296b-3efd-402f-bc8b-34881d7a2526"],
+ " to avoid notation issues."
+}], "Text",
+ CellChangeTimes->{{3.859156875365774*^9, 3.8591569531578197`*^9}, {
+  3.8591571160067444`*^9, 3.859157167430545*^9}, {3.859157238652566*^9, 
+  3.859157242970831*^9}, {3.859157888722474*^9, 
+  3.859157939712164*^9}},ExpressionUUID->"45af86ee-7897-4ff8-b2fb-\
+7265abda1f84"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Ob", 
+   RowBox[{"(", 
+    RowBox[{
+     SubscriptBox["Q", "i"], "'"}], ")"}]}], "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"x", "|", "x"}], "=", 
+    RowBox[{"{", 
+     RowBox[{GridBox[{
+        {
+         RowBox[{
+          SubscriptBox["T", "1"], "[", 
+          RowBox[{"Ob", 
+           SubscriptBox[
+            RowBox[{"(", 
+             SubscriptBox["Q", "i"], ")"}], "a"]}], "]"}], 
+         RowBox[{"\[Exists]", 
+          RowBox[{
+           SubscriptBox["T", "1"], "[", 
+           RowBox[{"Ob", 
+            SubscriptBox[
+             RowBox[{"(", 
+              SubscriptBox["Q", "i"], ")"}], "a"]}], "]"}]}]},
+        {
+         RowBox[{"Ob", 
+          SubscriptBox[
+           RowBox[{"(", 
+            SubscriptBox["Q", "i"], ")"}], "a"]}], 
+         RowBox[{"\[NotExists]", 
+          RowBox[{
+           SubscriptBox["T", "1"], "[", 
+           RowBox[{"Ob", 
+            SubscriptBox[
+             RowBox[{"(", 
+              SubscriptBox["Q", "i"], ")"}], "a"]}], "]"}]}]}
+       }], ",", 
+      RowBox[{"a", "\[Element]", 
+       SubscriptBox["\[DoubleStruckCapitalZ]", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"0", ",", 
+           RowBox[{"|", 
+            RowBox[{"Ob", 
+             RowBox[{"(", 
+              SubscriptBox["Q", "i"], ")"}]}], "|"}]}]}], "]"}]]}]}], 
+     "}"}]}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.859157214492186*^9, 3.8591572184028597`*^9}, {
+  3.859157262149043*^9, 3.8591572635969687`*^9}, {3.8591572965952253`*^9, 
+  3.8591573262378497`*^9}, {3.859157382761733*^9, 3.8591574112006145`*^9}, {
+  3.8591575944191666`*^9, 3.859157754514598*^9}, {3.8591578147331076`*^9, 
+  3.8591578397955456`*^9}},ExpressionUUID->"ab566843-dfd8-4dc9-9b1d-\
+32c49f7ab649"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Mor", 
+   RowBox[{"(", 
+    RowBox[{
+     SubscriptBox["Q", "i"], "'"}], ")"}]}], "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"x", "|", "x"}], "=", 
+    RowBox[{"{", 
+     RowBox[{GridBox[{
+        {
+         RowBox[{
+          SubscriptBox["T", "2"], "[", 
+          RowBox[{"Mor", 
+           SubscriptBox[
+            RowBox[{"(", 
+             SubscriptBox["Q", "i"], ")"}], "a"]}], "]"}], 
+         RowBox[{"\[Exists]", 
+          RowBox[{
+           SubscriptBox["T", "2"], "[", 
+           RowBox[{"Mor", 
+            SubscriptBox[
+             RowBox[{"(", 
+              SubscriptBox["Q", "i"], ")"}], "a"]}], "]"}]}]},
+        {
+         RowBox[{"Mor", 
+          SubscriptBox[
+           RowBox[{"(", 
+            SubscriptBox["Q", "i"], ")"}], "a"]}], 
+         RowBox[{"\[NotExists]", 
+          RowBox[{
+           SubscriptBox["T", "2"], "[", 
+           RowBox[{"Mor", 
+            SubscriptBox[
+             RowBox[{"(", 
+              SubscriptBox["Q", "i"], ")"}], "a"]}], "]"}]}]}
+       }], ",", 
+      RowBox[{"a", "\[Element]", 
+       SubscriptBox["\[DoubleStruckCapitalZ]", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"0", ",", 
+           RowBox[{"|", 
+            RowBox[{"Mor", 
+             RowBox[{"(", 
+              SubscriptBox["Q", "i"], ")"}]}], "|"}]}]}], "]"}]]}]}], 
+     "}"}]}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.8591577796549687`*^9, 
+  3.859157871239833*^9}},ExpressionUUID->"c63f36b3-72a4-4a27-ad9f-\
+6bb91d3cd4b7"],
+
+Cell[TextData[{
+ "Significantly we have the below definitions composing ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalF]", "t"], TraditionalForm]],
+  FormatType->"TraditionalForm",ExpressionUUID->
+  "00018580-26e1-4111-88a6-5d2c221bfe6b"],
+ "."
+}], "Text",
+ CellChangeTimes->{{3.8591580028648868`*^9, 
+  3.859158038501897*^9}},ExpressionUUID->"b28aa858-2677-4223-9557-\
+8ddd8e75271f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Ob", 
+   RowBox[{"(", 
+    RowBox[{
+     SubscriptBox["\[ScriptCapitalF]", "t"], 
+     SubscriptBox["\[ScriptCapitalC]", "t"]}], ")"}]}], "=", 
+  RowBox[{
+   RowBox[{"Ob", 
+    RowBox[{"(", 
+     SubscriptBox["\[ScriptCapitalC]", "t"], ")"}]}], "\[Union]", 
+   RowBox[{"Ob", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["Q", "i"], "'"}], ")"}]}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.8591580677601256`*^9, 
+  3.8591581756411004`*^9}},ExpressionUUID->"2e3f7346-f7a1-450a-8231-\
+30027958707c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Mor", 
+   RowBox[{"(", 
+    RowBox[{
+     SubscriptBox["\[ScriptCapitalF]", "t"], 
+     SubscriptBox["\[ScriptCapitalC]", "t"]}], ")"}]}], "=", 
+  RowBox[{
+   RowBox[{"Mor", 
+    RowBox[{"(", 
+     SubscriptBox["\[ScriptCapitalC]", "t"], ")"}]}], "\[Union]", 
+   RowBox[{"Mor", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["Q", "i"], "'"}], ")"}]}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.859158182320485*^9, 
+  3.8591582089388657`*^9}},ExpressionUUID->"f2742120-c3e3-4cdb-b5c3-\
+f7f8c82c50ba"],
+
+Cell[TextData[{
+ "The key point here is which ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalK]", "i"], TraditionalForm]],ExpressionUUID->
+  "1102297b-6e2f-4adc-b81f-6e323d0263fa"],
+ " to use. Initially, the rule shown in the graph above (",
+ StyleBox["the initial map",
+  FontWeight->"Bold"],
+ ") is utilized. However, in this way efficiency would not be high. To avoid \
+this, we need an additional procedure called ",
+ StyleBox["recursion supplement",
+  FontWeight->"Bold"],
+ ", which is called machine learning or something else other where. The \
+procedure of recursion supplement is to add new route line to the initial \
+map. Hence, when a node is past, the next node is selected from the \
+arrow-oriented ones, using the lottery algorithm. Note there can be multiple \
+arrows from one to one."
+}], "Text",
+ CellChangeTimes->{{3.85915822690623*^9, 3.859158293353468*^9}, {
+  3.8591626912036867`*^9, 3.859162694856742*^9}, {3.85916301583282*^9, 
+  3.859163049046864*^9}, {3.859163105074153*^9, 3.859163152795927*^9}, {
+  3.8591636149934196`*^9, 3.8591636867413654`*^9}, {3.859183307773014*^9, 
+  3.859183394609637*^9}},ExpressionUUID->"af7f413a-4252-44be-a5de-\
+83fb3f4c3f6f"],
+
+Cell[TextData[{
+ "It is worth to notice that introducing randomness (which may cause \
+complexity in Wolfram theories) can break the purity of the definition. To \
+avoid this,  actually ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalF]", "t"], TraditionalForm]],ExpressionUUID->
+  "dcdd1d19-ab67-422b-9e77-34c916a35356"],
+ " should have another parameter which is the ",
+ StyleBox["random source",
+  FontWeight->"Bold"],
+ " and the selection ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalK]", "j"], TraditionalForm]],ExpressionUUID->
+  "c89f1212-cccc-4c9f-82ab-da3b4105db19"],
+ " has index described as"
+}], "Text",
+ CellChangeTimes->{{3.8595996119746237`*^9, 3.859599731612313*^9}, {
+  3.859599775631124*^9, 3.8595997967741556`*^9}, {3.8596003823360825`*^9, 
+  3.8596003824802256`*^9}, {3.859600462879754*^9, 
+  3.859600463960842*^9}},ExpressionUUID->"3b589995-be02-413e-8bab-\
+0c2a424936c9"],
+
+Cell[BoxData[
+ RowBox[{"j", "=", 
+  RowBox[{
+   StyleBox["S",
+    FontWeight->"Bold",
+    FontSlant->"Italic"], " ", "mod", 
+   RowBox[{"(", 
+    RowBox[{
+     UnderoverscriptBox["\[Sum]", 
+      RowBox[{"q", "=", "1"}], "n"], 
+     RowBox[{"|", 
+      RowBox[{"Hom", 
+       RowBox[{"(", 
+        RowBox[{
+         SubscriptBox["\[ScriptCapitalK]", "i"], ",", 
+         SubscriptBox["\[ScriptCapitalK]", "q"]}], ")"}]}], "|"}]}], 
+    ")"}]}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.8595998137550726`*^9, 3.8595998152891893`*^9}, {
+  3.8596003110799785`*^9, 3.8596004385769305`*^9}, {3.8596018123662586`*^9, 
+  3.8596018137628527`*^9}},ExpressionUUID->"0d75b4fd-4c76-4f67-81e1-\
+c1646f3960a8"],
+
+Cell[TextData[{
+ "Where ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["S",
+    FontWeight->"Bold"], TraditionalForm]],ExpressionUUID->
+  "31a1a721-a66f-4958-b905-a22c2f3f9324"],
+ " is the random source provided here. Technically, to ensure lottery \
+algorithm\[CloseCurlyQuote]s quality, the random source ought to be measured \
+in the real world. For instance, ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["Intel", "\[RegisteredTrademark]"], TraditionalForm]],
+  ExpressionUUID->"0e148372-5a01-43b0-824f-d360ea7f121a"],
+ "\[CloseCurlyQuote]s digital random number generator is a good physical \
+approach."
+}], "Text",
+ CellChangeTimes->{{3.8596004527682085`*^9, 
+  3.859600646422084*^9}},ExpressionUUID->"168834b1-8e13-4cfb-b39e-\
+583f5940f91e"],
+
+Cell[TextData[{
+ "When the micro statements that the left pool contain  can ",
+ StyleBox["satisfy",
+  FontWeight->"Bold"],
+ " the right pool, we call the statement is proved. Here, the ",
+ StyleBox["proof procedures",
+  FontWeight->"Bold"],
+ " is generated as a set whose elements are in the form of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"i", ",", 
+     SubscriptBox["\[ScriptCapitalK]", "j"]}], ")"}], TraditionalForm]],
+  ExpressionUUID->"713318a2-29c6-47f3-8e71-a33691d6c48f"],
+ ", where ",
+ Cell[BoxData[
+  FormBox["i", TraditionalForm]],ExpressionUUID->
+  "5c32b2d5-cb10-4482-af53-99520b9490f6"],
+ " means this element is the ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"i", " ", "th"}], TraditionalForm]],ExpressionUUID->
+  "a5924b94-a826-462e-bc06-31807e709451"],
+ " to read and ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalK]", "j"], TraditionalForm]],ExpressionUUID->
+  "2edfaf01-676f-4d8d-891f-84dbaf865dbe"],
+ " is the reflection functor used in this step. Notice that via recursion \
+supplement, the map after the proof is might be significantly from the \
+initial case. After this process, we call the procedure in ended. \
+Importantly, when next time\[CloseCurlyQuote]s proof is initialized, the \
+initial map should be the latest produces recursion map."
+}], "Text",
+ CellChangeTimes->{{3.859183407194668*^9, 3.859183466614196*^9}, {
+   3.8596011189318466`*^9, 3.8596015058286753`*^9}, 
+   3.859601687196472*^9},ExpressionUUID->"d9b91f4c-d0b4-4008-9ebf-\
+7e820895c1f2"],
+
+Cell[TextData[{
+ "Importantly, to avoid the loss of efficiency by time, the map should have a \
+process of ",
+ StyleBox["reduction",
+  FontWeight->"Bold"],
+ ", which implies lowering the ",
+ StyleBox["opacity",
+  FontWeight->"Bold"],
+ " of some maps. This process is done by duplicating other maps\
+\[CloseCurlyQuote] count instead of removing some. Elegantly, if all maps\
+\[CloseCurlyQuote] count has a GCD (greatest common divider), divisions with \
+it does impact on nothing. The reduction is controlled by the Ebbinghaus \
+Forgetting Curve, which is approximately"
+}], "Text",
+ CellChangeTimes->{{3.859601691555785*^9, 3.85960180278343*^9}, {
+  3.859601883841383*^9, 3.8596019926617002`*^9}, {3.8596020441901503`*^9, 
+  3.8596020724325676`*^9}},ExpressionUUID->"f963fbff-6b99-4091-ac13-\
+45d0a7f3357c"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"B", "=", 
+   FractionBox[
+    RowBox[{"100", " ", "k"}], 
+    RowBox[{
+     RowBox[{"log", 
+      SuperscriptBox[
+       RowBox[{"(", "t", ")"}], "c"]}], "+", "k"}]]}], ",", " ", 
+  RowBox[{
+   RowBox[{"where", " ", "c"}], "=", "1.25"}], ",", 
+  RowBox[{"k", "=", "1.84"}]}]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.859602089769309*^9, 
+  3.859602140812652*^9}},ExpressionUUID->"3f911dd8-54cf-497e-973f-\
+65c8553c4980"],
+
+Cell[TextData[{
+ StyleBox["CURRENT DRAFT EOF",
+  FontWeight->"Bold"],
+ "\nAbove is the last line..."
+}], "Text",
+ CellChangeTimes->{{3.859183469033947*^9, 3.8591834876318493`*^9}, {
+  3.860305487688134*^9, 3.860305506520573*^9}},
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"e10c83b9-823e-408a-a331-8aed9d8aeb58"],
+
+Cell[TextData[{
+ StyleBox["UNFINISHED",
+  FontWeight->"Bold"],
+ "\nDetails will be added later..."
+}], "Text",
+ CellChangeTimes->{{3.859183469033947*^9, 3.8591834876318493`*^9}},
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"b5072d96-8448-44f9-bae9-350c10a3cbe7"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1536, 773},
+WindowMargins->{{-8, Automatic}, {Automatic, -8}},
+CellContext->Notebook,
+Magnification:>1.4 Inherited,
+FrontEndVersion->"12.0 for Microsoft Windows (64-bit) (April 8, 2019)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 267, 4, 135, "Title",ExpressionUUID->"70f19d4e-1a52-4fa6-870d-69edefc8da9f"],
+Cell[850, 28, 284, 8, 116, "Author",ExpressionUUID->"6798f7d3-752e-4ac4-9dc6-97723bc517a9"],
+Cell[1137, 38, 290, 7, 117, "Abstract",ExpressionUUID->"6f7103d9-615e-473d-80d2-e4162c12a8be"],
+Cell[1430, 47, 566, 10, 133, "Text",ExpressionUUID->"fc0cc334-2904-42d0-bcd4-de966a47323d"],
+Cell[1999, 59, 483, 10, 133, "Text",ExpressionUUID->"35915078-ee3c-46af-8b90-340ae969d3a4"],
+Cell[CellGroupData[{
+Cell[2507, 73, 204, 4, 48, "Text",ExpressionUUID->"650bcc22-bac0-49c6-916b-baf4a8e71bf9",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[2714, 79, 780, 13, 164, "Text",ExpressionUUID->"eb0fa15a-be78-4c48-b913-0c803cd5e559",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[3497, 94, 175, 4, 48, "Text",ExpressionUUID->"8783ab7f-25d6-4878-91c8-5ffbedef3ab7",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[3709, 103, 161, 3, 71, "Section",ExpressionUUID->"d393e966-172d-43ec-9148-607da92fb1e4"],
+Cell[3873, 108, 1524, 44, 256, "Text",ExpressionUUID->"034809ff-35d0-4a8d-a6a2-29e34230318d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5434, 157, 211, 4, 92, "Section",ExpressionUUID->"cd64146f-58de-4f77-9153-32b41ffea686"],
+Cell[5648, 163, 986, 25, 80, "Text",ExpressionUUID->"02bdc4e7-e48e-4b37-8838-d9aa4fb8ab86"],
+Cell[6637, 190, 620, 17, 37, "DisplayFormulaNumbered",ExpressionUUID->"60244d9e-4d80-4787-899a-5433cd0e7a99"],
+Cell[7260, 209, 1091, 29, 48, "Text",ExpressionUUID->"cb6e7249-011a-4d8e-b01f-7a5d9af258e1"],
+Cell[8354, 240, 402, 10, 35, "DisplayFormulaNumbered",ExpressionUUID->"b50eaa26-c75f-4a47-afba-4641a138fcf6"],
+Cell[8759, 252, 1697, 42, 80, "Text",ExpressionUUID->"aa93db92-95a5-4a5f-86fc-faee4d463847"],
+Cell[10459, 296, 431, 11, 48, "Text",ExpressionUUID->"0317cbc1-af5e-4f44-a41c-fc0dbb765a3e"],
+Cell[CellGroupData[{
+Cell[10915, 311, 253, 4, 70, "Text",ExpressionUUID->"379cde30-6821-43f4-ae7e-fc65d0052ebe",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}],
+Cell[11171, 317, 2564, 60, 163, "Input",ExpressionUUID->"01d8a675-a370-4981-b5e9-f09eecb5c690",
+ CellGroupingRules->{"GroupTogetherGrouping", 10000.}]
+}, Closed]],
+Cell[13750, 380, 5478, 99, 366, "Input",ExpressionUUID->"ec42e0ae-a511-4bb5-a2fc-05df912a351c"],
+Cell[19231, 481, 509, 14, 48, "Text",ExpressionUUID->"0ab2ad0b-cb91-4dfd-a6aa-7ea45aae6093"],
+Cell[19743, 497, 307, 8, 35, "DisplayFormulaNumbered",ExpressionUUID->"0a9905c4-1e4e-4e5a-ab4a-56f6919b4e41"],
+Cell[20053, 507, 477, 11, 48, "Text",ExpressionUUID->"33af6b0e-8e0a-4de2-93a1-c3b8b474d63a"],
+Cell[20533, 520, 644, 18, 35, "DisplayFormulaNumbered",ExpressionUUID->"b8e3116d-be1b-4437-ad55-850be22af7c5"],
+Cell[21180, 540, 1362, 31, 111, "Text",ExpressionUUID->"233cdf67-8f01-405f-870a-725cec0b5a6f"],
+Cell[22545, 573, 892, 25, 40, "DisplayFormulaNumbered",ExpressionUUID->"b92acfe0-00fb-4342-8895-1c6bc901805b"],
+Cell[23440, 600, 705, 22, 40, "DisplayFormulaNumbered",ExpressionUUID->"04ed1f96-4705-49ef-ad9a-b683d84c12d0"],
+Cell[24148, 624, 1695, 48, 80, "Text",ExpressionUUID->"45af86ee-7897-4ff8-b2fb-7265abda1f84"],
+Cell[25846, 674, 1776, 53, 60, "DisplayFormulaNumbered",ExpressionUUID->"ab566843-dfd8-4dc9-9b1d-32c49f7ab649"],
+Cell[27625, 729, 1529, 50, 60, "DisplayFormulaNumbered",ExpressionUUID->"c63f36b3-72a4-4a27-ad9f-6bb91d3cd4b7"],
+Cell[29157, 781, 399, 11, 48, "Text",ExpressionUUID->"b28aa858-2677-4223-9557-8ddd8e75271f"],
+Cell[29559, 794, 549, 17, 35, "DisplayFormulaNumbered",ExpressionUUID->"2e3f7346-f7a1-450a-8231-30027958707c"],
+Cell[30111, 813, 550, 17, 35, "DisplayFormulaNumbered",ExpressionUUID->"f2742120-c3e3-4cdb-b5c3-f7f8c82c50ba"],
+Cell[30664, 832, 1196, 24, 142, "Text",ExpressionUUID->"af7f413a-4252-44be-a5de-83fb3f4c3f6f"],
+Cell[31863, 858, 922, 22, 82, "Text",ExpressionUUID->"3b589995-be02-413e-8bab-0c2a424936c9"],
+Cell[32788, 882, 706, 20, 78, "DisplayFormulaNumbered",ExpressionUUID->"0d75b4fd-4c76-4f67-81e1-c1646f3960a8"],
+Cell[33497, 904, 743, 19, 80, "Text",ExpressionUUID->"168834b1-8e13-4cfb-b39e-583f5940f91e"],
+Cell[34243, 925, 1516, 37, 144, "Text",ExpressionUUID->"d9b91f4c-d0b4-4008-9ebf-7e820895c1f2"],
+Cell[35762, 964, 807, 17, 111, "Text",ExpressionUUID->"f963fbff-6b99-4091-ac13-45d0a7f3357c"],
+Cell[36572, 983, 463, 14, 60, "DisplayFormulaNumbered",ExpressionUUID->"3f911dd8-54cf-497e-973f-65c8553c4980"],
+Cell[37038, 999, 317, 8, 102, "Text",ExpressionUUID->"e10c83b9-823e-408a-a331-8aed9d8aeb58"],
+Cell[37358, 1009, 266, 7, 102, "Text",ExpressionUUID->"b5072d96-8448-44f9-bae9-350c10a3cbe7"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
