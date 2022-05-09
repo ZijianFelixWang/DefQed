@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
-//using System.Linq;
 using Console = DefQed.LogConsole;
 
 namespace DefQed.Core
@@ -86,8 +85,6 @@ namespace DefQed.Core
                 };
                 rete = ret;
             }
-
-            //throw new ApplicationException("Invalid TopLevel encountered. May be a bug.");
 
             if (!rete)
             {
@@ -232,32 +229,6 @@ namespace DefQed.Core
             // Now we encounter a symbol holder!
             // It seems that we need to rewrite all TST logics.
 
-            //if (!transistors.ContainsKey(req))
-            //{
-            //    if (!transistors.ContainsValue(situ))
-            //    {
-            //        transistors.Add(req, situ);
-            //        Console.Log(LogLevel.Diagnostic, $"New TST pair: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
-            //    }
-            //    else
-            //    {
-            //        // Bad guy...
-            //        Console.Log(LogLevel.Diagnostic, $"TST pair violation: Multiple value: {situ.GetHashCode()} Scan failed;");
-            //        return false;
-            //    }
-            //}
-            //else if(transistors[req].GetHashCode() == situ.GetHashCode())
-            //{
-            //    // Great job!
-            //    Console.Log(LogLevel.Diagnostic, $"TST pair already exists in array: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
-            //}
-            //else
-            //{
-            //    // Bad guy...
-            //    Console.Log(LogLevel.Diagnostic, $"TST pair violation: Hashcode: ({transistors[req].GetHashCode()}, {situ.GetHashCode()}) Scan failed;");
-            //    return false;
-            //}
-
             transistors.Add((req, situ));
             Console.Log(LogLevel.Diagnostic, $"New TST pair: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
 
@@ -308,7 +279,7 @@ namespace DefQed.Core
                     }
 
                     // Hey this linq will cause InvalidCastException
-                    //List<MicroStatement> candidates = (List<MicroStatement>)(from item in situation where item.Connector == bracket.MicroStatement.Connector select item);
+                   
                     List<MicroStatement> candidates = new();
                     foreach(var item in situation)
                     {
