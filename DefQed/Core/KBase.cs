@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using DefQed.Data;
-//using Terminal.Gui
 using Console = DefQed.LogConsole;
 
 namespace DefQed.Core
@@ -51,7 +50,6 @@ namespace DefQed.Core
         public int GetNextNotationId()
 #pragma warning restore CA1822 // Mark members as static
         {
-            //return MySQLDriver.GetMaxId(TableType.Notations) + 1;
             int id = MySQLDriver.GetMaxId(TableType.Notations);
             if (id == -1)
             {
@@ -79,11 +77,7 @@ namespace DefQed.Core
             ReflectionHistory += Reflection.Scan(Reflections, ref LeftPool);
             Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning right pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref RightPool);
-//#if __HIDE_REFLECT_HISTORY__
             Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory is hiden. RH size is {ReflectionHistory.Length}");
-//#else
-  //          Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory= {ReflectionHistory}");
-//#endif
         }
 
         // HowTo: Update reflections from just done. This is the principle for the self learning procedure.
@@ -96,12 +90,6 @@ namespace DefQed.Core
             bool occur = true;
             foreach (var item in RightPool)
             {
-                //if (!LeftPool.Contains(item))
-                //{
-                //    // To make it more human-readable...
-                //    Console.Log(LogLevel.Diagnostic, $"TryBridging: Left pool doesn't contain the following: {item.ToFriendlyString()}");
-                //    return false;
-                //}
                 var hash = item.ToFriendlyString();
                 bool subOccur = false;
                 foreach (var l in LeftPool)
