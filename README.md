@@ -38,6 +38,9 @@ The program is currently only tested in Windows. However, further support on Lin
 - *.NET 6.0 runtime*: You only need the basic one as it's a console application.
 - *MySQL Database*: The program store data in it so such is necessary.
 
+### Releases
+- `v0.01`: Experimental but basically working version. Only offer Windows binary in release page.
+
 ### Build
 Load the `.sln` file in Visual Studio (recommend: version 2022) and perform build.
 
@@ -216,7 +219,7 @@ Each `prove` tag contains a tree of `that` tag (which represents a `Bracket`).
 - There are a lot of useless lines of code which impact code quality. (Will be removed soon)
 
 ## Acknowledgements
-DefQed uses these dependencies:
+DefQed uses these technologies:
 - .NET
 - Newtonsoft.Json
 - MySQL
