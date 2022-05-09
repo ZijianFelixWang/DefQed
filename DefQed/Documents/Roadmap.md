@@ -1,4 +1,4 @@
-﻿# Project DefQed
+# Project DefQed
 ## The Development Roadmap
 ***
 ### Basic Proof System
@@ -8,7 +8,7 @@
 - [x] Main Loop
 - [x] Data Structures
 - [x] Isomorphism Checker
-- [x] Transistor Applier `Very Buggy Now... Working on it.`
+- [x] Transistor Applier
 - [ ] RH Generator `Very difficult for humans to read.`
 ### Nearly Completed System
 - [ ] Self Learning Logic
@@ -27,7 +27,7 @@
 - [ ] GNU/Linux Setup Program
 - [ ] macOS Setup Program
 ### Documents and Examples
-- [ ] Readme File
+- [x] Readme File
 - [ ] Documentation
-- [ ] Example Codes (runnable)
+- [x] Example Codes (runnable)
 - [x] Diagnostic Example
