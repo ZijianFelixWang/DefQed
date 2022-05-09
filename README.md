@@ -215,5 +215,13 @@ Each `prove` tag contains a tree of `that` tag (which represents a `Bracket`).
 - Currently it cannot serialize KBase correctly.
 - There are a lot of useless lines of code which impact code quality. (Will be removed soon)
 
+## Acknowledgements
+DefQed uses these dependencies:
+- .NET
+- Newtonsoft.Json
+- MySQL
+- BouncyCastle
+- Mathematica
+
 ## One more thing
 **Feel free to fork but do NOT plagiarize.** I may write a paper about it some time later so you shouldn't just copy the project and claim your originality. However, if you add new ideas to it, it then becomes your project.
