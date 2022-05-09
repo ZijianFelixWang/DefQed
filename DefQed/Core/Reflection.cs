@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-//using System.Linq;
-//using System.Text.Json;
 using Console = DefQed.LogConsole;
 using JsonSerializer2 = Newtonsoft.Json.JsonConvert;
 
@@ -290,15 +288,6 @@ namespace DefQed.Core
         // Now the logic is simpler and better.
         private static void ApplyTransistors(ref Bracket br, List<(Bracket, Bracket)> tst)
         {
-            //foreach (var key in tst.Keys)
-            //{
-            //    if (br.GetHashCode() == key.GetHashCode())
-            //    {
-            //        br = tst[key];
-            //        return;
-            //    }
-            //}
-
             // Try replacement...
             foreach (var pair in tst)
             {
@@ -306,10 +295,6 @@ namespace DefQed.Core
                 {
                     br = pair.Item2;
                     return;
-                }
-                else
-                {
-
                 }
             }
 
@@ -331,77 +316,7 @@ namespace DefQed.Core
         #region cmt
         // eg, {a==b, b==c}=>{a==c}. (Actual: x==y,y==z) TRANSITOR:x->a, y->b, z->c
         // we need to transform "a==c" to "x==z"
-        //        private static void ApplyTransistors(ref MicroStatement piece, Dictionary<Symbol, Symbol> transistors)
-        //        {
-        //            // let's traversal everywhere of piece's two brackets and apply each transistor...
-        //            switch (piece.Brackets[0].BracketType)
-        //            {
-        //                case BracketType.NegatedHolder:
-        //                    ApplyTransistors(ref piece.Brackets[0], transistors);
-        //                    break;
-        //                case BracketType.BracketHolder:
-        //                    ApplyTransistors(ref piece.Brackets[0], transistors);
-        //                    ApplyTransistors(ref piece.Brackets[1], transistors);
-        //                    break;
-        //                case BracketType.SymbolHolder:
-        //                    MicroStatement pieceCpy = piece;
-        //                    //Using Linq will cause another InvalidCastException... Damn it.
-        //                    //REM, a SymbolHolder can only hold one symbol.
-        //                    //piece.Brackets[0].Symbol = ((List<Symbol>)(from t in transistors where t.Value == pieceCpy.Brackets[0].Symbol select t.Key))[0];
-        //                    //Symbol s = new();
-        //                    foreach (var t in transistors)
-        //                    {
-        //                        if (t.Value == pieceCpy.Brackets[0].Symbol)
-        //                        {
-        //                            //.s = t.Key;
-        //                            piece.Brackets[0].Symbol = t.Key;
-        //                        }
-        //                    }
-        //                    // now the replacement is done. Wow.
-        //                    break;
-        //                case null:
-        //                    break;
-        //                default:
-        //#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-        //                    throw new ArgumentOutOfRangeException("Cannot apply transistor set to an invalid micro statement.");
-        //#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-        //            }
-        //}
-
-        //        private static void ApplyTransistors(ref Bracket bracket, Dictionary<Symbol, Symbol> transistors)
-        //        {
-        //            switch (bracket.BracketType)
-        //            {
-        //                case BracketType.NegatedHolder:
-        //                    ApplyTransistors(ref bracket.SubBrackets[0], transistors);
-        //                    break;
-        //                case BracketType.BracketHolder:
-        //                    ApplyTransistors(ref bracket.SubBrackets[0], transistors);
-        //                    ApplyTransistors(ref bracket.SubBrackets[1], transistors);
-        //                    break;
-        //                case BracketType.SymbolHolder:
-        //                    Bracket br = bracket;
-
-        //                    // For a pair of titem, value is abc (formula things, to be replaced), key is xyz (real things)
-
-        //                    //br.Symbol = ((List<Symbol>)(from t in transistors where t.Value == br.Symbol select t.Key))[0];
-        //                    foreach (var t in transistors)
-        //                    {
-        //                        if (t.Value == br.Symbol)
-        //                        {
-        //                            //.s = t.Key;
-        //                            br.Symbol = t.Key;
-        //                        }
-        //                    }
-        //                    // now the replacement is done. Wow.
-        //                    break;
-        //                default:
-        //#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-        //                    throw new ArgumentOutOfRangeException("Cannot apply transistor set to an invalid micro statement.");
-        //#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-
-        //            }
-        //        }
+        // LCMP
         #endregion
 
         private static void UpdatePool(List<List<MicroStatement>> rawPools, ref List<MicroStatement> pool)
@@ -409,13 +324,9 @@ namespace DefQed.Core
             // This simple method merges the rawPools into the original pool to keep it updated.
             foreach (var rp in rawPools)
             {
-                //pool = (List<MicroStatement>)pool.Union(rp);
                 foreach (var rpContent in rp)
                 {
-                    //if (!pool.Contains(rpContent))
-                    //{
-                    //    pool.Add(rpContent);
-                    //}
+                   // LCMP
 
                     bool occur = false;
                     foreach (var i in pool)
