@@ -38,40 +38,19 @@ namespace DefQed.Core
         private bool ProofPalsed = false;
 
         // Remark: if give a default value will lead into an excpetion...
-        //#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        //        public ProgressBar PulseBar;
-        //#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        //private bool PulseNow = false;
-
-        //public void Initialize()
-        //{
-        //    // So what does it do when the user executes the initialization command now?
-        //    if (XMLFileName == "")
-        //    {
-        //        Console.WriteLine("Error: no xml specified.");
-        //        Environment.Exit(-1);
-        //    }
-
-        //    // Parse & Connect
-        //    XMLParser.ParseXML(XMLFileName, ref KnowledgeBase);
-        //    // Initialization complete.
-        //}
-
+        
         public void PerformProof()
         {
-            //Console.Log(LogLevel.Information, "To call PerformProof");
             PerformProof(TimeOut);
         }
 
         private void PerformProof(int TimeOut)
         {
-            //PulseBar.Pulse();
 #if __DONT_HANDLE_EXCEPTION__
             Console.Log(LogLevel.Information, "Start proving...");
 
             // Load reflections...
             KnowledgeBase.LoadReflections();
-            //PulseBar.Pulse();
             Console.Log(LogLevel.Diagnostic, "Pulse.");
 
             ProofTask = new(() =>
@@ -82,17 +61,9 @@ namespace DefQed.Core
                     {
                         Console.Log(LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
                         KnowledgeBase.ScanPools();
-                        //if (PulseNow = !PulseNow)
-                        //{
-                        //Console.Log(LogLevel.Diagnostic, "UI pulse");
-                        //Console.Log(LogLevel.Diagnostic, "Pulse.");
-                        //}
-                        //System.Console.ReadLine();
                     }
                 }
             });
-
-            //_ = MessageBox.Query("PerformProof called.", "DMessage", "Ok");
 
             Console.Log(LogLevel.Information, "PerformProof called: Start proving");
 
@@ -100,14 +71,9 @@ namespace DefQed.Core
 
             if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
             {
-                //Console.WriteLine("Proof process has finished!");
                 Console.Log(LogLevel.Information, "Proof process has finished.");
-                //_ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
-
 #if !__NO_TEE_AFTER_PROOF__
                 #region commented stuff decomment after debug
-                //Console.WriteLine("Below is report generated:");
-                //Console.WriteLine(KnowledgeBase.GenerateReport());
 
                 var forDbg = KnowledgeBase.GenerateReport();
 
@@ -165,12 +131,10 @@ namespace DefQed.Core
 #else
             try
             {
-                //_ = MessageBox.Query("PerformProof called.", "Start proving...", "Ok");
                 Console.Log(LogLevel.Information, "Start proving...");
 
                 // Load reflections...
                 KnowledgeBase.LoadReflections();
-                //PulseBar.Pulse();
                 Console.Log(LogLevel.Diagnostic, "Pulse.");
 
                 ProofTask = new(() =>
@@ -181,17 +145,9 @@ namespace DefQed.Core
                         {
                             Console.Log(LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
                             KnowledgeBase.ScanPools();
-                            //if (PulseNow = !PulseNow)
-                            //{
-                            //Console.Log(LogLevel.Diagnostic, "UI pulse");
-                            //Console.Log(LogLevel.Diagnostic, "Pulse.");
-                            //}
-                            //System.Console.ReadLine();
                         }
                     }
                 });
-
-                //_ = MessageBox.Query("PerformProof called.", "DMessage", "Ok");
 
                 Console.Log(LogLevel.Information, "PerformProof called: Start proving");
 
@@ -199,14 +155,9 @@ namespace DefQed.Core
 
                 if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
                 {
-                    //Console.WriteLine("Proof process has finished!");
                     Console.Log(LogLevel.Information, "Proof process has finished.");
-                    //_ = MessageBox.Query("Proof done.", "Proof execution done successfully.");
-                    
 #if !__NO_TEE_AFTER_PROOF__
             #region commented stuff decomment after debug
-                    //Console.WriteLine("Below is report generated:");
-                    //Console.WriteLine(KnowledgeBase.GenerateReport());
                     Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
                     while (true)
                     {
@@ -271,54 +222,6 @@ namespace DefQed.Core
             }
 #endif
         }
-
-//#pragma warning disable CA1822 // Mark members as static
-//        public void SetLogLevelUI()
-//#pragma warning restore CA1822 // Mark members as static
-//        {
-//            // The ctrl-G...
-//#if __CTRL_G_TO_RUN__
-//            LoadXMLUI();
-//            PerformProof();
-//#else
-//            Button confirm = new("Ok", is_default: true);
-//            Button cancel = new("Cancel", is_default: false);
-//            RadioGroup sel = new(2, 2, new ustring[] { "Diagnostic", "Information", "Warning", "Error" }, 1);
-//            confirm.Clicked += () =>
-//            {
-//                Console.LogLevel = sel.SelectedItem switch
-//                {
-//                    0 => LogLevel.Diagnostic,
-//                    1 => LogLevel.Information,
-//                    2 => LogLevel.Warning,
-//                    3 => LogLevel.Error,
-//                    _ => LogLevel.Information
-//                };
-
-//                Console.Log(LogLevel.Information, "Log level set to " + Console.LogLevel);
-
-//                Console.Log(LogLevel.Diagnostic, "Diagnostic example.");
-//                Console.Log(LogLevel.Information, "Information example.");
-//                Console.Log(LogLevel.Warning, "Warning example.");
-//                Console.Log(LogLevel.Error, "Error example.");
-
-
-//                Application.RequestStop();
-//            };
-//            cancel.Clicked += () =>
-//            {
-//                Application.RequestStop();
-//            };
-
-//            Dialog ui = new("Request input.", 50, 20, confirm, cancel);
-//            Label hint = new(1, 1, "Select the log level. The default option is information. Click Ok to confirm, Click cancel to go back.");
-
-//            ui.Add(hint);
-//            ui.Add(sel);
-//            Application.Run(ui);
-//            // Now the loop is finished.
-//#endif
-//        }
 
 #if __INSERT_LINE_UI__
         public void KBaseInsertRowUI()
@@ -458,9 +361,7 @@ namespace DefQed.Core
         public void SerializeDiagnosticBrackets()
 //#pragma warning restore CA1822 // Mark members as static
         {
-            //_ = MessageBox.Query("DIAG", "This should be commented after this debug.");
 #region serialize cond
-            //_ = MessageBox.Query("DIAG", "Serializing debug condition.");
             Formula cond = new();
 
             cond.TopLevel.BracketType = BracketType.BracketHolder;
@@ -571,13 +472,10 @@ namespace DefQed.Core
 
             string json1 = JsonSerializer.Serialize(cond, op);
 
-
-            //_ = MessageBox.Query("DIAG", "OK, see it in log console.");
             Console.Log(LogLevel.Information, json1);
 
 #endregion
 #region serialize conc
-            //_ = MessageBox.Query("DIAG", "Serializing debug conclusion.");
             List<MicroStatement> conc = new();
             conc.Add(new MicroStatement
             {
@@ -608,66 +506,16 @@ namespace DefQed.Core
 
             json1 = JsonSerializer.Serialize(conc, op);
 
-            //_ = MessageBox.Query("DIAG", "OK, see it in log console.");
             Console.Log(LogLevel.Information, json1);
 #endregion
         }
 #endif
-
-        //private void TextInputBoxInnerUI(ustring hintText)
-        //{
-
-        //    Button confirm = new("Ok", is_default: true);
-        //    Button cancel = new("Cancel", is_default: false);
-        //    TextField field = new()
-        //    {
-        //        X = 2,
-        //        Y = 2,
-        //        Width = 40
-        //    };
-
-        //    confirm.Clicked += () =>
-        //    {
-        //        JustNowTextInput = field.Text;
-        //        Application.RequestStop();
-        //    };
-        //    cancel.Clicked += () =>
-        //    {
-        //        Application.RequestStop();
-        //    };
-        //    Dialog ui = new("Request input.", 50, 20, confirm, cancel);
-        //    Label hint = new(1, 1, hintText);
-
-        //    ui.Add(hint);
-        //    ui.Add(field);
-        //    Application.Run(ui);
-        //    // Now the loop is finished.
-        //}
-
-        //private ustring TextInputBoxUI(ustring hint)
-        //{
-        //    TextInputBoxInnerUI(hint);
-        //    return JustNowTextInput;
-        //}
-
-        //// What a ugly line of code here.
-        //private ustring JustNowTextInput = "";
-
         public void SetTimeoutUI()
         {
-            //Button confirm = new("Ok", is_default: true);
-            //Button cancel = new("Cancel", is_default: false);
-            //TextField field = new()
-            //{
-            //    X = 2,
-            //    Y = 2,
-            //    Width = 40
-            //};
             string? field = System.Console.ReadLine();
             if (!int.TryParse(field, out TimeOut))
             {
                 // parse error.
-                //_ = MessageBox.ErrorQuery("Bad data format.", "The timeout value is not a valid int.", "Ok");
                 Console.Log(LogLevel.Error, "Bad data format. The timeout value is not a valid int.");
             }
         }
@@ -781,7 +629,6 @@ namespace DefQed.Core
                 {
                     MySQLDriver.Terminate();
                 }
-                //Application.Shutdown();
                 Environment.Exit(0);
             }
         }
