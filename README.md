@@ -2,6 +2,7 @@
 ![](https://img.shields.io/github/license/ZijianFelixWang/DefQed?style=flat-square)
 ![](https://img.shields.io/github/languages/code-size/ZijianFelixWang/DefQed?style=flat-square)
 ![](https://img.shields.io/tokei/lines/github/ZijianFelixWang/DefQed?style=flat-square)
+![](https://img.shields.io/codacy/grade/135e566bb35047bf9c9bf07dcaa0a069?style=flat-square)
 
 ## What's This?
 **DefQed** is a statement prover with its own algorithm for academic written in C#. It is immature and still in active (and very early) development.
