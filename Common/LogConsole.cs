@@ -7,20 +7,20 @@
 using DateTime = System.DateTime;
 using System.Diagnostics;
 
-namespace DefQed
+namespace Common
 {
     internal static class LogConsole
     {
-        // Usage: using Console = DefQed.LogConsole
+        // Usage: using Console = Common.LogConsole
 //#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 //        public static TextView Display;
 //#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 #pragma warning disable CS0649 // Never assigned to value.
 #if __DIAGNOSTIC_AS_DEFAULT__
-        public static LogLevel LogLevel = DefQed.LogLevel.Diagnostic;
+        public static LogLevel LogLevel = Common.LogLevel.Diagnostic;
 #else
-        public static LogLevel LogLevel = DefQed.LogLevel.Information;
+        public static LogLevel LogLevel = Common.LogLevel.Information;
 #endif
 #pragma warning restore CS0649 // Never assigned to value.
 

@@ -5,8 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using DefQed.Data;
-using Console = DefQed.LogConsole;
+using Common.Data;
+using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
@@ -50,16 +50,16 @@ namespace DefQed.Core
         public int GetNextNotationId()
 #pragma warning restore CA1822 // Mark members as static
         {
-            int id = MySQLDriver.GetMaxId(TableType.Notations);
+            int id = Common.Data.MySQLDriver.GetMaxId(TableType.Notations);
             if (id == -1)
             {
-                Console.Log(LogLevel.Warning, "Using next notation id zero. Do not perform proof.");
+                Console.Log(Common.LogLevel.Warning, "Using next notation id zero. Do not perform proof.");
                 return 0;   // Ignored.
             }
             if (id == -2)
             {
                 // To abort protocol.
-                Console.Log(LogLevel.Error, "Error signal -2 received.");
+                Console.Log(Common.LogLevel.Error, "Error signal -2 received.");
 
                 return -1;
             }
@@ -73,11 +73,11 @@ namespace DefQed.Core
             // ScanPool -- This method overviews the two pools and then check if they can satisfy some reflections.
             // Then it adds the reflected things to the pools.
             // Call hrc: ScanPools -> Reflection.Scan()
-            Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning left pool.");
+            Console.Log(Common.LogLevel.Diagnostic, $"ScanPools: Scanning left pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref LeftPool);
-            Console.Log(LogLevel.Diagnostic, $"ScanPools: Scanning right pool.");
+            Console.Log(Common.LogLevel.Diagnostic, $"ScanPools: Scanning right pool.");
             ReflectionHistory += Reflection.Scan(Reflections, ref RightPool);
-            Console.Log(LogLevel.Diagnostic, $"ScanPools: ReflectionHistory is hiden. RH size is {ReflectionHistory.Length}");
+            Console.Log(Common.LogLevel.Diagnostic, $"ScanPools: ReflectionHistory is hiden. RH size is {ReflectionHistory.Length}");
         }
 
         // HowTo: Update reflections from just done. This is the principle for the self learning procedure.
@@ -110,9 +110,9 @@ namespace DefQed.Core
         // Utilities
         public void LoadReflections()
         {
-            Console.Log(LogLevel.Information, "Loading reflections.");
+            Console.Log(Common.LogLevel.Information, "Loading reflections.");
 
-            List<List<string>> query = MySQLDriver.AcquireWholeTable(TableType.Reflections);
+            List<List<string>> query = Common.Data.MySQLDriver.AcquireWholeTable(TableType.Reflections);
             foreach (List<string> row in query)
             {
                 if (row.Count < 4)
@@ -133,7 +133,7 @@ namespace DefQed.Core
                 string condJson = "";
                 string concJson = "";
 
-                List<List<string>> query2 = MySQLDriver.QueryTable(TableType.Registries, "ID", condId, new List<string>(new string[] { "CONTENT" }));
+                List<List<string>> query2 = Common.Data.MySQLDriver.QueryTable(TableType.Registries, "ID", condId, new List<string>(new string[] { "CONTENT" }));
                 foreach (List<string> cRow in query2)
                 {
                     if (cRow.Count < 1)
@@ -149,7 +149,7 @@ namespace DefQed.Core
                     condJson = cRow[0];
                 }
 
-                query2 = MySQLDriver.QueryTable(TableType.Registries, "ID", concId, new List<string>(new string[] { "CONTENT" }));
+                query2 = Common.Data.MySQLDriver.QueryTable(TableType.Registries, "ID", concId, new List<string>(new string[] { "CONTENT" }));
                 foreach (List<string> cRow in query2)
                 {
                     if (cRow.Count < 1)
@@ -165,7 +165,7 @@ namespace DefQed.Core
                     concJson = cRow[0];
                 }
 
-                Console.Log(LogLevel.Diagnostic, $"Deserializing reflection {Reflections.Count}.");
+                Console.Log(Common.LogLevel.Diagnostic, $"Deserializing reflection {Reflections.Count}.");
                 
                 JsonSerializerOptions op = new()
                 {
@@ -181,7 +181,7 @@ namespace DefQed.Core
 #pragma warning restore CS8601 // Possible null reference assignment.
                 });
 
-                Console.Log(LogLevel.Diagnostic, $"Reflection {Reflections.Count} loaded.");
+                Console.Log(Common.LogLevel.Diagnostic, $"Reflection {Reflections.Count} loaded.");
             }
         }
 
@@ -195,7 +195,7 @@ namespace DefQed.Core
 
             List<string> tmp = new();
             tmp.Add("ID");
-            List<List<string>> query = MySQLDriver.QueryTable(TableType.Notations, "TITLE", notation.Name.ToUpper().Trim(), tmp);
+            List<List<string>> query = Common.Data.MySQLDriver.QueryTable(TableType.Notations, "TITLE", notation.Name.ToUpper().Trim(), tmp);
             if (query.Count > 0)
             {
                 notation.Id = int.Parse(query[0][0]);
@@ -234,11 +234,11 @@ namespace DefQed.Core
 
             // DO = TODO - TO
             // DO: error handling here.
-            int max = MySQLDriver.GetMaxId(TableType.Notations);
+            int max = Common.Data.MySQLDriver.GetMaxId(TableType.Notations);
             if (max == -2)
             {
                 // Chose to abort
-                Console.Log(LogLevel.Warning, "InstallNotation: Abort.");
+                Console.Log(Common.LogLevel.Warning, "InstallNotation: Abort.");
                 notation = new();
                 return;
             }
@@ -263,7 +263,7 @@ namespace DefQed.Core
             values.Add(origin);
             values.Add("1.00");
 
-            MySQLDriver.InsertRow(TableType.Notations, columns, values);
+            Common.Data.MySQLDriver.InsertRow(TableType.Notations, columns, values);
         }
     }
 }

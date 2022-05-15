@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using Console = DefQed.LogConsole;
+using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
@@ -167,7 +167,7 @@ namespace DefQed.Core
             // This function validate if a microstatement is a subtree of one of the situations.
             foreach (var t in situation)
             {
-                Console.Log(LogLevel.Diagnostic, $"REQ: {req.ToFriendlyString()} SITUATION: {t.ToFriendlyString()}");
+                Console.Log(Common.LogLevel.Diagnostic, $"REQ: {req.ToFriendlyString()} SITUATION: {t.ToFriendlyString()}");
             }
             List<bool> res = new();
             for (int i = 0; i < situation.Count; i++)
@@ -230,7 +230,7 @@ namespace DefQed.Core
             // It seems that we need to rewrite all TST logics.
 
             transistors.Add((req, situ));
-            Console.Log(LogLevel.Diagnostic, $"New TST pair: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
+            Console.Log(Common.LogLevel.Diagnostic, $"New TST pair: from {req.ToFriendlyString()} to {situ.ToFriendlyString()};");
 
             return true;
         }
@@ -244,9 +244,9 @@ namespace DefQed.Core
             };
 
 #if __NO_VERBOSE_SERIALIZATION__
-            Console.Log(LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= ..., situation= ..., transistors= ...");
+            Console.Log(Common.LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= ..., situation= ..., transistors= ...");
 #else
-            Console.Log(LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= {bracket.ToFriendlyString()}, situation= {MicroStatement.ToFriendlyStringList(situation)}, transistors= {Transistors2Str(transistors)}");
+            Console.Log(Common.LogLevel.Diagnostic, $"VisitBracket: visiting... bracket= {bracket.ToFriendlyString()}, situation= {MicroStatement.ToFriendlyStringList(situation)}, transistors= {Transistors2Str(transistors)}");
 #endif
 
             // Initially bracket = TopLevel

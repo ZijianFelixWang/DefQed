@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 using DefQed.Core;
-using Console = DefQed.LogConsole;
+using Console = Common.LogConsole;
 
 namespace DefQed.Data
 {
@@ -16,7 +16,7 @@ namespace DefQed.Data
 
         public static KBase ParseXMLAsync(string filename)
         {
-            Console.Log(LogLevel.Diagnostic, $"ParseXMLAsync() Thread {Environment.CurrentManagedThreadId}");
+            Console.Log(Common.LogLevel.Diagnostic, $"ParseXMLAsync() Thread {Environment.CurrentManagedThreadId}");
             // LCMP
             KBase k = ParseXMLTask(filename).Result;
             return k;
@@ -26,8 +26,8 @@ namespace DefQed.Data
         {
             var task = Task.Run(() =>
             {
-                Console.Log(LogLevel.Diagnostic, "This is to create the xml parser task.");
-                Console.Log(LogLevel.Diagnostic, $"ParseXMLTask() Thread {Environment.CurrentManagedThreadId}");
+                Console.Log(Common.LogLevel.Diagnostic, "This is to create the xml parser task.");
+                Console.Log(Common.LogLevel.Diagnostic, $"ParseXMLTask() Thread {Environment.CurrentManagedThreadId}");
                 KBase k = new();
                 bool e = false;
                 ParseXML(filename, ref k, ref e);
@@ -59,32 +59,32 @@ namespace DefQed.Data
             }
             catch (FileNotFoundException ex)
             {
-                Console.Log(LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
+                Console.Log(Common.LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
                 error = true;
                 return;
             }
             catch (IOException ex)
             {
-                Console.Log(LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
+                Console.Log(Common.LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
                 error = true;
                 return;
             }
             catch (ArgumentException ex)
             {
-                Console.Log(LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
+                Console.Log(Common.LogLevel.Error, $"Given XML file doesn't exist.\n{ex.Message}");
                 error = true;
                 return;
             }
             catch (XmlException ex)
             {
-                Console.Log(LogLevel.Error, $"XML Parse Error.\n{ex.Message}");
+                Console.Log(Common.LogLevel.Error, $"XML Parse Error.\n{ex.Message}");
                 error = true;
                 return;
             }
 
             if (doc.DocumentElement == null)
             {
-                Console.Log(LogLevel.Error, "Input XML file is null.");
+                Console.Log(Common.LogLevel.Error, "Input XML file is null.");
                 error = true;
                 return;
             }
@@ -93,7 +93,7 @@ namespace DefQed.Data
             if (root.Name.Trim().ToLower() != "defqed")
             {
                 // Base node error.
-                Console.Log(LogLevel.Error, "Not a DefQed XML file.");
+                Console.Log(Common.LogLevel.Error, "Not a DefQed XML file.");
                 error = true;
                 return;
             }
@@ -143,18 +143,18 @@ namespace DefQed.Data
 
             if ((user == null) || (password == null) || (database == null))
             {
-                Console.Log(LogLevel.Error, "XML Parse Error in connection tag.");
+                Console.Log(Common.LogLevel.Error, "XML Parse Error in connection tag.");
                 error = true;
                 return;
             }
-            MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
+            Common.Data.MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
 
             #region commented stuff
             #endregion
 
-            if (!MySQLDriver.Initialize())
+            if (!Common.Data.MySQLDriver.Initialize())
             {
-                Console.Log(LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.");
+                Console.Log(Common.LogLevel.Error, "Connstr " + Common.Data.MySQLDriver.connStr + " failed.");
                 error = true;
             }
         }
@@ -179,7 +179,7 @@ namespace DefQed.Data
                         #region parse enroll
                         if ((child.Attributes.Count != 1) || (child.Attributes == null))
                         {
-                            Console.Log(LogLevel.Error, "XML Parse Error in enroll tag.");
+                            Console.Log(Common.LogLevel.Error, "XML Parse Error in enroll tag.");
                             error = true;
                             return;
                         }
@@ -227,7 +227,7 @@ namespace DefQed.Data
                                 case "let":
                                     if ((forceChild.Attributes.Count != 1) || (forceChild.Attributes == null))
                                     {
-                                        Console.Log(LogLevel.Error, "XML Parse Error in let tag.");
+                                        Console.Log(Common.LogLevel.Error, "XML Parse Error in let tag.");
                                         error = true;
                                         return;
                                     }
@@ -237,7 +237,7 @@ namespace DefQed.Data
                                 case "be":
                                     if ((forceChild.Attributes.Count != 1) || (forceChild.Attributes == null))
                                     {
-                                        Console.Log(LogLevel.Error, "XML Parse Error in let tag.");
+                                        Console.Log(Common.LogLevel.Error, "XML Parse Error in let tag.");
                                         error = true;
                                         return;
                                     }
@@ -265,7 +265,7 @@ namespace DefQed.Data
                         situ.Brackets[0].BracketType = BracketType.SymbolHolder;
                         if (!SymbolBank.ContainsKey(letItem))
                         {
-                            Console.Log(LogLevel.Error, "Unenrolled let item encountered.");
+                            Console.Log(Common.LogLevel.Error, "Unenrolled let item encountered.");
                             error = true;
                             return;
                         }
@@ -276,7 +276,7 @@ namespace DefQed.Data
                         // We need to generate a notation with type 'category'.
                         if (beCategory == "")
                         {
-                            Console.Log(LogLevel.Error, "Failed to parse XML: Error getting beCategory.");
+                            Console.Log(Common.LogLevel.Error, "Failed to parse XML: Error getting beCategory.");
                             error = true;
                             return;
                         }
@@ -335,7 +335,7 @@ namespace DefQed.Data
             {
                 if (child.Name.Trim().ToLower() != "prove")
                 {
-                    Console.Log(LogLevel.Error, "Unexpected node encountered in statement tag.");
+                    Console.Log(Common.LogLevel.Error, "Unexpected node encountered in statement tag.");
                     error = true;
                     return;
                 }
@@ -345,7 +345,7 @@ namespace DefQed.Data
 
                 if ((child.ChildNodes.Count != 1) || (child.ChildNodes == null))
                 {
-                    Console.Log(LogLevel.Error, "Unexpected error in prove tag.");
+                    Console.Log(Common.LogLevel.Error, "Unexpected error in prove tag.");
                     error = true;
                     return;
                 }
@@ -353,7 +353,7 @@ namespace DefQed.Data
 //#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (child.ChildNodes[0].Name.Trim().ToLower() != "that")
                 {
-                    Console.Log(LogLevel.Error, "Unexpected tag encountered in prove tag.");
+                    Console.Log(Common.LogLevel.Error, "Unexpected tag encountered in prove tag.");
                     error = true;
                     return;
                 }
@@ -374,7 +374,7 @@ namespace DefQed.Data
                 // Next step: resolve the subs of the child
                 if ((child.ChildNodes[0].ChildNodes.Count != 2) || (child.ChildNodes[0].ChildNodes == null))
                 {
-                    Console.Log(LogLevel.Error, "Error resolving root that tag in prove tag.");
+                    Console.Log(Common.LogLevel.Error, "Error resolving root that tag in prove tag.");
                     error = true;
                     return;
                 }
@@ -402,7 +402,7 @@ namespace DefQed.Data
 
             if (node.Name.Trim().ToLower() != "that")
             {
-                Console.Log(LogLevel.Error, "Unable to resolve that tag.");
+                Console.Log(Common.LogLevel.Error, "Unable to resolve that tag.");
                 error = true;
                 return;
             }
@@ -427,7 +427,7 @@ namespace DefQed.Data
                 }
                 else
                 {
-                    Console.Log(LogLevel.Error, "Unenrolled symbol encountered in conclusion.");
+                    Console.Log(Common.LogLevel.Error, "Unenrolled symbol encountered in conclusion.");
                     error = true;
                     return;
                 }
@@ -438,7 +438,7 @@ namespace DefQed.Data
                 bracket.BracketType = BracketType.NegatedHolder;
                 if (node.ChildNodes.Count != 1)
                 {
-                    Console.Log(LogLevel.Error, "Invalid prove bracket encountered: Multiple things to negate.");
+                    Console.Log(Common.LogLevel.Error, "Invalid prove bracket encountered: Multiple things to negate.");
                     error = true;
                     return;
                 }
@@ -466,7 +466,7 @@ namespace DefQed.Data
                 if (!KBase.VerifyNotation(ref connector))
                 {
                     // bad notation
-                    Console.Log(LogLevel.Error, "Invalid connector in bracket to enroll.");
+                    Console.Log(Common.LogLevel.Error, "Invalid connector in bracket to enroll.");
                     error = true;
                     return;
                 }

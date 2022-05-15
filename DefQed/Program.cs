@@ -22,21 +22,21 @@ namespace DefQed
             Console.ResetColor();
 
             Console.OutputEncoding = Encoding.Unicode;
-            LogConsole.Log(LogLevel.Information, $"OS: {RuntimeInformation.OSDescription}");
+            Common.LogConsole.Log(Common.LogLevel.Information, $"OS: {RuntimeInformation.OSDescription}");
 
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                LogConsole.Log(LogLevel.Warning, "OS is not Windows. Software execution not tested. Press enter to continue.");
+                Common.LogConsole.Log(Common.LogLevel.Warning, "OS is not Windows. Software execution not tested. Press enter to continue.");
                 _ = Console.ReadLine();
             }
 
             if (args.Length != 1)
             {
-                LogConsole.Log(LogLevel.Error, "Bad usage. Usage: <program name> XMLFileName.xml");
+                Common.LogConsole.Log(Common.LogLevel.Error, "Bad usage. Usage: <program name> XMLFileName.xml");
 
 #if __TEST_LOG__
-                LogConsole.Log(LogLevel.Diagnostic, "D");
-                LogConsole.Log(LogLevel.Warning, "W");
+                Common.LogConsole.Log(Common.LogLevel.Diagnostic, "D");
+                Common.LogConsole.Log(Common.LogLevel.Warning, "W");
 #endif
 
                 Environment.Exit(-1);

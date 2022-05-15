@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Console = DefQed.LogConsole;
+using Console = Common.LogConsole;
 using JsonSerializer2 = Newtonsoft.Json.JsonConvert;
 
 namespace DefQed.Core
@@ -31,10 +31,10 @@ namespace DefQed.Core
 
         public static string Scan(List<Reflection> reflections, ref List<MicroStatement> pool)
         {
-            Console.Log(LogLevel.Diagnostic, $"Scan: Preparing to apply scan: {reflections.Count} reflections, {pool.Count} microstatements.");
+            Console.Log(Common.LogLevel.Diagnostic, $"Scan: Preparing to apply scan: {reflections.Count} reflections, {pool.Count} microstatements.");
             foreach (var t in pool)
             {
-                Console.Log(LogLevel.Diagnostic, $"OLD Pool Content: {t.ToFriendlyString()}");
+                Console.Log(Common.LogLevel.Diagnostic, $"OLD Pool Content: {t.ToFriendlyString()}");
             }
             // This scans a pool and apply appliable reflections to it.
             string history = "Scan(";
@@ -53,19 +53,19 @@ namespace DefQed.Core
                     {
                         return DoReflect(reflections, i, tempPool, ref history);
                     }));
-                    Console.Log(LogLevel.Diagnostic, $"Scan: Created scan task {tasks[^1].Id}");
+                    Console.Log(Common.LogLevel.Diagnostic, $"Scan: Created scan task {tasks[^1].Id}");
                 }
             }
 
             // Start the task set asyncly.
             foreach (var t in tasks)
             {
-                Console.Log(LogLevel.Diagnostic, $"Scan: Starting scan task {t.Id}.");
+                Console.Log(Common.LogLevel.Diagnostic, $"Scan: Starting scan task {t.Id}.");
                 t.Start();
             }
 
             Task.WaitAll(tasks.ToArray());
-            Console.Log(LogLevel.Diagnostic, "Scan: All scans completed.");
+            Console.Log(Common.LogLevel.Diagnostic, "Scan: All scans completed.");
 
             // Get tasks' result and deal with it.
             foreach (var t in tasks)
@@ -73,11 +73,11 @@ namespace DefQed.Core
                 rawResults.Add(t.Result);
             }
             UpdatePool(rawResults, ref pool);
-            Console.Log(LogLevel.Diagnostic, "Scan: Pool updated.");
+            Console.Log(Common.LogLevel.Diagnostic, "Scan: Pool updated.");
 
             foreach (var t in pool)
             {
-                Console.Log(LogLevel.Diagnostic, $"Pool Content: {t.ToFriendlyString()}");
+                Console.Log(Common.LogLevel.Diagnostic, $"Pool Content: {t.ToFriendlyString()}");
             }
 
             history += ");";
@@ -104,7 +104,7 @@ namespace DefQed.Core
 
         private static List<MicroStatement> DoReflect(Reflection reflection, List<MicroStatement> pool, ref string history)
         {
-            Console.Log(LogLevel.Diagnostic, "DoReflect: Trying to do reflect...");
+            Console.Log(Common.LogLevel.Diagnostic, "DoReflect: Trying to do reflect...");
 
             List<MicroStatement> result = new(pool);    // thing to return
 
@@ -114,7 +114,7 @@ namespace DefQed.Core
             if (reflection.Condition.Validate(pool, ref transistors))
             {
                 // The pool satisfies the formula's condition.
-                Console.Log(LogLevel.Diagnostic, "DoReflect: Formula satisfaction success.");
+                Console.Log(Common.LogLevel.Diagnostic, "DoReflect: Formula satisfaction success.");
 
                 Newtonsoft.Json.JsonSerializerSettings op = new()
                 {
@@ -128,7 +128,7 @@ namespace DefQed.Core
 #if DEBUG
                 foreach (var tst in transistors)
                 {
-                    Console.Log(LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+                    Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
                 }
 #endif
 
@@ -138,7 +138,7 @@ namespace DefQed.Core
                 {
                     foreach (var tst in s)
                     {
-                        Console.Log(LogLevel.Diagnostic, $"(SubSet) Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+                        Console.Log(Common.LogLevel.Diagnostic, $"(SubSet) Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
                     }
 
                     // Let's joint the conclusion.
@@ -149,7 +149,7 @@ namespace DefQed.Core
                         ApplyTransistors(ref item, s);
 
                         result.Add(item);
-                        Console.Log(LogLevel.Diagnostic, $"DoReflect: Applied transistor {i + 1} of {reflection.Conclusion.Count}.");
+                        Console.Log(Common.LogLevel.Diagnostic, $"DoReflect: Applied transistor {i + 1} of {reflection.Conclusion.Count}.");
 
                         history += $"[{i}]{item}";
                     }
@@ -159,7 +159,7 @@ namespace DefQed.Core
             }
             else
             {
-                Console.Log(LogLevel.Diagnostic, "DoReflect: Formula satisfaction failure.");
+                Console.Log(Common.LogLevel.Diagnostic, "DoReflect: Formula satisfaction failure.");
             }
 
             return result;
@@ -201,12 +201,12 @@ namespace DefQed.Core
             FTCNextLevel(new(), new(), transistors, ref ret);
             foreach (var reco in ret)
             {
-                Console.Log(LogLevel.Diagnostic, "SubTSTS begin.");
+                Console.Log(Common.LogLevel.Diagnostic, "SubTSTS begin.");
                 foreach (var tst in reco)
                 {
-                    Console.Log(LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+                    Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
                 }
-                Console.Log(LogLevel.Diagnostic, "SubTSTS end.");
+                Console.Log(Common.LogLevel.Diagnostic, "SubTSTS end.");
             }
             return ret;
         }
@@ -236,22 +236,22 @@ namespace DefQed.Core
                     locked.Add(a);
                     coLocked.Add(x);
 
-                    Console.Log(LogLevel.Diagnostic, $"Add lock({a.Symbol.Name}->{x.Symbol.Name})");
+                    Console.Log(Common.LogLevel.Diagnostic, $"Add lock({a.Symbol.Name}->{x.Symbol.Name})");
 
                     for (int i = 0; i < transistors.Count; i++)
                     {
                         (Bracket, Bracket) b = transistors[i];
-                        Console.Log(LogLevel.Diagnostic, $"{b.Item1.Symbol.Name} {a.Symbol.Name} {b.Item2.Symbol.Name} {x.Symbol.Name}");
+                        Console.Log(Common.LogLevel.Diagnostic, $"{b.Item1.Symbol.Name} {a.Symbol.Name} {b.Item2.Symbol.Name} {x.Symbol.Name}");
                         if ((b.Item1.Symbol.Name == a.Symbol.Name) || (b.Item2.Symbol.Name == x.Symbol.Name))
                         {
                             transistors.Remove(b);
-                            Console.Log(LogLevel.Diagnostic, $"Remove b: {b.Item1.Symbol.Name}->{b.Item2.Symbol.Name}");
+                            Console.Log(Common.LogLevel.Diagnostic, $"Remove b: {b.Item1.Symbol.Name}->{b.Item2.Symbol.Name}");
                         }
                     }
                     transistors.Add((a, x));
                     foreach (var tst in transistors)
                     {
-                        //Console.Log(LogLevel.Diagnostic, $"Just Removed Abs: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+                        //Console.Log(Common.LogLevel.Diagnostic, $"Just Removed Abs: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
                     }
                     // If not the end,
                     // should append to next level.
@@ -333,7 +333,7 @@ namespace DefQed.Core
                     {
                         if (i.ToFriendlyString() == rpContent.ToFriendlyString())
                         {
-                            Console.Log(LogLevel.Diagnostic, "Same merge. Ignored.");
+                            Console.Log(Common.LogLevel.Diagnostic, "Same merge. Ignored.");
                             occur = true;
                         }
                     }

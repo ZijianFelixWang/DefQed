@@ -4,11 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using Console = DefQed.LogConsole;
-//using Terminal.Gui
-//using NStack
+using Console = Common.LogConsole;
 
-namespace DefQed.Data
+namespace Common.Data
 {
     internal static class MySQLDriver
     {

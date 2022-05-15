@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
 using DefQed.Data;
-using Console = DefQed.LogConsole;
+using Console = Common.LogConsole;
 using Environment = System.Environment;
 using TimeSpan = System.TimeSpan;
 using Exception = System.Exception;
@@ -45,11 +45,11 @@ namespace DefQed.Core
         private void PerformProof(int TimeOut)
         {
 #if __DONT_HANDLE_EXCEPTION__
-            Console.Log(LogLevel.Information, "Start proving...");
+            Console.Log(Common.LogLevel.Information, "Start proving...");
 
             // Load reflections...
             KnowledgeBase.LoadReflections();
-            Console.Log(LogLevel.Diagnostic, "Pulse.");
+            Console.Log(Common.LogLevel.Diagnostic, "Pulse.");
 
             ProofTask = new(() =>
             {
@@ -57,19 +57,19 @@ namespace DefQed.Core
                 {
                     while (!KnowledgeBase.TryBridging())
                     {
-                        Console.Log(LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
+                        Console.Log(Common.LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
                         KnowledgeBase.ScanPools();
                     }
                 }
             });
 
-            Console.Log(LogLevel.Information, "PerformProof called: Start proving");
+            Console.Log(Common.LogLevel.Information, "PerformProof called: Start proving");
 
             ProofTask.Start();
 
             if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
             {
-                Console.Log(LogLevel.Information, "Proof process has finished.");
+                Console.Log(Common.LogLevel.Information, "Proof process has finished.");
 #if !__NO_TEE_AFTER_PROOF__
                 #region commented stuff decomment after debug
 
@@ -129,11 +129,11 @@ namespace DefQed.Core
 #else
             try
             {
-                Console.Log(LogLevel.Information, "Start proving...");
+                Console.Log(Common.LogLevel.Information, "Start proving...");
 
                 // Load reflections...
                 KnowledgeBase.LoadReflections();
-                Console.Log(LogLevel.Diagnostic, "Pulse.");
+                Console.Log(Common.LogLevel.Diagnostic, "Pulse.");
 
                 ProofTask = new(() =>
                 {
@@ -141,19 +141,19 @@ namespace DefQed.Core
                     {
                         while (!KnowledgeBase.TryBridging())
                         {
-                            Console.Log(LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
+                            Console.Log(Common.LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
                             KnowledgeBase.ScanPools();
                         }
                     }
                 });
 
-                Console.Log(LogLevel.Information, "PerformProof called: Start proving");
+                Console.Log(Common.LogLevel.Information, "PerformProof called: Start proving");
 
                 ProofTask.Start();
 
                 if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
                 {
-                    Console.Log(LogLevel.Information, "Proof process has finished.");
+                    Console.Log(Common.LogLevel.Information, "Proof process has finished.");
 #if !__NO_TEE_AFTER_PROOF__
             #region commented stuff decomment after debug
                     Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
@@ -212,7 +212,7 @@ namespace DefQed.Core
             {
                 // This error handling is very lazy here. No categoring of errors umm.
                 // Something more may be added later.
-                Console.Log(LogLevel.Error, $"Exception envountered. Exception Category: {ex.GetType()}\nException Message: {ex.Message}");
+                Console.Log(Common.LogLevel.Error, $"Exception envountered. Exception Category: {ex.GetType()}\nException Message: {ex.Message}");
                 Console.WriteLine("You can now save the dump file or terminate the program.");
                 TeeSerializedKBase();
 
@@ -250,16 +250,16 @@ namespace DefQed.Core
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
                         // Get next id
-                        int id = MySQLDriver.GetMaxId(TableType.Notations) + 1;
+                        int id = Common.Data.MySQLDriver.GetMaxId(TableType.Notations) + 1;
 
 #pragma warning disable CS8601 // Possible null reference assignment.
                         try
                         {
-                            MySQLDriver.InsertRow(TableType.Notations, new List<string>(new string[] { "ID", "TITLE", "ORIGIN", "OPACITY" }), new List<string>(new string[] { id.ToString(), title, origin, opacity }));
+                            Common.Data.MySQLDriver.InsertRow(TableType.Notations, new List<string>(new string[] { "ID", "TITLE", "ORIGIN", "OPACITY" }), new List<string>(new string[] { id.ToString(), title, origin, opacity }));
                         }
                         catch (Exception ex)
                         {
-                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            Console.Log(Common.LogLevel.Error, "Database failure." + ex.Message);
                             return;
                         }
 #pragma warning restore CS8601 // Possible null reference assignment.
@@ -280,22 +280,22 @@ namespace DefQed.Core
                         int id1;
                         try
                         {
-                            id1 = MySQLDriver.GetMaxId(TableType.Reflections) + 1;
+                            id1 = Common.Data.MySQLDriver.GetMaxId(TableType.Reflections) + 1;
                         }
                         catch (Exception ex)
                         {
-                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            Console.Log(Common.LogLevel.Error, "Database failure." + ex.Message);
                             return;
                         }
 
 #pragma warning disable CS8601 // Possible null reference assignment.
                         try
                         {
-                            MySQLDriver.InsertRow(TableType.Reflections, new List<string>(new string[] { "ID", "CASES", "THUSES", "OPACITY" }), new List<string>(new string[] { id1.ToString(), cases, thuses, opacity1 }));
+                            Common.Data.MySQLDriver.InsertRow(TableType.Reflections, new List<string>(new string[] { "ID", "CASES", "THUSES", "OPACITY" }), new List<string>(new string[] { id1.ToString(), cases, thuses, opacity1 }));
                         }
                         catch (Exception ex)
                         {
-                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            Console.Log(Common.LogLevel.Error, "Database failure." + ex.Message);
                             return;
                         }
 #pragma warning restore CS8601 // Possible null reference assignment.
@@ -312,32 +312,32 @@ namespace DefQed.Core
                         int id2;
                         try
                         {
-                            id2 = MySQLDriver.GetMaxId(TableType.Registries) + 1;
+                            id2 = Common.Data.MySQLDriver.GetMaxId(TableType.Registries) + 1;
                         }
                         catch (Exception ex)
                         {
-                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            Console.Log(Common.LogLevel.Error, "Database failure." + ex.Message);
                             return;
                         }
 #pragma warning disable CS8601 // Possible null reference assignment.
                         try
                         {
-                            MySQLDriver.InsertRow(TableType.Registries, new List<string>(new string[] { "ID", "CONTENT" }), new List<string>(new string[] { id2.ToString(), content }));
+                            Common.Data.MySQLDriver.InsertRow(TableType.Registries, new List<string>(new string[] { "ID", "CONTENT" }), new List<string>(new string[] { id2.ToString(), content }));
                         }
                         catch (Exception ex)
                         {
-                            Console.Log(LogLevel.Error, "Database failure." + ex.Message);
+                            Console.Log(Common.LogLevel.Error, "Database failure." + ex.Message);
                             return;
                         }
 #pragma warning restore CS8601 // Possible null reference assignment.
                         break;
 
                     default:
-                        Console.Log(LogLevel.Error, "Internal Error: Unexpected selection.");
+                        Console.Log(Common.LogLevel.Error, "Internal Error: Unexpected selection.");
                         break;
                 }
 
-                Console.Log(LogLevel.Warning, "You need to restart the instance to load changes.");
+                Console.Log(Common.LogLevel.Warning, "You need to restart the instance to load changes.");
 
                 Application.RequestStop();
             };
@@ -470,7 +470,7 @@ namespace DefQed.Core
 
             string json1 = JsonSerializer.Serialize(cond, op);
 
-            Console.Log(LogLevel.Information, json1);
+            Console.Log(Common.LogLevel.Information, json1);
 
 #endregion
 #region serialize conc
@@ -504,7 +504,7 @@ namespace DefQed.Core
 
             json1 = JsonSerializer.Serialize(conc, op);
 
-            Console.Log(LogLevel.Information, json1);
+            Console.Log(Common.LogLevel.Information, json1);
 #endregion
         }
 #endif
@@ -514,7 +514,7 @@ namespace DefQed.Core
             if (!int.TryParse(field, out TimeOut))
             {
                 // parse error.
-                Console.Log(LogLevel.Error, "Bad data format. The timeout value is not a valid int.");
+                Console.Log(Common.LogLevel.Error, "Bad data format. The timeout value is not a valid int.");
             }
         }
 
@@ -529,16 +529,16 @@ namespace DefQed.Core
             watch.Start();
             XMLParser.ParseXML(XMLFileName, ref temp, ref err);
             watch.Stop();
-            Console.Log(LogLevel.Information, $"XML parsing done in {watch.ElapsedMilliseconds} ms.");
+            Console.Log(Common.LogLevel.Information, $"XML parsing done in {watch.ElapsedMilliseconds} ms.");
 
             if (err)
             {
-                Console.Log(LogLevel.Error, "XML parse failure.");
+                Console.Log(Common.LogLevel.Error, "XML parse failure.");
             }
             else
             {
                 KnowledgeBase = temp;
-                Console.Log(LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
+                Console.Log(Common.LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
             }
 
         }
@@ -564,13 +564,13 @@ namespace DefQed.Core
                 {
                     ProofTask.Dispose();
                 }
-                if ((MySQLDriver.connStr != "") && (MySQLDriver.connStr != null))
+                if ((Common.Data.MySQLDriver.connStr != "") && (Common.Data.MySQLDriver.connStr != null))
                 {
-                    MySQLDriver.Terminate();
+                    Common.Data.MySQLDriver.Terminate();
                 }
                 XMLFileName = "";
                 KnowledgeBase.Dispose();
-                Console.Log(LogLevel.Information, "Instance refreshed.");
+                Console.Log(Common.LogLevel.Information, "Instance refreshed.");
             }
         }
 
@@ -593,12 +593,12 @@ namespace DefQed.Core
                 if ((ProofTask != null) && (!ProofTask.IsCompleted))
                 {
                     ProofTask.Dispose();
-                    Console.Log(LogLevel.Information, "Proof disposed successfully.");
+                    Console.Log(Common.LogLevel.Information, "Proof disposed successfully.");
                 }
                 else
                 {
                     //MessageBox.Query("Invalid operation.", "There is nothing to dispose.", "Ok");
-                    Console.Log(LogLevel.Error, "There is nothing to dispose.");
+                    Console.Log(Common.LogLevel.Error, "There is nothing to dispose.");
                 }
             }
         }
@@ -623,9 +623,9 @@ namespace DefQed.Core
                 {
                     ProofTask.Dispose();
                 }
-                if ((MySQLDriver.connStr != "") && (MySQLDriver.connStr != null))
+                if ((Common.Data.MySQLDriver.connStr != "") && (Common.Data.MySQLDriver.connStr != null))
                 {
-                    MySQLDriver.Terminate();
+                    Common.Data.MySQLDriver.Terminate();
                 }
                 Environment.Exit(0);
             }
@@ -635,11 +635,11 @@ namespace DefQed.Core
         {
             if ((ProofTask == null) || (ProofTask.IsCompleted))
             {
-                Console.Log(LogLevel.Error, "There is nothing to pause or resume.");
+                Console.Log(Common.LogLevel.Error, "There is nothing to pause or resume.");
             }
 
             ProofPalsed = !ProofPalsed;
-            Console.Log(LogLevel.Information, "Negated task successfully.");
+            Console.Log(Common.LogLevel.Information, "Negated task successfully.");
         }
 
         private void TeeSerializedKBase()

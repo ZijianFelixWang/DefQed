@@ -3,13 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using Console = DefQed.LogConsole;
+using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
-#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     internal class Bracket : IDisposable
-#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         // Bracket -- the minimized structure that holds
         // To make it more general, logics are defined using Notations.
@@ -64,7 +62,7 @@ namespace DefQed.Core
                     return false;
                 }
 
-                Console.Log(LogLevel.Diagnostic, "Isomorphism checker: entering lower level.");
+                Console.Log(Common.LogLevel.Diagnostic, "Isomorphism checker: entering lower level.");
 
                 return (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[0], ref transistors, bias) &&
                     CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[1], ref transistors, bias)) ||
@@ -104,7 +102,7 @@ namespace DefQed.Core
                     transistors.Add(tuple.Item1, tuple.Item2);
                 }
                 // We add transistors just and the rest job is not ours.
-                Console.Log(LogLevel.Diagnostic, $"New transistor (r,f) = ({tuple.Item1.Name}, {tuple.Item2.Name})");
+                Console.Log(Common.LogLevel.Diagnostic, $"New transistor (r,f) = ({tuple.Item1.Name}, {tuple.Item2.Name})");
             }
 
             return true;
