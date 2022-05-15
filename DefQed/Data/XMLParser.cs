@@ -154,7 +154,7 @@ namespace DefQed.Data
 
             if (!MySQLDriver.Initialize())
             {
-                Console.Log(LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.\nTry a different connstr: ");
+                Console.Log(LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.");
                 error = true;
             }
         }
