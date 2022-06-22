@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using Console = Common.LogConsole;
 
-namespace Common.Data
+namespace DefQed.Data
 {
     internal static class MySQLDriver
     {
@@ -33,16 +33,16 @@ namespace Common.Data
             }
             catch (MySql.Data.MySqlClient.MySqlException ex)
             {
-                Console.Log(LogLevel.Error, "Fatal error encountered when attempting to connect to database.");
-                Console.Log(LogLevel.Error, ex.Message);
+                Console.Log(Common.LogLevel.Error, "Fatal error encountered when attempting to connect to database.");
+                Console.Log(Common.LogLevel.Error, ex.Message);
                 return false;
             }
 
-            Console.Log(LogLevel.Information, $"Connection state: {conn.State}");
+            Console.Log(Common.LogLevel.Information, $"Connection state: {conn.State}");
 
             if (!PerformTableCheck())
             {
-                Console.Log(LogLevel.Warning, "Warning: Table structure may contain error.");
+                Console.Log(Common.LogLevel.Warning, "Warning: Table structure may contain error.");
             }
 
             return true;
@@ -53,12 +53,12 @@ namespace Common.Data
             if (conn != null)
             {
                 conn.Close();
-                Console.Log(LogLevel.Information, $"Connection state: {conn.State}");
+                Console.Log(Common.LogLevel.Information, $"Connection state: {conn.State}");
                 return true;
             }
             else
             {
-                Console.Log(LogLevel.Error, "Cannot terminate connection as connection is null.");
+                Console.Log(Common.LogLevel.Error, "Cannot terminate connection as connection is null.");
                 return false;
             }
         }
@@ -151,7 +151,7 @@ namespace Common.Data
             {
                 //int choice = MessageBox.ErrorQuery(ex.ToString(), $"Exception details:\n{ex}\n\nAbort: end process; Ignore: continue (diagnostic only).", new ustring[] { "Abort", "Ignore" });
                 int choice;
-                Console.Log(LogLevel.Error, ex.ToString() + $"Exception details:\n{ex}");
+                Console.Log(Common.LogLevel.Error, ex.ToString() + $"Exception details:\n{ex}");
                 System.Console.Write("A = Abort; I = Ignore");
               choice = System.Console.ReadLine()  switch
             {
@@ -183,7 +183,7 @@ namespace Common.Data
             MySql.Data.MySqlClient.MySqlCommand cmd = new(sql, conn);
             _ = cmd.ExecuteNonQuery();
 
-            Console.Log(LogLevel.Diagnostic, $"Insert row. SQL: {sql}");
+            Console.Log(Common.LogLevel.Diagnostic, $"Insert row. SQL: {sql}");
         }
 
         private static string List2Str(List<string> list, bool quotes = true)

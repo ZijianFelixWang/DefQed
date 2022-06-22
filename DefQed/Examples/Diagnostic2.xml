@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?> 
-<!-- Use the defqed diagnostic database for this. -->
+<!-- Use the defqed diagnostic database for this exception. -->
 <defqed>
 	<connection>
 		<user>DefQed</user>
@@ -10,6 +10,7 @@
 		<enroll category="item">x</enroll>
 		<enroll category="item">y</enroll>
 		<enroll category="item">z</enroll>
+        <enroll category="item">t</enroll>
 
 		<force>
 			<let category="item">x</let>
@@ -25,7 +26,7 @@
 		<prove>
 			<that category="==">
 				<that category="item">x</that>
-				<that category="item">z</that>
+				<that category="item">t</that>
 			</that>
 		</prove>
 	</statement>

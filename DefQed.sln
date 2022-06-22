@@ -14,10 +14,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Common", "Common\Common.shproj", "{1014D642-D59C-4758-9132-97C5037D89CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{937C3412-0156-41D6-99F6-0E9A6AF06B78}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Common\Common.projitems*{1014d642-d59c-4758-9132-97c5037d89cd}*SharedItemsImports = 13
 		Common\Common.projitems*{7a1f5d19-8fe7-4e0f-8df1-d7c228018a8b}*SharedItemsImports = 5
+		Common\Common.projitems*{937c3412-0156-41d6-99f6-0e9a6af06b78}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,6 +37,14 @@ Global
 		{7A1F5D19-8FE7-4E0F-8DF1-D7C228018A8B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A1F5D19-8FE7-4E0F-8DF1-D7C228018A8B}.Release|x64.ActiveCfg = Release|x64
 		{7A1F5D19-8FE7-4E0F-8DF1-D7C228018A8B}.Release|x64.Build.0 = Release|x64
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Debug|x64.Build.0 = Debug|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Release|x64.ActiveCfg = Release|Any CPU
+		{937C3412-0156-41D6-99F6-0E9A6AF06B78}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

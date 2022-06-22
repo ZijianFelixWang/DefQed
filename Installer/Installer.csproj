@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+	  <ImplicitUsings>disable</ImplicitUsings>
+	  <Nullable>enable</Nullable>
+	  <Platforms>AnyCPU;x64</Platforms>
+	  <StartupObject>Installer.Program</StartupObject>
+	  <Version>0.0.1</Version>
+	  <Authors>Zijian Wang</Authors>
+	  <Description>Installer of the DefQed automatic statement prover.</Description>
+	  <Copyright>Copyright Zijian Felix Wang. All rights reserved.</Copyright>
+	  <PackageTags>DefQed</PackageTags>
+	  <PackageProjectUrl>https://github.com/ZijianFelixWang/DefQed</PackageProjectUrl>
+	  <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <Import Project="..\Common\Common.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.29" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="echo ProjectDir= $(ProjectDir)&#xD;&#xA;echo OutDir= $(OutDir)&#xD;&#xA;cd" />
+  </Target>
+
+</Project>

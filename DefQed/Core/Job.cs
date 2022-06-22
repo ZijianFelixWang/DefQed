@@ -250,12 +250,12 @@ namespace DefQed.Core
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
                         // Get next id
-                        int id = Common.Data.MySQLDriver.GetMaxId(TableType.Notations) + 1;
+                        int id = DefQed.Data.MySQLDriver.GetMaxId(TableType.Notations) + 1;
 
 #pragma warning disable CS8601 // Possible null reference assignment.
                         try
                         {
-                            Common.Data.MySQLDriver.InsertRow(TableType.Notations, new List<string>(new string[] { "ID", "TITLE", "ORIGIN", "OPACITY" }), new List<string>(new string[] { id.ToString(), title, origin, opacity }));
+                            DefQed.Data.MySQLDriver.InsertRow(TableType.Notations, new List<string>(new string[] { "ID", "TITLE", "ORIGIN", "OPACITY" }), new List<string>(new string[] { id.ToString(), title, origin, opacity }));
                         }
                         catch (Exception ex)
                         {
@@ -280,7 +280,7 @@ namespace DefQed.Core
                         int id1;
                         try
                         {
-                            id1 = Common.Data.MySQLDriver.GetMaxId(TableType.Reflections) + 1;
+                            id1 = DefQed.Data.MySQLDriver.GetMaxId(TableType.Reflections) + 1;
                         }
                         catch (Exception ex)
                         {
@@ -291,7 +291,7 @@ namespace DefQed.Core
 #pragma warning disable CS8601 // Possible null reference assignment.
                         try
                         {
-                            Common.Data.MySQLDriver.InsertRow(TableType.Reflections, new List<string>(new string[] { "ID", "CASES", "THUSES", "OPACITY" }), new List<string>(new string[] { id1.ToString(), cases, thuses, opacity1 }));
+                            DefQed.Data.MySQLDriver.InsertRow(TableType.Reflections, new List<string>(new string[] { "ID", "CASES", "THUSES", "OPACITY" }), new List<string>(new string[] { id1.ToString(), cases, thuses, opacity1 }));
                         }
                         catch (Exception ex)
                         {
@@ -312,7 +312,7 @@ namespace DefQed.Core
                         int id2;
                         try
                         {
-                            id2 = Common.Data.MySQLDriver.GetMaxId(TableType.Registries) + 1;
+                            id2 = DefQed.Data.MySQLDriver.GetMaxId(TableType.Registries) + 1;
                         }
                         catch (Exception ex)
                         {
@@ -322,7 +322,7 @@ namespace DefQed.Core
 #pragma warning disable CS8601 // Possible null reference assignment.
                         try
                         {
-                            Common.Data.MySQLDriver.InsertRow(TableType.Registries, new List<string>(new string[] { "ID", "CONTENT" }), new List<string>(new string[] { id2.ToString(), content }));
+                            DefQed.Data.MySQLDriver.InsertRow(TableType.Registries, new List<string>(new string[] { "ID", "CONTENT" }), new List<string>(new string[] { id2.ToString(), content }));
                         }
                         catch (Exception ex)
                         {
@@ -356,7 +356,7 @@ namespace DefQed.Core
 
 #if __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
 //#pragma warning disable CA1822 // Mark members as static
-        public void SerializeDiagnosticBrackets()
+        public static void SerializeDiagnosticBrackets()
 //#pragma warning restore CA1822 // Mark members as static
         {
 #region serialize cond
@@ -564,9 +564,9 @@ namespace DefQed.Core
                 {
                     ProofTask.Dispose();
                 }
-                if ((Common.Data.MySQLDriver.connStr != "") && (Common.Data.MySQLDriver.connStr != null))
+                if ((DefQed.Data.MySQLDriver.connStr != "") && (DefQed.Data.MySQLDriver.connStr != null))
                 {
-                    Common.Data.MySQLDriver.Terminate();
+                    DefQed.Data.MySQLDriver.Terminate();
                 }
                 XMLFileName = "";
                 KnowledgeBase.Dispose();
@@ -623,9 +623,9 @@ namespace DefQed.Core
                 {
                     ProofTask.Dispose();
                 }
-                if ((Common.Data.MySQLDriver.connStr != "") && (Common.Data.MySQLDriver.connStr != null))
+                if ((DefQed.Data.MySQLDriver.connStr != "") && (DefQed.Data.MySQLDriver.connStr != null))
                 {
-                    Common.Data.MySQLDriver.Terminate();
+                    DefQed.Data.MySQLDriver.Terminate();
                 }
                 Environment.Exit(0);
             }

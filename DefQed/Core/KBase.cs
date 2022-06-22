@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using Common.Data;
+using DefQed.Data;
 using Console = Common.LogConsole;
 
 namespace DefQed.Core
@@ -50,7 +50,7 @@ namespace DefQed.Core
         public int GetNextNotationId()
 #pragma warning restore CA1822 // Mark members as static
         {
-            int id = Common.Data.MySQLDriver.GetMaxId(TableType.Notations);
+            int id = DefQed.Data.MySQLDriver.GetMaxId(TableType.Notations);
             if (id == -1)
             {
                 Console.Log(Common.LogLevel.Warning, "Using next notation id zero. Do not perform proof.");
@@ -112,7 +112,7 @@ namespace DefQed.Core
         {
             Console.Log(Common.LogLevel.Information, "Loading reflections.");
 
-            List<List<string>> query = Common.Data.MySQLDriver.AcquireWholeTable(TableType.Reflections);
+            List<List<string>> query = DefQed.Data.MySQLDriver.AcquireWholeTable(TableType.Reflections);
             foreach (List<string> row in query)
             {
                 if (row.Count < 4)
@@ -133,7 +133,7 @@ namespace DefQed.Core
                 string condJson = "";
                 string concJson = "";
 
-                List<List<string>> query2 = Common.Data.MySQLDriver.QueryTable(TableType.Registries, "ID", condId, new List<string>(new string[] { "CONTENT" }));
+                List<List<string>> query2 = DefQed.Data.MySQLDriver.QueryTable(TableType.Registries, "ID", condId, new List<string>(new string[] { "CONTENT" }));
                 foreach (List<string> cRow in query2)
                 {
                     if (cRow.Count < 1)
@@ -149,7 +149,7 @@ namespace DefQed.Core
                     condJson = cRow[0];
                 }
 
-                query2 = Common.Data.MySQLDriver.QueryTable(TableType.Registries, "ID", concId, new List<string>(new string[] { "CONTENT" }));
+                query2 = DefQed.Data.MySQLDriver.QueryTable(TableType.Registries, "ID", concId, new List<string>(new string[] { "CONTENT" }));
                 foreach (List<string> cRow in query2)
                 {
                     if (cRow.Count < 1)
@@ -195,7 +195,7 @@ namespace DefQed.Core
 
             List<string> tmp = new();
             tmp.Add("ID");
-            List<List<string>> query = Common.Data.MySQLDriver.QueryTable(TableType.Notations, "TITLE", notation.Name.ToUpper().Trim(), tmp);
+            List<List<string>> query = DefQed.Data.MySQLDriver.QueryTable(TableType.Notations, "TITLE", notation.Name.ToUpper().Trim(), tmp);
             if (query.Count > 0)
             {
                 notation.Id = int.Parse(query[0][0]);
@@ -234,7 +234,7 @@ namespace DefQed.Core
 
             // DO = TODO - TO
             // DO: error handling here.
-            int max = Common.Data.MySQLDriver.GetMaxId(TableType.Notations);
+            int max = DefQed.Data.MySQLDriver.GetMaxId(TableType.Notations);
             if (max == -2)
             {
                 // Chose to abort
@@ -263,7 +263,7 @@ namespace DefQed.Core
             values.Add(origin);
             values.Add("1.00");
 
-            Common.Data.MySQLDriver.InsertRow(TableType.Notations, columns, values);
+            DefQed.Data.MySQLDriver.InsertRow(TableType.Notations, columns, values);
         }
     }
 }
