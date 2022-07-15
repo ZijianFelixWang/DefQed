@@ -50,6 +50,7 @@ namespace Installer.Steps
         {
             LogConsole.Log(LogLevel.Information, "Preparing to perform MySQL installation.");
 
+            // TODO: To be continued later...
         }
     }
 }

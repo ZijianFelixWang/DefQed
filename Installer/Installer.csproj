@@ -22,6 +22,10 @@
     <PackageReference Include="MySql.Data" Version="8.0.29" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="echo ProjectDir= $(ProjectDir)&#xD;&#xA;echo OutDir= $(OutDir)&#xD;&#xA;cd" />
   </Target>
