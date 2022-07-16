@@ -21,6 +21,6 @@ jobs:
           # Building DefQed
           pwd
           echo ------debug------
-          ls -l
+          ls
           echo -----------------
           #dotnet msbuild ./DefQed/DefQed.csproj
