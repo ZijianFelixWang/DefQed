@@ -19,4 +19,4 @@ jobs:
           # To prove: Work.xml ; Using: Work.sql
           # Attention: Run under a second branch!
           # Building DefQed
-          msbuild ./DefQed/DefQed.csproj
+          dotnet msbuild ./DefQed/DefQed.csproj
