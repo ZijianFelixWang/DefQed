@@ -17,8 +17,8 @@ jobs:
         run: |
           # This is NetQed, to call DefQed online.
           # To prove: Work.xml ; Using: Work.sql
+          # Attention: Run under a second branch!
           pwd
-          cd ..
-          mkdir temp
-          ls
-          pwd
+          cd DefQed
+          # Building DefQed
+          msbuild
