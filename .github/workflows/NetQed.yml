@@ -18,6 +18,5 @@ jobs:
           # This is NetQed, to call DefQed online.
           # To prove: Work.xml ; Using: Work.sql
           # Attention: Run under a second branch!
-          cd DefQed
           # Building DefQed
-          msbuild
+          msbuild ./DefQed/DefQed.csproj
