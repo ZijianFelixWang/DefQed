@@ -20,7 +20,14 @@ jobs:
           # Attention: Run under a second branch!
           # Building DefQed
           pwd
-          echo ------debug------
-          ls
-          echo -----------------
-          #dotnet msbuild ./DefQed/DefQed.csproj
+          git clone https://github.com/ZijianFelixWang/DefQed.git
+          #dotnet msbuild 
+          dotnet build .\DefQed\DefQed.sln
+
+      - name: Setup Database
+        run: |
+               
+
+      - name: Perform
+        run: |
+          dotnet run --project .\DefQed\DefQed\ .\DefQed\NetQed\Work.xml
