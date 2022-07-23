@@ -1,7 +1,7 @@
 ﻿#if DEBUG
 #define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
 #define __NO_WELCOME_SCREEN__
-#define __TEST_LOG__
+//#define __TEST_LOG__
 //#define __SERIALIZE_DEBUG_JSON__
 #endif
 
@@ -18,7 +18,7 @@ namespace DefQed
         {
             Console.WriteLine("DefQed.");
 
-            Console.Title = "DefQed Version 0.01\tStill in development\tby felix_wzj@yahoo.com";
+            Console.Title = "DefQed Version 0.02\tStill in development\tby felix_wzj@yahoo.com";
             Console.ResetColor();
 
             Console.OutputEncoding = Encoding.Unicode;
@@ -50,7 +50,7 @@ namespace DefQed
 
         private static void MainApp(string arg)
         {
-            Console.Title = "DefQed version 0.01";
+            Console.Title = "DefQed version 0.02";
 
 #if __SERIALIZE_DEBUG_JSON__
             CurrentJob.SerializeDiagnosticBrackets();
@@ -58,7 +58,7 @@ namespace DefQed
 #endif
 
             // A better ui will be added later....
-            CurrentJob.LoadXMLUI(arg);
+            CurrentJob.LoadXML(arg);
             CurrentJob.PerformProof();
         }
     }

@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<Platforms>AnyCPU;x64</Platforms>
 		<StartupObject>DefQed.Program</StartupObject>
-		<Version>0.0.1</Version>
+		<Version>0.0.2</Version>
 		<Authors>Zijian Wang</Authors>
 		<Description>The DefQed automatic statement prover.</Description>
 		<Copyright>Copyright Zijian Felix Wang. All rights reserved.</Copyright>
@@ -17,22 +17,25 @@
 		<PackageProjectUrl>https://github.com/ZijianFelixWang/DefQed</PackageProjectUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/ZijianFelixWang/DefQed</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <WarningLevel>3</WarningLevel>
+	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <WarningLevel>3</WarningLevel>
+	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-	  <WarningLevel>3</WarningLevel>
+	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-	  <WarningLevel>3</WarningLevel>
+	  <WarningLevel>4</WarningLevel>
 	</PropertyGroup>
 
 	<ItemGroup>

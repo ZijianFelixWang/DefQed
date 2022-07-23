@@ -14,9 +14,7 @@ using System.Text.Json;
 using System.IO;
 using DefQed.Data;
 using Console = Common.LogConsole;
-using Environment = System.Environment;
 using TimeSpan = System.TimeSpan;
-using Exception = System.Exception;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -33,7 +31,6 @@ namespace DefQed.Core
         public int TimeOut = 365 * 24 * 3600;   // A year's proof hah
 
         private Task? ProofTask;
-        private bool ProofPalsed = false;
 
         // Remark: if give a default value will lead into an excpetion...
         
@@ -49,18 +46,15 @@ namespace DefQed.Core
 
             // Load reflections...
             KnowledgeBase.LoadReflections();
-            Console.Log(Common.LogLevel.Diagnostic, "Pulse.");
 
             ProofTask = new(() =>
             {
-                if (!ProofPalsed)
+                while (!KnowledgeBase.TryBridging())
                 {
-                    while (!KnowledgeBase.TryBridging())
-                    {
-                        Console.Log(Common.LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
-                        KnowledgeBase.ScanPools();
-                    }
+                    Console.Log(Common.LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
+                    KnowledgeBase.ScanPools();
                 }
+                
             });
 
             Console.Log(Common.LogLevel.Information, "PerformProof called: Start proving");
@@ -87,7 +81,7 @@ namespace DefQed.Core
                     sel = sel.Trim().ToUpper();
                     if (sel == "S")
                     {
-                        TeeSerializedKBase();
+                        Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
                         break;
                     }
                     if (sel == "T")
@@ -97,7 +91,7 @@ namespace DefQed.Core
                     }
                     if (sel == "B")
                     {
-                        TeeSerializedKBase();
+                        Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
                         TeeProofText();
                         break;
                     }
@@ -109,22 +103,8 @@ namespace DefQed.Core
             else
             {
                 // timeout termination encountered.
-                Console.WriteLine("Proof terminated because of timeout. Dump current KBase? Y/N(Default)");
-                while (true)
-                {
-                    string? sel = Console.ReadLine();
-                    if ((sel == null) || (sel.Trim().ToUpper() == "N"))
-                    {
-                        break;
-                    }
-
-                    sel = sel.Trim().ToUpper();
-                    if (sel == "Y")
-                    {
-                        TeeSerializedKBase();
-                        break;
-                    }
-                }
+                Console.WriteLine("Proof terminated because of timeout.");
+                Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
             }
 #else
             try
@@ -508,17 +488,8 @@ namespace DefQed.Core
 #endregion
         }
 #endif
-        public void SetTimeoutUI()
-        {
-            string? field = System.Console.ReadLine();
-            if (!int.TryParse(field, out TimeOut))
-            {
-                // parse error.
-                Console.Log(Common.LogLevel.Error, "Bad data format. The timeout value is not a valid int.");
-            }
-        }
 
-        public void LoadXMLUI(string filename)
+        public void LoadXML(string filename)
         {
 //#if __AUTO_XML_SUBMIT__
             XMLFileName = filename.Trim();
@@ -541,123 +512,6 @@ namespace DefQed.Core
                 Console.Log(Common.LogLevel.Information, "Congratulations: XML parse and DB connect ok.");
             }
 
-        }
-
-        public void RenewInstanceUI()
-        {
-            //int choice = MessageBox.Query("Are you sure?", "This operation will dispose the current job and cannot be restored.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
-            int choice;
-            Console.WriteLine("This operation will dispose the current job and cannot be restored. (y,N)");
-            string? field = System.Console.ReadLine();
-            choice = field switch
-            {
-                null => 1,
-                "y" => 0,
-                "Y" => 0,
-                "n" => 1,
-                "N" => 1,
-                _ => 1
-            };
-            if (choice == 0)
-            {
-                if ((ProofTask != null) && (!ProofTask.IsCompleted))
-                {
-                    ProofTask.Dispose();
-                }
-                if ((DefQed.Data.MySQLDriver.connStr != "") && (DefQed.Data.MySQLDriver.connStr != null))
-                {
-                    DefQed.Data.MySQLDriver.Terminate();
-                }
-                XMLFileName = "";
-                KnowledgeBase.Dispose();
-                Console.Log(Common.LogLevel.Information, "Instance refreshed.");
-            }
-        }
-
-        public void DisposeProofUI()
-        {
-            //int choice = MessageBox.Query("Are you sure?", "This operation will dispose the current proof and cannot be restored.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
-            Console.WriteLine("This operation will dispose the current proof and cannot be restored. (y,N)");
-            string? field = System.Console.ReadLine();
-            int choice = field switch
-            {
-                null => 1,
-                "y" => 0,
-                "Y" => 0,
-                "n" => 1,
-                "N" => 1,
-                _ => 1
-            };
-            if (choice == 0)
-            {
-                if ((ProofTask != null) && (!ProofTask.IsCompleted))
-                {
-                    ProofTask.Dispose();
-                    Console.Log(Common.LogLevel.Information, "Proof disposed successfully.");
-                }
-                else
-                {
-                    //MessageBox.Query("Invalid operation.", "There is nothing to dispose.", "Ok");
-                    Console.Log(Common.LogLevel.Error, "There is nothing to dispose.");
-                }
-            }
-        }
-
-        public void QuitUI()
-        {
-            //int choice = MessageBox.Query("Are you sure?", "This will terminate the application.", defaultButton: 1, buttons: new ustring[] { "Yes", "No" });
-            Console.WriteLine("This operation will terminate the operation. (y,N)");
-            string? field = System.Console.ReadLine();
-            int choice = field switch
-            {
-                null => 1,
-                "y" => 0,
-                "Y" => 0,
-                "n" => 1,
-                "N" => 1,
-                _ => 1
-            };
-            if (choice == 0)
-            {
-                if ((ProofTask != null) && (!ProofTask.IsCompleted))
-                {
-                    ProofTask.Dispose();
-                }
-                if ((DefQed.Data.MySQLDriver.connStr != "") && (DefQed.Data.MySQLDriver.connStr != null))
-                {
-                    DefQed.Data.MySQLDriver.Terminate();
-                }
-                Environment.Exit(0);
-            }
-        }
-
-        public void PauseResumeUI()
-        {
-            if ((ProofTask == null) || (ProofTask.IsCompleted))
-            {
-                Console.Log(Common.LogLevel.Error, "There is nothing to pause or resume.");
-            }
-
-            ProofPalsed = !ProofPalsed;
-            Console.Log(Common.LogLevel.Information, "Negated task successfully.");
-        }
-
-        private void TeeSerializedKBase()
-        {
-            string serialization = JsonSerializer.Serialize(KnowledgeBase);
-            string? filename;
-            while (true)
-            {
-                System.Console.Write("Asking: (Json Serialized KBase) File name: ");
-                filename = System.Console.ReadLine();
-                if ((filename != null) && (filename.Length > 0))
-                {
-                    break;
-                }
-            }
-//#pragma warning disable CS8604 // Possible null reference argument.
-            File.WriteAllText(filename, serialization);
-//#pragma warning restore CS8604 // Possible null reference argument.
         }
 
 //#pragma warning disable IDE0051 // Remove unused private members
