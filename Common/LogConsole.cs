@@ -3,7 +3,6 @@
 // For debug only
 #define __DIAGNOSTIC_AS_DEFAULT__
 
-//using Terminal.Gui
 using DateTime = System.DateTime;
 using System.Diagnostics;
 
@@ -12,9 +11,6 @@ namespace Common
     internal static class LogConsole
     {
         // Usage: using Console = Common.LogConsole
-//#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-//        public static TextView Display;
-//#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 #pragma warning disable CS0649 // Never assigned to value.
 #if __DIAGNOSTIC_AS_DEFAULT__
@@ -43,7 +39,6 @@ namespace Common
                     _ => fc
                 };
 
-                //WriteLine($"[{LogLevel2Str(level)}] [{DateTime.Now}] {info}");
                 System.Console.Write($"[{LogLevel2Str(level)}]");
 
                 System.Console.ForegroundColor = fc;
@@ -54,7 +49,7 @@ namespace Common
             Debug.WriteLine($"[{DateTime.Now}] {info}");
         }
 
-        private static string LogLevel2Str(LogLevel lev) => lev switch
+        public static string LogLevel2Str(LogLevel lev) => lev switch
         {
             LogLevel.Diagnostic =>  "   DEBUG   ",
             LogLevel.Information => "INFORMATION",
@@ -94,26 +89,6 @@ namespace Common
 
         public static string ReadLine()
         {
-//            Display.ReadOnly = false;
-//            Display.AllowsReturn = true;
-//            Display.Multiline = false;
-//            int lines = Display.Lines;
-//            int startFrom = Display.Text.Length;
-
-//            while (Display.Lines <= lines + 1) { }
-
-//            Display.Multiline = true;
-//            Display.AllowsReturn = false;
-//            Display.ReadOnly = true;
-//            if (Display.Text.ToString() == null)
-//            {
-//                return "";
-//            }
-
-////#pragma warning disable CS8602 // Dereference of a possibly null reference.
-//            return Display.Text.ToString()[startFrom..].Trim();
-////#pragma warning restore CS8602 // Dereference of a possibly null reference.
-
             string? rl = System.Console.ReadLine();
             if (rl == null)
             {
@@ -126,7 +101,7 @@ namespace Common
         }
     }
 
-    internal enum LogLevel
+    public enum LogLevel
     {
         Diagnostic = 0,
         Information = 1,

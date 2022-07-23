@@ -8,15 +8,26 @@
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
+using McMaster.Extensions.CommandLineUtils;
 using DefQed.Core;
 
 namespace DefQed
 {
     public class Program
     {
+        [Option]
+        public Common.LogLevel LogLevel { get; set; }
+
+        [Option(Description = "File format: xml (default), js, qed", ShortName = "f")]
+        public string? Format { get; set; }
+
+        [Argument(0)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string? FileName { get; set; }
+
         public static void Main(string[] args)
         {
-            Console.WriteLine("DefQed.");
+            Console.WriteLine("DefQed. For detailed help, refer to github.");
 
             Console.Title = "DefQed Version 0.02\tStill in development\tby felix_wzj@yahoo.com";
             Console.ResetColor();
@@ -30,34 +41,51 @@ namespace DefQed
                 _ = Console.ReadLine();
             }
 
-            if (args.Length != 1)
-            {
-                Common.LogConsole.Log(Common.LogLevel.Error, "Bad usage. Usage: <program name> XMLFileName.xml");
-
-#if __TEST_LOG__
-                Common.LogConsole.Log(Common.LogLevel.Diagnostic, "D");
-                Common.LogConsole.Log(Common.LogLevel.Warning, "W");
-#endif
-
-                Environment.Exit(-1);
-            }
-
-            MainApp(args[0]);
-            Environment.Exit(0);
+            CommandLineApplication.Execute<Program>(args);
         }
 
         private static readonly Job CurrentJob = new();
 
-        private static void MainApp(string arg)
+#pragma warning disable IDE0051 // Remove unused private members
+        private void OnExecute()
+#pragma warning restore IDE0051 // Remove unused private members
         {
-            Console.Title = "DefQed version 0.02";
+            Common.LogConsole.LogLevel = LogLevel;
+            Common.LogConsole.Log(Common.LogLevel.Information, $"Set LogLevel as {Common.LogConsole.LogLevel2Str(LogLevel)}.");
+            if (FileName.Length == 0)
+            {
+                Common.LogConsole.Log(Common.LogLevel.Error, "Bad filename.");
+                Environment.Exit(-1);
+            }
 
+            switch (Format.ToLower())
+            {
+                case "xml":
+                default:
+                    ProveXML(FileName);
+                    break;
+                case "js":
+                    ProveJavaScript(FileName);
+                    break;
+                case "qed":
+                    Common.LogConsole.Log(Common.LogLevel.Error, "Not implemented QED format...");
+                    Environment.Exit(-1);
+                    break;
+            }
+        }
+
+        private static void ProveJavaScript(string arg)
+        {
+            
+        }
+
+        private static void ProveXML(string arg)
+        {
 #if __SERIALIZE_DEBUG_JSON__
             CurrentJob.SerializeDiagnosticBrackets();
             Console.ReadLine();
 #endif
 
-            // A better ui will be added later....
             CurrentJob.LoadXML(arg);
             CurrentJob.PerformProof();
         }

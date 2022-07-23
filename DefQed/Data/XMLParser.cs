@@ -147,14 +147,14 @@ namespace DefQed.Data
                 error = true;
                 return;
             }
-            DefQed.Data.MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
+            MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
 
             #region commented stuff
             #endregion
 
-            if (!DefQed.Data.MySQLDriver.Initialize())
+            if (!MySQLDriver.Initialize())
             {
-                Console.Log(Common.LogLevel.Error, "Connstr " + DefQed.Data.MySQLDriver.connStr + " failed.");
+                Console.Log(Common.LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.");
                 error = true;
             }
         }

@@ -489,6 +489,16 @@ namespace DefQed.Core
         }
 #endif
 
+        public void LoadJS(string filename)
+        {
+            Stopwatch watch = new();
+            watch.Start();
+            JSDriver.LoadJS(filename, ref KnowledgeBase);
+            watch.Stop();
+            Console.Log(Common.LogLevel.Information, $"JS load done in {watch.ElapsedMilliseconds} ms");
+            Console.Log(Common.LogLevel.Information, "Congratulations: All set up, ready to work.");
+        }
+
         public void LoadXML(string filename)
         {
 //#if __AUTO_XML_SUBMIT__
