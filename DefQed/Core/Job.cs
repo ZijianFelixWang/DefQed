@@ -2,8 +2,6 @@
 #if DEBUG
 #define __USE_INLINE_XML_URI__
 #define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
-//#define __NO_TEE_AFTER_PROOF__
-//#define __INSERT_LINE_UI__ //Deprec!
 #endif
 
 using System.Threading.Tasks;
@@ -26,6 +24,8 @@ namespace DefQed.Core
         public string XMLFileName = "";
         public KBase KnowledgeBase = new();
         public int TimeOut = 365 * 24 * 3600;   // A year's proof hah
+        public string ProofOutput = "";
+        public bool NotToTee = false;
 
         private Task? ProofTask;
 
@@ -38,6 +38,9 @@ namespace DefQed.Core
 
         private void PerformProof(int TimeOut)
         {
+            Stopwatch w2 = new();
+            w2.Start();
+
             // Load reflections...
             KnowledgeBase.LoadReflections();
 
@@ -57,50 +60,32 @@ namespace DefQed.Core
 
             if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
             {
-                Console.Log(Common.LogLevel.Information, "Proof process has finished.");
+                w2.Stop();
+                Console.Log(Common.LogLevel.Information, $"Proof process has finished in {w2.ElapsedMilliseconds} ms.");
 
 #if DEBUG
                 Console.Log(Common.LogLevel.Diagnostic, "Below is proof:");
                 Console.WriteLine(KnowledgeBase.GenerateReport());
                 Console.Log(Common.LogLevel.Diagnostic, "----------------------");
-#endif
-
-#if !__NO_TEE_AFTER_PROOF__
-                Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
-                while (true)
+#else
+                if (NotToTee)
                 {
-                    string? sel = Console.ReadLine();
-                    if ((sel == null) || (sel.Trim().ToUpper() == "N"))
-                    {
-                        break;
-                    }
-
-                    sel = sel.Trim().ToUpper();
-                    if (sel == "S")
-                    {
-                        Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
-                        break;
-                    }
-                    if (sel == "T")
-                    {
-                        TeeProofText();
-                        break;
-                    }
-                    if (sel == "B")
-                    {
-                        Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
-                        TeeProofText();
-                        break;
-                    }
-                    Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
+                    Console.Log(Common.LogLevel.Diagnostic, "Below is proof:");
+                    Console.WriteLine(KnowledgeBase.GenerateReport());
+                    Console.Log(Common.LogLevel.Diagnostic, "----------------------");
                 }
 #endif
+
+                if (!NotToTee)
+                {
+                    TeeProofText();
+                }
             }
             else
             {
                 // timeout termination encountered.
                 Console.Log(Common.LogLevel.Error, "Proof terminated because of timeout.");
-                Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
+                Console.Log(Common.LogLevel.Information, $"Current Steps:\n{KnowledgeBase.GenerateReport()}");
             }
         }
 
@@ -355,8 +340,8 @@ namespace DefQed.Core
 
             Console.Log(Common.LogLevel.Information, json1);
 
-            #endregion
-            #region serialize conc
+#endregion
+#region serialize conc
             List<MicroStatement> conc = new()
             {
                 new MicroStatement
@@ -434,14 +419,22 @@ namespace DefQed.Core
 //#pragma warning restore IDE0051 // Remove unused private members
         {
             string? filename;
-            while (true)
+
+            if (ProofOutput == "")
             {
-                System.Console.Write("Where to save the proof?  ");
-                filename = Console.ReadLine();
-                if ((filename != null) && (filename.Length > 0))
+                while (true)
                 {
-                    break;
+                    System.Console.Write("Where to save the proof?  ");
+                    filename = Console.ReadLine();
+                    if ((filename != null) && (filename.Length > 0))
+                    {
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                filename = ProofOutput;
             }
 //#pragma warning disable CS8604 // Possible null reference argument.
             File.WriteAllText(filename, KnowledgeBase.GenerateReport());

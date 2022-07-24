@@ -15,7 +15,7 @@ namespace DefQed
 {
     public class Program
     {
-        [Option(Description = "LogLevel: Diagnostic, Information, Warning, Error", ShortName = "l")]
+        [Option(ShortName = "l")]
         public Common.LogLevel? LogLevel { get; set; }
 
         [Option(Description = "File format: xml (default), js, qed", ShortName = "f")]
@@ -23,6 +23,12 @@ namespace DefQed
 
         [Option(Description = "Time out, in seconds, default: 31536000 =365*24*3600", ShortName = "t")]
         public int? TimeOut { get; set; }
+
+        [Option(Description = "Proof output distination. Program will be quiet then.", ShortName = "p")]
+        public string? ProofFileName { get; set; }
+
+        [Option(Description = "Not to tee proof text. This will override -p option. (Quiet mode)", ShortName = "q")]
+        public bool Quiet { get; set; }
 
         [Argument(0)]
         [System.ComponentModel.DataAnnotations.Required]
@@ -64,6 +70,16 @@ namespace DefQed
                 CurrentJob.TimeOut = (int)TimeOut;
             }
             Common.LogConsole.Log(Common.LogLevel.Information, $"Set TimeOut as {CurrentJob.TimeOut} seconds.");
+
+            if (ProofFileName != null)
+            {
+                CurrentJob.ProofOutput = ProofFileName;
+            }
+
+            if (Quiet == true)
+            {
+                CurrentJob.NotToTee = true;
+            }
 
             if (FileName.Length == 0)
             {

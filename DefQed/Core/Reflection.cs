@@ -14,6 +14,8 @@ namespace DefQed.Core
         public Formula Condition = new();
         public List<MicroStatement> Conclusion = new();
 
+        private static uint DoReflectCount = 0;
+
         private string Conclusion2Str()
         {
             string res = "{";
@@ -116,6 +118,8 @@ namespace DefQed.Core
                 // The pool satisfies the formula's condition.
                 Console.Log(Common.LogLevel.Diagnostic, "DoReflect: Formula satisfaction success.");
 
+                DoReflectCount++;
+                history += $"{DoReflectCount}\t----------\n";
                 history += $"Using\t{reflection}\nWith\t{Transistor2Str(transistors)})\n";
 
                 // FTC algorithm called here~

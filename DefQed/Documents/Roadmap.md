@@ -4,12 +4,13 @@
 ### Basic Proof System
 - [x] Basic User Interface
 - [x] XML Parser
+- [x] JS Driver
 - [x] MySQL Connection Manager
 - [x] Main Loop
 - [x] Data Structures
 - [x] Isomorphism Checker
 - [x] Transistor Applier
-- [ ] RH Generator `Very difficult for humans to read.`
+- [x] RH Generator
 ### Nearly Completed System
 - [ ] Self Learning Logic
 - [ ] Teaching Logic
