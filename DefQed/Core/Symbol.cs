@@ -2,7 +2,7 @@
 
 namespace DefQed.Core
 {
-    internal class Symbol : IDisposable
+    public class Symbol : IDisposable
     {
         // Symbol -- the 'newed' notation
         // if 'ABC' as Name, okay but what if evaluation pops out '12'

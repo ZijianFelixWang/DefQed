@@ -6,7 +6,7 @@ using JsonSerializer2 = Newtonsoft.Json.JsonConvert;
 
 namespace DefQed.Core
 {
-    internal record Reflection
+    public record Reflection
     {
         // Reflection must specify a formula of MicroStatements (when this)
         // and a set of MicroStatements (then that). Note: the 'formula' must

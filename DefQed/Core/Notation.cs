@@ -5,7 +5,7 @@ using Org.BouncyCastle.Crypto.Digests;
 
 namespace DefQed.Core
 {
-    internal class Notation : IDisposable
+    public class Notation : IDisposable
     {
         public string Name = "";
         public int Id;
@@ -80,7 +80,7 @@ namespace DefQed.Core
         }
     }
 
-    internal enum NotationOrigin
+    public enum NotationOrigin
     {
         Internal,   // eg, ==, >
         External    // eg, Point, Triangle

@@ -5,12 +5,14 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
-    internal class Formula : IDisposable
+    public class Formula : IDisposable
     {
         // Formula -- logical set of micro statements
         public Bracket TopLevel = new();
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             TopLevel.Dispose();
         }

@@ -10,7 +10,7 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
-    internal class KBase : IDisposable
+    public class KBase : IDisposable
     {
         // KBase -- The knowledge base (The real core part)
         // KBase contains: Notations, Reflections, and Registries

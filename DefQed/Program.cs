@@ -76,7 +76,8 @@ namespace DefQed
 
         private static void ProveJavaScript(string arg)
         {
-            
+            CurrentJob.LoadJS(arg);
+            CurrentJob.PerformProof();
         }
 
         private static void ProveXML(string arg)

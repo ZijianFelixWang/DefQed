@@ -7,15 +7,18 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Data
 {
-    internal static class JSDriver
+    public static class JSDriver
     {
+#pragma warning disable CA2211 // Non-constant fields should not be visible
         public static bool errored = false;
+#pragma warning restore CA2211 // Non-constant fields should not be visible
 
         private static KBase kbase2 = new();
 #pragma warning disable IDE0044 // Add readonly modifier
         private static Dictionary<string, Symbol> SymbolBank = new();
 #pragma warning restore IDE0044 // Add readonly modifier
-
+        private static List<MicroStatement> LeftPool = new();
+        private static List<MicroStatement> RigtPool = new();
 
         public static void Connect(string user, string passwd, string db)
         {
@@ -62,13 +65,11 @@ namespace DefQed.Data
             SymbolBank.Add(name, new Symbol(kbase2.GetNextSymbolId(), notation, name));
         }
 
-        public static void LeftPool(List<MicroStatement> s) => kbase2.LeftPool = s;
-
-        public static void RightPool(List<MicroStatement> s) => kbase2.RightPool = s;
-
         public static MicroStatement MicroStatement(Bracket b0, Notation c, Bracket b1)
         {
+#pragma warning disable IDE0017 // Simplify object initialization
             MicroStatement m = new();
+#pragma warning restore IDE0017 // Simplify object initialization
 
             m.Connector = c;
             m.Brackets[0] = b0;
@@ -151,8 +152,13 @@ namespace DefQed.Data
             return b;
         }
 
+        public static void Left(MicroStatement m) => LeftPool.Add(m);
+
+        public static void Right(MicroStatement m) => RigtPool.Add(m);
+
         public static void LoadJS(string filename, ref KBase kbase)
         {
+            Console.Log(Common.LogLevel.Warning, "LoadJS feature is EXPERIMENTAL.");
             errored = false;
             
             if (kbase == null)
@@ -174,11 +180,27 @@ namespace DefQed.Data
                 Environment.Exit(-1);
             }
 
-            var engine = new V8ScriptEngine();
-            engine.AddHostType("$", typeof(JSDriver));
-            engine.Execute(js);
+            try
+            {
+                var engine = new V8ScriptEngine();
+                engine.AddHostType(typeof(JSDriver));
+#if DEBUG
+                engine.AddHostType(typeof(System.Console));
+#endif
+                Console.Log(Common.LogLevel.Information, "Start to execute JavaScript.");
+                engine.Execute(js);
+                Console.Log(Common.LogLevel.Information, "JavaScript execution done.");
+            }
+            catch (Microsoft.ClearScript.ScriptEngineException ex)
+            {
+                Console.Log(Common.LogLevel.Error, "Script execution error. There may be an error in the js file.");
+                Console.Log(Common.LogLevel.Error, $"Details: {ex.Message}");
+                Environment.Exit(-1);
+            }
 
             kbase = kbase2;
+            kbase.LeftPool = LeftPool;
+            kbase.RightPool = RigtPool;
 
             if (errored)
             {

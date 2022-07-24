@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DefQed.Core
 {
-    internal class MicroStatement : IDisposable
+    public class MicroStatement : IDisposable
     {
         // a microstatement is firstly generated from E&S by other things...
 

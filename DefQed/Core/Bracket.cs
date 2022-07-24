@@ -7,7 +7,7 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
-    internal class Bracket : IDisposable
+    public class Bracket : IDisposable
     {
         // Bracket -- the minimized structure that holds
         // To make it more general, logics are defined using Notations.
@@ -184,7 +184,7 @@ namespace DefQed.Core
         }
     }
 
-    internal enum BracketType
+    public enum BracketType
     {
         BracketHolder,      // mode 1
         NegatedHolder,      // mode 2
@@ -192,13 +192,13 @@ namespace DefQed.Core
         SymbolHolder        // mode 4
     };
 
-    internal enum TransistorOrientation
+    public enum TransistorOrientation
     {
         LeftIndex,  // b0 is index
         RightIndex  // b1 is index
     };
 
-    internal enum Satisfaction
+    public enum Satisfaction
     {
         Unknown,
         False,
