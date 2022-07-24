@@ -27,7 +27,7 @@ namespace DefQed.Core
 
         public override string ToString() => $"MicroStatement({Brackets[0]} {Connector} {Brackets[1]});";
 
-        public string ToFriendlyString() => $"MicroStatement({Brackets[0].ToFriendlyString()} {Connector.Name} {Brackets[1].ToFriendlyString()}";
+        public string ToFriendlyString() => $"[{Brackets[0].ToFriendlyString()} {Connector.Name} {Brackets[1].ToFriendlyString()}]";
 
         public static string ToFriendlyStringList(List<MicroStatement> situ)
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using Console = Common.LogConsole;
 
 namespace DefQed.Core
@@ -18,7 +17,7 @@ namespace DefQed.Core
 
         public override string ToString()
         {
-            return $"Formula({TopLevel});";
+            return $"{TopLevel.ToFriendlyString()}";
         }
 
         // Validator: check if the TopLevel can be satisfied within a fixed given set of MSs.

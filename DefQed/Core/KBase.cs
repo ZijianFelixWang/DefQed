@@ -36,7 +36,7 @@ namespace DefQed.Core
         private string ReflectionHistory = "";
         public string GenerateReport()
         {
-            return $"Proof(\n\t{ReflectionHistory});";
+            return $"{ReflectionHistory}";
         }
 
         // Aux things

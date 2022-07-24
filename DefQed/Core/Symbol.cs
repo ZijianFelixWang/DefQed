@@ -13,7 +13,7 @@ namespace DefQed.Core
 
         public override string ToString()
         {
-            return $"Symbol(Notation = {Notation}, [{Id}]({Name.ToUpper()}), Value = {DirectValue});";
+            return $"({Notation}/[{Id}]{Name.ToUpper()})";
         }
 
         public Symbol()

@@ -11,7 +11,7 @@ namespace DefQed.Core
         public int Id;
         public NotationOrigin Origin;
 
-        public override string ToString() => $"Notation([{Id}]{Name.ToUpper()});";
+        public override string ToString() => $"([{Id}]{Name})";
 
         public void Dispose()
         {

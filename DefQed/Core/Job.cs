@@ -2,9 +2,6 @@
 #if DEBUG
 #define __USE_INLINE_XML_URI__
 #define __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS__
-#define __CTRL_G_TO_RUN__
-#define __AUTO_XML_SUBMIT__
-#define __DONT_HANDLE_EXCEPTION__
 //#define __NO_TEE_AFTER_PROOF__
 //#define __INSERT_LINE_UI__ //Deprec!
 #endif
@@ -41,7 +38,6 @@ namespace DefQed.Core
 
         private void PerformProof(int TimeOut)
         {
-#if __DONT_HANDLE_EXCEPTION__
             // Load reflections...
             KnowledgeBase.LoadReflections();
 
@@ -62,11 +58,14 @@ namespace DefQed.Core
             if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
             {
                 Console.Log(Common.LogLevel.Information, "Proof process has finished.");
+
+#if DEBUG
+                Console.Log(Common.LogLevel.Diagnostic, "Below is proof:");
+                Console.WriteLine(KnowledgeBase.GenerateReport());
+                Console.Log(Common.LogLevel.Diagnostic, "----------------------");
+#endif
+
 #if !__NO_TEE_AFTER_PROOF__
-                #region commented stuff decomment after debug
-
-                var forDbg = KnowledgeBase.GenerateReport();
-
                 Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
                 while (true)
                 {
@@ -95,7 +94,6 @@ namespace DefQed.Core
                     }
                     Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
                 }
-                #endregion
 #endif
             }
             else
@@ -104,99 +102,6 @@ namespace DefQed.Core
                 Console.Log(Common.LogLevel.Error, "Proof terminated because of timeout.");
                 Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
             }
-#else
-            try
-            {
-                Console.Log(Common.LogLevel.Information, "Start proving...");
-
-                // Load reflections...
-                KnowledgeBase.LoadReflections();
-                Console.Log(Common.LogLevel.Diagnostic, "Pulse.");
-
-                ProofTask = new(() =>
-                {
-                    if (!ProofPalsed)
-                    {
-                        while (!KnowledgeBase.TryBridging())
-                        {
-                            Console.Log(Common.LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
-                            KnowledgeBase.ScanPools();
-                        }
-                    }
-                });
-
-                Console.Log(Common.LogLevel.Information, "PerformProof called: Start proving");
-
-                ProofTask.Start();
-
-                if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
-                {
-                    Console.Log(Common.LogLevel.Information, "Proof process has finished.");
-#if !__NO_TEE_AFTER_PROOF__
-            #region commented stuff decomment after debug
-                    Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
-                    while (true)
-                    {
-                        string? sel = Console.ReadLine();
-                        if ((sel == null) || (sel.Trim().ToUpper() == "N"))
-                        {
-                            break;
-                        }
-
-                        sel = sel.Trim().ToUpper();
-                        if (sel == "S")
-                        {
-                            TeeSerializedKBase();
-                            break;
-                        }
-                        if (sel == "T")
-                        {
-                            TeeProofText();
-                            break;
-                        }
-                        if (sel == "B")
-                        {
-                            TeeSerializedKBase();
-                            TeeProofText();
-                            break;
-                        }
-                        Console.WriteLine("\nGenerate report file?\nN/ENTER = No; S = Serialized KBase; T = Proof text; B = Both");
-                    }
-            #endregion
-#endif
-                }
-                else
-                {
-                    // timeout termination encountered.
-                    Console.WriteLine("Proof terminated because of timeout. Dump current KBase? Y/N(Default)");
-                    while (true)
-                    {
-                        string? sel = Console.ReadLine();
-                        if ((sel == null) || (sel.Trim().ToUpper() == "N"))
-                        {
-                            break;
-                        }
-
-                        sel = sel.Trim().ToUpper();
-                        if (sel == "Y")
-                        {
-                            TeeSerializedKBase();
-                            break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // This error handling is very lazy here. No categoring of errors umm.
-                // Something more may be added later.
-                Console.Log(Common.LogLevel.Error, $"Exception envountered. Exception Category: {ex.GetType()}\nException Message: {ex.Message}");
-                Console.WriteLine("You can now save the dump file or terminate the program.");
-                TeeSerializedKBase();
-
-                Environment.Exit(-2);
-            }
-#endif
         }
 
 #if __INSERT_LINE_UI__
@@ -450,19 +355,21 @@ namespace DefQed.Core
 
             Console.Log(Common.LogLevel.Information, json1);
 
-#endregion
-#region serialize conc
-            List<MicroStatement> conc = new();
-            conc.Add(new MicroStatement
+            #endregion
+            #region serialize conc
+            List<MicroStatement> conc = new()
             {
-                Connector = new Notation
+                new MicroStatement
                 {
-                    Name = "==",
-                    Id = 1,
-                    Origin = NotationOrigin.Internal
-                },
-                Brackets = new Bracket[2]
-            });
+                    Connector = new Notation
+                    {
+                        Name = "==",
+                        Id = 1,
+                        Origin = NotationOrigin.Internal
+                    },
+                    Brackets = new Bracket[2]
+                }
+            };
             conc[0].Brackets[0] = new();
             conc[0].Brackets[1] = new();
             conc[0].Brackets[0].BracketType = BracketType.SymbolHolder;

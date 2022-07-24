@@ -67,14 +67,14 @@ namespace DefQed.Core
 
         public string ToFriendlyString()
         {
-            string res = "Bracket(";
+            string res = "(";
             res += BracketType switch
             {
-                Core.BracketType.BracketHolder => $"{SubBrackets[0].ToFriendlyString()} {Connector.Name} {SubBrackets[1].ToFriendlyString()});",
-                Core.BracketType.NegatedHolder => $"!({SubBrackets[0].ToFriendlyString()}););",
-                Core.BracketType.StatementHolder => $"{MicroStatement.ToFriendlyString()});",
-                Core.BracketType.SymbolHolder => $"{Symbol.Name});",
-                _ => ");",
+                Core.BracketType.BracketHolder => $"{SubBrackets[0].ToFriendlyString()} {Connector.Name} {SubBrackets[1].ToFriendlyString()})",
+                Core.BracketType.NegatedHolder => $"!{SubBrackets[0].ToFriendlyString()})",
+                Core.BracketType.StatementHolder => $"{MicroStatement.ToFriendlyString()})",
+                Core.BracketType.SymbolHolder => $"{Symbol.Name})",
+                _ => ")",
             };
             return res;
         }

@@ -16,16 +16,16 @@ namespace DefQed.Core
 
         private string Conclusion2Str()
         {
-            string res = "List(";
+            string res = "{";
             for (int i = 0; i < Conclusion.Count; i++)
             {
-                res += Conclusion[i].ToString();
+                res += Conclusion[i].ToFriendlyString();
                 if (i != Conclusion.Count - 1)
                 {
                     res += ",";
                 }
             }
-            res += ")";
+            res += "}";
             return res;
         }
 
@@ -116,21 +116,7 @@ namespace DefQed.Core
                 // The pool satisfies the formula's condition.
                 Console.Log(Common.LogLevel.Diagnostic, "DoReflect: Formula satisfaction success.");
 
-                Newtonsoft.Json.JsonSerializerSettings op = new()
-                {
-                    MaxDepth = 1024
-                };
-
-                string json = JsonSerializer2.SerializeObject(transistors, op);
-
-                history += $"Reflection = {reflection}, Transistors = Json({json});,\n\t";
-
-#if DEBUG
-                //foreach (var tst in transistors)
-                //{
-                //    Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-                //}
-#endif
+                history += $"Using\t{reflection}\nWith\t{Transistor2Str(transistors)})\n";
 
                 // FTC algorithm called here~
                 var ss = FreeTSTCombinator(transistors);
@@ -146,12 +132,12 @@ namespace DefQed.Core
                     {
                         MicroStatement item = reflection.Conclusion[i];
                         // Apply transistors to item.
-                        ApplyTransistors(ref item, s);
+                        ApplyTransistors(ref item, s, ref history);
 
                         result.Add(item);
                         Console.Log(Common.LogLevel.Diagnostic, $"DoReflect: Applied transistor {i + 1} of {reflection.Conclusion.Count}.");
 
-                        history += $"[{i}]{item}";
+                        //history += $"[{i}]{item}";
                     }
 
                     history += "\n";
@@ -195,19 +181,9 @@ namespace DefQed.Core
 
             // First, we select one br as 'a'
 
-            //List<Bracket> locked = new();
-
             List<List<(Bracket, Bracket)>> ret = new();
             FTCNextLevel(new(), new(), transistors, ref ret);
-            //foreach (var reco in ret)
-            //{
-            //    Console.Log(Common.LogLevel.Diagnostic, "SubTSTS begin.");
-            //    foreach (var tst in reco)
-            //    {
-            //        Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-            //    }
-            //    Console.Log(Common.LogLevel.Diagnostic, "SubTSTS end.");
-            //}
+
             return ret;
         }
 
@@ -236,16 +212,12 @@ namespace DefQed.Core
                     locked.Add(a);
                     coLocked.Add(x);
 
-                    //Console.Log(Common.LogLevel.Diagnostic, $"Add lock({a.Symbol.Name}->{x.Symbol.Name})");
-
                     for (int i = 0; i < transistors.Count; i++)
                     {
                         (Bracket, Bracket) b = transistors[i];
-                        Console.Log(Common.LogLevel.Diagnostic, $"{b.Item1.Symbol.Name} {a.Symbol.Name} {b.Item2.Symbol.Name} {x.Symbol.Name}");
                         if ((b.Item1.Symbol.Name == a.Symbol.Name) || (b.Item2.Symbol.Name == x.Symbol.Name))
                         {
                             transistors.Remove(b);
-                            //Console.Log(Common.LogLevel.Diagnostic, $"Remove b: {b.Item1.Symbol.Name}->{b.Item2.Symbol.Name}");
                         }
                     }
                     transistors.Add((a, x));
@@ -272,18 +244,20 @@ namespace DefQed.Core
             }
         }
 
-        private static void ApplyTransistors(ref MicroStatement stmt, List<(Bracket, Bracket)> tst)
+        private static void ApplyTransistors(ref MicroStatement stmt, List<(Bracket, Bracket)> tst, ref string rh)
         {
             // stmt: a==c, tst: a->x, b->y, c->z
 
             // let's traversal it!
-            ApplyTransistors(ref stmt.Brackets[0], tst);
-            ApplyTransistors(ref stmt.Brackets[1], tst);
+            ApplyTransistors(ref stmt.Brackets[0], tst, ref rh);
+            ApplyTransistors(ref stmt.Brackets[1], tst, ref rh);
         }
 
         // Now the logic is simpler and better.
-        private static void ApplyTransistors(ref Bracket br, List<(Bracket, Bracket)> tst)
+        private static void ApplyTransistors(ref Bracket br, List<(Bracket, Bracket)> tst, ref string rh)
         {
+            rh += $"Apply\t{Transistor2Str(tst)}\n";
+
             // Try replacement...
             foreach (var pair in tst)
             {
@@ -298,11 +272,11 @@ namespace DefQed.Core
             switch (br.BracketType)
             {
                 case BracketType.NegatedHolder:
-                    ApplyTransistors(ref br.SubBrackets[0], tst);
+                    ApplyTransistors(ref br.SubBrackets[0], tst, ref rh);
                     break;
                 case BracketType.BracketHolder:
-                    ApplyTransistors(ref br.SubBrackets[0], tst);
-                    ApplyTransistors(ref br.SubBrackets[1], tst);
+                    ApplyTransistors(ref br.SubBrackets[0], tst, ref rh);
+                    ApplyTransistors(ref br.SubBrackets[1], tst, ref rh);
                     break;
                 default:
                     break;
@@ -343,7 +317,21 @@ namespace DefQed.Core
 
         public override string ToString()
         {
-            return $"Reflection(Condition = {Condition}, Conclusions = {Conclusion2Str()});";
+            return $"{Condition}\t--->\t{Conclusion2Str()}";
+        }
+
+        private static string Transistor2Str(List<(Bracket, Bracket)> tst)
+        {
+            // TST: left is req, right is situ
+            string rh = "{\n";
+            foreach (var t in tst)
+            {
+                rh += $"{t.Item1.ToFriendlyString()}\t<--->\t{t.Item2.ToFriendlyString()}\n";
+            }
+            //rh = rh[..^1];
+            rh += "}";
+
+            return rh;
         }
     }
 }
