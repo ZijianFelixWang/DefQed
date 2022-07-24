@@ -31,13 +31,13 @@ namespace DefQed.Core
 
         public static string Scan(List<Reflection> reflections, ref List<MicroStatement> pool)
         {
-            Console.Log(Common.LogLevel.Diagnostic, $"Scan: Preparing to apply scan: {reflections.Count} reflections, {pool.Count} microstatements.");
+            Console.Log(Common.LogLevel.Information, $"Scan: Preparing to apply scan: {reflections.Count} reflections, {pool.Count} microstatements.");
             foreach (var t in pool)
             {
                 Console.Log(Common.LogLevel.Diagnostic, $"OLD Pool Content: {t.ToFriendlyString()}");
             }
             // This scans a pool and apply appliable reflections to it.
-            string history = "Scan(";
+            string history = "";
 
             // Multithreading capability to be implemented, this makes it easier to migrate to CUDA.
             List<Task<List<MicroStatement>>> tasks = new();
@@ -65,7 +65,7 @@ namespace DefQed.Core
             }
 
             Task.WaitAll(tasks.ToArray());
-            Console.Log(Common.LogLevel.Diagnostic, "Scan: All scans completed.");
+            Console.Log(Common.LogLevel.Information, "Scan: All scans completed.");
 
             // Get tasks' result and deal with it.
             foreach (var t in tasks)
@@ -80,7 +80,7 @@ namespace DefQed.Core
                 Console.Log(Common.LogLevel.Diagnostic, $"Pool Content: {t.ToFriendlyString()}");
             }
 
-            history += ");";
+            //history += ");";
             return history;
         }
 
@@ -126,20 +126,20 @@ namespace DefQed.Core
                 history += $"Reflection = {reflection}, Transistors = Json({json});,\n\t";
 
 #if DEBUG
-                foreach (var tst in transistors)
-                {
-                    Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-                }
+                //foreach (var tst in transistors)
+                //{
+                //    Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+                //}
 #endif
 
                 // FTC algorithm called here~
                 var ss = FreeTSTCombinator(transistors);
                 foreach (var s in ss)
                 {
-                    foreach (var tst in s)
-                    {
-                        Console.Log(Common.LogLevel.Diagnostic, $"(SubSet) Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-                    }
+                    //foreach (var tst in s)
+                    //{
+                    //    Console.Log(Common.LogLevel.Diagnostic, $"(SubSet) Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+                    //}
 
                     // Let's joint the conclusion.
                     for (int i = 0; i < reflection.Conclusion.Count; i++)
@@ -199,15 +199,15 @@ namespace DefQed.Core
 
             List<List<(Bracket, Bracket)>> ret = new();
             FTCNextLevel(new(), new(), transistors, ref ret);
-            foreach (var reco in ret)
-            {
-                Console.Log(Common.LogLevel.Diagnostic, "SubTSTS begin.");
-                foreach (var tst in reco)
-                {
-                    Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-                }
-                Console.Log(Common.LogLevel.Diagnostic, "SubTSTS end.");
-            }
+            //foreach (var reco in ret)
+            //{
+            //    Console.Log(Common.LogLevel.Diagnostic, "SubTSTS begin.");
+            //    foreach (var tst in reco)
+            //    {
+            //        Console.Log(Common.LogLevel.Diagnostic, $"Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
+            //    }
+            //    Console.Log(Common.LogLevel.Diagnostic, "SubTSTS end.");
+            //}
             return ret;
         }
 
@@ -236,7 +236,7 @@ namespace DefQed.Core
                     locked.Add(a);
                     coLocked.Add(x);
 
-                    Console.Log(Common.LogLevel.Diagnostic, $"Add lock({a.Symbol.Name}->{x.Symbol.Name})");
+                    //Console.Log(Common.LogLevel.Diagnostic, $"Add lock({a.Symbol.Name}->{x.Symbol.Name})");
 
                     for (int i = 0; i < transistors.Count; i++)
                     {
@@ -245,14 +245,11 @@ namespace DefQed.Core
                         if ((b.Item1.Symbol.Name == a.Symbol.Name) || (b.Item2.Symbol.Name == x.Symbol.Name))
                         {
                             transistors.Remove(b);
-                            Console.Log(Common.LogLevel.Diagnostic, $"Remove b: {b.Item1.Symbol.Name}->{b.Item2.Symbol.Name}");
+                            //Console.Log(Common.LogLevel.Diagnostic, $"Remove b: {b.Item1.Symbol.Name}->{b.Item2.Symbol.Name}");
                         }
                     }
                     transistors.Add((a, x));
-                    foreach (var tst in transistors)
-                    {
-                        //Console.Log(Common.LogLevel.Diagnostic, $"Just Removed Abs: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-                    }
+                    
                     // If not the end,
                     // should append to next level.
                     if (locked.Count < allLefts.Count)
@@ -262,7 +259,6 @@ namespace DefQed.Core
                     else
                     {
                         // all locked. This give a combination.
-                        //coms.Add()
                         List<(Bracket, Bracket)> tmp = new();
                         for (int j = 0; j < locked.Count; j++)
                         {

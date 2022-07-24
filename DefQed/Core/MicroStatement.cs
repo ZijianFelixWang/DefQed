@@ -22,19 +22,8 @@ namespace DefQed.Core
             Brackets[0].Dispose();
             Brackets[1].Dispose();
             Connector.Dispose();
+            GC.SuppressFinalize(this);  // CA1816 quality rule
         }
-
-        // Then how to evaluate it?
-        // L    M   R
-        // S1   ==  S3
-        // We refer to the definition table of notation...
-        // Aha, a Pos-2 notation should be evaluatable.
-        // But how? For example, we cannot use bruteforcing to define '=='
-        // as it is unlimited. We then must have built in notations (Origin = 0)
-
-        // Well... Evaluation should return a boolean.
-        // A lot of useless stuff deleted here!
-        // Less code, more performance.
 
         public override string ToString() => $"MicroStatement({Brackets[0]} {Connector} {Brackets[1]});";
 

@@ -43,69 +43,7 @@ namespace DefQed.Core
                 SubBrackets[1].Dispose();
             }
             BracketType = null;
-        }
-
-        public static bool CheckIsomorphism(Bracket b0, Bracket b1, ref Dictionary<Symbol, Symbol> transistors, TransistorOrientation bias)
-        {
-            // Isomorphism means the two brackets are with the same structure.
-            // This has no sense about the Symbol's actual Name, Id, DV but Notation (aka, Symbol type) must be equal.
-
-            if (b0.BracketType != b1.BracketType)
-            {
-                return false;
-            }
-
-            if (b0.BracketType == Core.BracketType.BracketHolder)
-            {
-                if (b0.Connector != b1.Connector)
-                {
-                    return false;
-                }
-
-                Console.Log(Common.LogLevel.Diagnostic, "Isomorphism checker: entering lower level.");
-
-                return (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[0], ref transistors, bias) &&
-                    CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[1], ref transistors, bias)) ||
-                    (CheckIsomorphism(b0.SubBrackets[0], b1.SubBrackets[1], ref transistors, bias) &&
-                    CheckIsomorphism(b0.SubBrackets[1], b1.SubBrackets[0], ref transistors, bias));    // Symmetry safe ensured.
-            }
-
-            if (b0.BracketType == Core.BracketType.SymbolHolder)
-            {
-                if ((b0.Symbol == null) || (b1.Symbol == null) || (b0.Symbol.Notation != b1.Symbol.Notation))
-                {
-                    return false;
-                }
-
-                // okay, true. Now let's build transistor now.
-                
-                // real   fake
-                // xyz    abc
-                (Symbol, Symbol) tuple = (bias switch
-                {
-                    TransistorOrientation.LeftIndex => b0.Symbol,
-                    TransistorOrientation.RightIndex => b1.Symbol,
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                    _ => throw new ArgumentOutOfRangeException("Invalid TransistorOrientation encountered.")
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-                }, bias switch
-                {
-                    TransistorOrientation.LeftIndex => b1.Symbol,
-                    TransistorOrientation.RightIndex => b0.Symbol,
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
-                    _ => throw new ArgumentOutOfRangeException("Invalid TransistorOrientation encountered.")
-#pragma warning restore CA2208 // Instantiate argument exceptions correctly
-                });
-
-                if (!transistors.ContainsKey(tuple.Item1))
-                {
-                    transistors.Add(tuple.Item1, tuple.Item2);
-                }
-                // We add transistors just and the rest job is not ours.
-                Console.Log(Common.LogLevel.Diagnostic, $"New transistor (r,f) = ({tuple.Item1.Name}, {tuple.Item2.Name})");
-            }
-
-            return true;
+            GC.SuppressFinalize(this);  // CA1816 quality rule
         }
 
         public override bool Equals(object? obj)

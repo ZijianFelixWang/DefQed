@@ -2,7 +2,7 @@
 // EXPERIMENTAL FEATURE!
 // Use the defqed diagnostic database for this
 
-JSDriver.Connect("DtefQed", "oClg2%[TenbL86V+rsC3", "defqed");
+JSDriver.Connect("DefQed", "oClg2%[TenbL86V+rsC3", "defqed");
 JSDriver.Enroll("item", "x");
 JSDriver.Enroll("item", "y");
 JSDriver.Enroll("item", "z");

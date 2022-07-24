@@ -22,6 +22,7 @@ namespace DefQed.Core
             LeftPool.Clear();
             RightPool.Clear();
             Reflections.Clear();
+            GC.SuppressFinalize(this);  // CA1816 quality rule
         }
 
         // Pools
@@ -181,7 +182,7 @@ namespace DefQed.Core
 #pragma warning restore CS8601 // Possible null reference assignment.
                 });
 
-                Console.Log(Common.LogLevel.Diagnostic, $"Reflection {Reflections.Count} loaded.");
+                Console.Log(Common.LogLevel.Information, $"Reflection {Reflections.Count} loaded.");
             }
         }
 
@@ -193,8 +194,10 @@ namespace DefQed.Core
                 return false;
             }
 
-            List<string> tmp = new();
-            tmp.Add("ID");
+            List<string> tmp = new()
+            {
+                "ID"
+            };
             List<List<string>> query = DefQed.Data.MySQLDriver.QueryTable(TableType.Notations, "TITLE", notation.Name.ToUpper().Trim(), tmp);
             if (query.Count > 0)
             {
@@ -224,17 +227,19 @@ namespace DefQed.Core
 
         public static void InstallNotation(ref Notation notation)
         {
-            List<string> columns = new();
-            columns.Add("ID");
-            columns.Add("TITLE");
-            columns.Add("ORIGIN");
-            columns.Add("OPACITY");
+            List<string> columns = new()
+            {
+                "ID",
+                "TITLE",
+                "ORIGIN",
+                "OPACITY"
+            };
 
             List<string> values = new();
 
             // DO = TODO - TO
             // DO: error handling here.
-            int max = DefQed.Data.MySQLDriver.GetMaxId(TableType.Notations);
+            int max = MySQLDriver.GetMaxId(TableType.Notations);
             if (max == -2)
             {
                 // Chose to abort
@@ -263,7 +268,7 @@ namespace DefQed.Core
             values.Add(origin);
             values.Add("1.00");
 
-            DefQed.Data.MySQLDriver.InsertRow(TableType.Notations, columns, values);
+            MySQLDriver.InsertRow(TableType.Notations, columns, values);
         }
     }
 }

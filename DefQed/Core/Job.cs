@@ -42,8 +42,6 @@ namespace DefQed.Core
         private void PerformProof(int TimeOut)
         {
 #if __DONT_HANDLE_EXCEPTION__
-            Console.Log(Common.LogLevel.Information, "Start proving...");
-
             // Load reflections...
             KnowledgeBase.LoadReflections();
 
@@ -51,7 +49,7 @@ namespace DefQed.Core
             {
                 while (!KnowledgeBase.TryBridging())
                 {
-                    Console.Log(Common.LogLevel.Diagnostic, "Bridging failed, try to scan pool.");
+                    Console.Log(Common.LogLevel.Information, "Bridging failed, try to scan pool.");
                     KnowledgeBase.ScanPools();
                 }
                 
@@ -103,7 +101,7 @@ namespace DefQed.Core
             else
             {
                 // timeout termination encountered.
-                Console.WriteLine("Proof terminated because of timeout.");
+                Console.Log(Common.LogLevel.Error, "Proof terminated because of timeout.");
                 Console.Log(Common.LogLevel.Warning, "This version will not serialize KBase.");
             }
 #else

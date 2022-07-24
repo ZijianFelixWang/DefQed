@@ -42,6 +42,7 @@ namespace DefQed.Core
         public void Dispose()
         {
             Notation.Dispose();
+            GC.SuppressFinalize(this);  // CA1816 quality rule
         }
     }
 }

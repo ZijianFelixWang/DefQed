@@ -18,6 +18,7 @@ namespace DefQed.Core
             Name = "";
             Id = -1;
             Origin = 0;
+            GC.SuppressFinalize(this);  // CA1816 quality rule
         }
 
         public override bool Equals(object? obj)

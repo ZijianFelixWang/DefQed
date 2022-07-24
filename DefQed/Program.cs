@@ -15,11 +15,14 @@ namespace DefQed
 {
     public class Program
     {
-        [Option]
-        public Common.LogLevel LogLevel { get; set; }
+        [Option(Description = "LogLevel: Diagnostic, Information, Warning, Error", ShortName = "l")]
+        public Common.LogLevel? LogLevel { get; set; }
 
         [Option(Description = "File format: xml (default), js, qed", ShortName = "f")]
         public string? Format { get; set; }
+
+        [Option(Description = "Time out, in seconds, default: 31536000 =365*24*3600", ShortName = "t")]
+        public int? TimeOut { get; set; }
 
         [Argument(0)]
         [System.ComponentModel.DataAnnotations.Required]
@@ -50,8 +53,18 @@ namespace DefQed
         private void OnExecute()
 #pragma warning restore IDE0051 // Remove unused private members
         {
-            Common.LogConsole.LogLevel = LogLevel;
-            Common.LogConsole.Log(Common.LogLevel.Information, $"Set LogLevel as {Common.LogConsole.LogLevel2Str(LogLevel)}.");
+            if (LogLevel != null)
+            {
+                Common.LogConsole.LogLevel = (Common.LogLevel)LogLevel;
+            }
+            Common.LogConsole.Log(Common.LogLevel.Information, $"Set LogLevel as {Common.LogConsole.LogLevel2Str(Common.LogConsole.LogLevel)}.");
+            
+            if (TimeOut != null)
+            {
+                CurrentJob.TimeOut = (int)TimeOut;
+            }
+            Common.LogConsole.Log(Common.LogLevel.Information, $"Set TimeOut as {CurrentJob.TimeOut} seconds.");
+
             if (FileName.Length == 0)
             {
                 Common.LogConsole.Log(Common.LogLevel.Error, "Bad filename.");
