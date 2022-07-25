@@ -21,16 +21,22 @@ namespace DefQed.Core
 
         // Maybe some time later the ui codes and job codes should be separated.
 
-        public string XMLFileName = "";
-        public KBase KnowledgeBase = new();
-        public int TimeOut = 365 * 24 * 3600;   // A year's proof hah
-        public string ProofOutput = "";
-        public bool NotToTee = false;
+        private string xMLFileName = "";
+        private KBase knowledgeBase = new();
+        private int timeOut = 365 * 24 * 3600;   // A year's proof hah
+        private string proofOutput = "";
+        private bool notToTee = false;
 
         private Task? ProofTask;
 
+        public string XMLFileName { get => xMLFileName; set => xMLFileName = value; }
+        public KBase KnowledgeBase { get => knowledgeBase; set => knowledgeBase = value; }
+        public int TimeOut { get => timeOut; set => timeOut = value; }
+        public string ProofOutput { get => proofOutput; set => proofOutput = value; }
+        public bool NotToTee { get => notToTee; set => notToTee = value; }
+
         // Remark: if give a default value will lead into an excpetion...
-        
+
         public void PerformProof()
         {
             PerformProof(TimeOut);

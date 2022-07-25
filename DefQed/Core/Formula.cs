@@ -7,7 +7,9 @@ namespace DefQed.Core
     public class Formula : IDisposable
     {
         // Formula -- logical set of micro statements
-        public Bracket TopLevel = new();
+        private Bracket topLevel = new();
+
+        public Bracket TopLevel { get => topLevel; set => topLevel = value; }
 
         public void Dispose()
         {

@@ -17,14 +17,19 @@ namespace DefQed.Core
         // 3) hold a micro statement
         // 4) hold a symbol
 
-        public MicroStatement? MicroStatement = null;
-        public Symbol? Symbol = null;
-        public Notation? Connector = null;
-        public Bracket[] SubBrackets = new Bracket[2];
+        private MicroStatement? microStatement;
+        private Symbol? symbol;
+        private Notation? connector;
+        private Bracket[] subBrackets = new Bracket[2];
+        private BracketType? bracketType;
+        private Satisfaction satisfied = Satisfaction.Unknown;  // This is for DefQed.Core.Formula.Validate().
 
-        public BracketType? BracketType = null;
-
-        public Satisfaction Satisfied = Satisfaction.Unknown;  // This is for DefQed.Core.Formula.Validate().
+        public BracketType? BracketType { get => bracketType; set => bracketType = value; }
+        public Satisfaction Satisfied { get => satisfied; set => satisfied = value; }
+        public Bracket[] SubBrackets { get => subBrackets; set => subBrackets = value; }
+        public Notation? Connector { get => connector; set => connector = value; }
+        public Symbol? Symbol { get => symbol; set => symbol = value; }
+        public MicroStatement? MicroStatement { get => microStatement; set => microStatement = value; }
 
         // Will cause stack overflow
         //Lines of code removed here.

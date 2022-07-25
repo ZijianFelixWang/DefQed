@@ -6,10 +6,13 @@ namespace DefQed.Core
     {
         // Symbol -- the 'newed' notation
         // if 'ABC' as Name, okay but what if evaluation pops out '12'
-        public string Name;
-        public int Id;
-        public Notation Notation;
-        public double? DirectValue = null;
+        private string name;
+        private int id;
+        private Notation notation;
+
+        public string Name { get => name; set => name = value; }
+        public int Id { get => id; set => id = value; }
+        public Notation Notation { get => notation; set => notation = value; }
 
         public override string ToString()
         {
@@ -36,7 +39,6 @@ namespace DefQed.Core
             Id = -1;
             Name = Convert.ToString(dVal);
             Notation = notation;
-            DirectValue = dVal;
         }
 
         public void Dispose()

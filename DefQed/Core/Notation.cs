@@ -1,15 +1,19 @@
-﻿using System;
+﻿using Org.BouncyCastle.Crypto.Digests;
+using System;
 using System.Text;
 using System.Text.Json;
-using Org.BouncyCastle.Crypto.Digests;
 
 namespace DefQed.Core
 {
     public class Notation : IDisposable
     {
-        public string Name = "";
-        public int Id;
-        public NotationOrigin Origin;
+        private string name = "";
+        private int id;
+        private NotationOrigin origin;
+
+        public string Name { get => name; set => name = value; }
+        public int Id { get => id; set => id = value; }
+        public NotationOrigin Origin { get => origin; set => origin = value; }
 
         public override string ToString() => $"([{Id}]{Name})";
 
@@ -59,7 +63,7 @@ namespace DefQed.Core
             }
         }
 
-        public static bool operator != (Notation? n1, Notation? n2) => !(n1 == n2);
+        public static bool operator !=(Notation? n1, Notation? n2) => !(n1 == n2);
 
         public static bool operator ==(Notation? n1, Notation? n2)
         {

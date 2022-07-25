@@ -18,7 +18,9 @@ namespace DefQed.Data
         // Remove this line of code when release.
         public static string connStr = @"server=127.0.0.1;uid=DefQed;pwd=oClg2%[TenbL86V+rsC3;database=defqed";
 #else
-        public static string connStr = "";
+        private static string connStr = "";
+
+        public static string ConnStr { get => connStr; set => connStr = value; }
 #endif
 
         public static bool Initialize()
@@ -27,7 +29,7 @@ namespace DefQed.Data
             {
                 conn = new();
                 {
-                    conn.ConnectionString = connStr;
+                    conn.ConnectionString = ConnStr;
                 }
                 conn.Open();
             }

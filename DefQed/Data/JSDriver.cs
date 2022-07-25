@@ -1,40 +1,38 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
+﻿using DefQed.Core;
 using Microsoft.ClearScript.V8;
-using DefQed.Core;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Console = Common.LogConsole;
 
 namespace DefQed.Data
 {
     public static class JSDriver
     {
-#pragma warning disable CA2211 // Non-constant fields should not be visible
-        public static bool errored = false;
-#pragma warning restore CA2211 // Non-constant fields should not be visible
+        private static bool errored = false;
 
         private static KBase kbase2 = new();
-#pragma warning disable IDE0044 // Add readonly modifier
-        private static Dictionary<string, Symbol> SymbolBank = new();
-#pragma warning restore IDE0044 // Add readonly modifier
-        private static List<MicroStatement> LeftPool = new();
-        private static List<MicroStatement> RigtPool = new();
+        private static readonly Dictionary<string, Symbol> SymbolBank = new();
+        private static readonly List<MicroStatement> LeftPool = new();
+        private static readonly List<MicroStatement> RigtPool = new();
+
+        public static bool Errored { get => errored; set => errored = value; }
 
         public static void Connect(string user, string passwd, string db)
         {
             if ((user == null) || (passwd == null) || (db == null))
             {
                 Console.Log(Common.LogLevel.Error, "Bad connection declaration in JavaScript.");
-                errored = true;
+                Errored = true;
                 return;
             }
-            MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={passwd};database={db}";
+            MySQLDriver.ConnStr = $"server=127.0.0.1;uid={user};pwd={passwd};database={db}";
 
             // connect now
             if (!MySQLDriver.Initialize())
             {
-                Console.Log(Common.LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.");
-                errored = true;
+                Console.Log(Common.LogLevel.Error, "Connstr " + MySQLDriver.ConnStr + " failed.");
+                Errored = true;
                 return;
             }
         }
@@ -58,7 +56,7 @@ namespace DefQed.Data
                 else
                 {
                     Console.Log(Common.LogLevel.Error, "Unexpected notation id allocated.");
-                    errored = true;
+                    Errored = true;
                     return;
                 }
             }
@@ -104,7 +102,7 @@ namespace DefQed.Data
             }
             else
             {
-                errored = true;
+                Errored = true;
                 Console.Log(Common.LogLevel.Error, "Unenrolled symbol name.");
                 return new();
             }
@@ -159,8 +157,8 @@ namespace DefQed.Data
         public static void LoadJS(string filename, ref KBase kbase)
         {
             Console.Log(Common.LogLevel.Warning, "LoadJS feature is EXPERIMENTAL.");
-            errored = false;
-            
+            Errored = false;
+
             if (kbase == null)
             {
                 kbase = new();
@@ -202,7 +200,7 @@ namespace DefQed.Data
             kbase.LeftPool = LeftPool;
             kbase.RightPool = RigtPool;
 
-            if (errored)
+            if (Errored)
             {
                 Console.Log(Common.LogLevel.Error, "Error encountered when loading from javascript file.");
                 Environment.Exit(-1);

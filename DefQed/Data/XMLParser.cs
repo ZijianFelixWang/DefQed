@@ -10,9 +10,7 @@ namespace DefQed.Data
 {
     internal static class XMLParser
     {
-#pragma warning disable IDE0044 // Add readonly modifier
-        private static Dictionary<string, Symbol> SymbolBank = new();
-#pragma warning restore IDE0044 // Add readonly modifier
+        private static readonly Dictionary<string, Symbol> SymbolBank = new();
 
         public static KBase ParseXMLAsync(string filename)
         {
@@ -147,14 +145,14 @@ namespace DefQed.Data
                 error = true;
                 return;
             }
-            MySQLDriver.connStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
+            MySQLDriver.ConnStr = $"server=127.0.0.1;uid={user};pwd={password};database={database}";
 
             #region commented stuff
             #endregion
 
             if (!MySQLDriver.Initialize())
             {
-                Console.Log(Common.LogLevel.Error, "Connstr " + MySQLDriver.connStr + " failed.");
+                Console.Log(Common.LogLevel.Error, "Connstr " + MySQLDriver.ConnStr + " failed.");
                 error = true;
             }
         }

@@ -10,10 +10,14 @@ namespace DefQed.Core
         // Reflection must specify a formula of MicroStatements (when this)
         // and a set of MicroStatements (then that). Note: the 'formula' must
         // has logics which supports 'A and (B or C)' or something like that.
-        public Formula Condition = new();
-        public List<MicroStatement> Conclusion = new();
+        private Formula condition = new();
+        private List<MicroStatement> conclusion = new();
 
         private static uint DoReflectCount = 0;
+
+        public Formula Condition { get => condition; set => condition = value; }
+        public List<MicroStatement> Conclusion { get => conclusion; set => conclusion = value; }
+        public static uint DoReflectCount1 { get => DoReflectCount; set => DoReflectCount = value; }
 
         private string Conclusion2Str()
         {
@@ -116,8 +120,8 @@ namespace DefQed.Core
                 // The pool satisfies the formula's condition.
                 Console.Log(Common.LogLevel.Diagnostic, "DoReflect: Formula satisfaction success.");
 
-                DoReflectCount++;
-                history += $"{DoReflectCount}\t----------\n";
+                DoReflectCount1++;
+                history += $"{DoReflectCount1}\t----------\n";
                 history += $"Using\t{reflection}\nWith\t{Transistor2Str(transistors)})\n";
 
                 // FTC algorithm called here~
