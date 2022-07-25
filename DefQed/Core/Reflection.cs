@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Console = Common.LogConsole;
-using JsonSerializer2 = Newtonsoft.Json.JsonConvert;
 
 namespace DefQed.Core
 {
@@ -82,7 +81,6 @@ namespace DefQed.Core
                 Console.Log(Common.LogLevel.Diagnostic, $"Pool Content: {t.ToFriendlyString()}");
             }
 
-            //history += ");";
             return history;
         }
 
@@ -126,11 +124,6 @@ namespace DefQed.Core
                 var ss = FreeTSTCombinator(transistors);
                 foreach (var s in ss)
                 {
-                    //foreach (var tst in s)
-                    //{
-                    //    Console.Log(Common.LogLevel.Diagnostic, $"(SubSet) Pair: {tst.Item1.Symbol.Name} to {tst.Item2.Symbol.Name}");
-                    //}
-
                     // Let's joint the conclusion.
                     for (int i = 0; i < reflection.Conclusion.Count; i++)
                     {
@@ -140,8 +133,6 @@ namespace DefQed.Core
 
                         result.Add(item);
                         Console.Log(Common.LogLevel.Diagnostic, $"DoReflect: Applied transistor {i + 1} of {reflection.Conclusion.Count}.");
-
-                        //history += $"[{i}]{item}";
                     }
 
                     history += "\n";
@@ -201,8 +192,6 @@ namespace DefQed.Core
                     allLefts.Add(transistors[i].Item1);
                 }
             }
-
-            //var tOld = transistors;
 
             for (int i1 = 0; i1 < transistors.Count; i1++)
             {
@@ -332,7 +321,6 @@ namespace DefQed.Core
             {
                 rh += $"{t.Item1.ToFriendlyString()}\t<--->\t{t.Item2.ToFriendlyString()}\n";
             }
-            //rh = rh[..^1];
             rh += "}";
 
             return rh;

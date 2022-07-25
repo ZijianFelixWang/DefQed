@@ -149,7 +149,6 @@ namespace DefQed.Data
             }
             catch (System.Data.SqlTypes.SqlNullValueException ex)
             {
-                //int choice = MessageBox.ErrorQuery(ex.ToString(), $"Exception details:\n{ex}\n\nAbort: end process; Ignore: continue (diagnostic only).", new ustring[] { "Abort", "Ignore" });
                 int choice;
                 Console.Log(Common.LogLevel.Error, ex.ToString() + $"Exception details:\n{ex}");
                 System.Console.Write("A = Abort; I = Ignore");

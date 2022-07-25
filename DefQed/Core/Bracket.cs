@@ -93,7 +93,6 @@ namespace DefQed.Core
 
         public override int GetHashCode()
         {
-            //return base.GetHashCode();
             JsonSerializerOptions op = new()
             {
                 IncludeFields = true,

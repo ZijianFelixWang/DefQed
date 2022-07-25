@@ -21,7 +21,6 @@ namespace DefQed.Core
         }
 
         // Validator: check if the TopLevel can be satisfied within a fixed given set of MSs.
-        //public bool Validate(List<MicroStatement> situation, ref Dictionary<Symbol, Symbol> transistors) => VisitBracket(TopLevel, situation, ref transistors);
 
         // Well, the iso-checker and tst-builder algorithm here has serious problems!
         // We need to fix it. But... what if invlove in a binary tree?
