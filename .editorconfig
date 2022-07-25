@@ -22,6 +22,9 @@ dotnet_diagnostic.IDE0008.severity = silent
 # CS8602: Dereference of a possibly null reference.
 dotnet_diagnostic.CS8602.severity = silent
 
+# CA1051: Do not declare visible instance fields
+dotnet_diagnostic.CA1051.severity = silent
+
 [*.{cs,vb}]
 #### Naming styles ####
 

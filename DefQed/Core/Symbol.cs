@@ -6,9 +6,9 @@ namespace DefQed.Core
     {
         // Symbol -- the 'newed' notation
         // if 'ABC' as Name, okay but what if evaluation pops out '12'
-        private string name;
-        private int id;
-        private Notation notation;
+        private string name = "";
+        private int id = -2;
+        private Notation notation = new();
 
         public string Name { get => name; set => name = value; }
         public int Id { get => id; set => id = value; }

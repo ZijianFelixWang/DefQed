@@ -8,11 +8,8 @@ namespace DefQed.Core
         // a microstatement is firstly generated from E&S by other things...
 
         // These brackets allow type BH 1 , SYH 4
-        private Bracket[] brackets = new Bracket[2]; // L, R
-        private Notation connector = new(); // M
-
-        public Bracket[] Brackets { get => brackets; set => brackets = value; }
-        public Notation Connector { get => connector; set => connector = value; }
+        public Bracket[] Brackets = new Bracket[2]; // L, R
+        public Notation Connector = new(); // M
 
         public MicroStatement()
         {
