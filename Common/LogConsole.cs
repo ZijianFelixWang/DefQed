@@ -14,13 +14,15 @@ namespace Common
 
 #pragma warning disable CS0649 // Never assigned to value.
 #if __DIAGNOSTIC_AS_DEFAULT__
-        public static LogLevel LogLevel = Common.LogLevel.Diagnostic;
+        private static LogLevel logLevel = Common.LogLevel.Diagnostic;
+
 #else
-        public static LogLevel LogLevel = Common.LogLevel.Information;
+        private static LogLevel LogLevel = Common.LogLevel.Information;
 #endif
+        public static LogLevel LogLevel { get => logLevel; set => logLevel = value; }
 #pragma warning restore CS0649 // Never assigned to value.
 
-// If a warning appeared with CS0649 already disabled, just enable this
+        // If a warning appeared with CS0649 already disabled, just enable this
 #if __IDE_BUG_WARNING_FIX__
         public static void SetLogLevel(LogLevel lv) => LogLevel = lv;
 #endif

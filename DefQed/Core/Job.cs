@@ -25,7 +25,7 @@ namespace DefQed.Core
         public KBase KnowledgeBase = new();
         public int TimeOut = 365 * 24 * 3600;   // A year's proof hah
         public string ProofOutput = "";
-        public bool NotToTee = false;
+        public bool NotToTee;
 
         private Task? ProofTask;
 
