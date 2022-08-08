@@ -6,6 +6,7 @@
 
 **Note.** The latest documentation can be found in the Wiki Section...
 **Note.** The Wiki section is NOT finished. So you should still use this Get Started documentation...
+**Note.** Visit the ANT-ANCT-Paper repo for more information.
 
 ## What's This?
 **DefQed** is a statement prover with its own algorithm for academic written in C#. It is immature and still in active (and very early) development.
