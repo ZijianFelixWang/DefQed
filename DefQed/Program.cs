@@ -30,9 +30,12 @@ namespace DefQed
         [Option(Description = "Not to tee proof text. This will override -p option. (Quiet mode)", ShortName = "q")]
         public bool Quiet { get; set; }
 
-        [Argument(0)]
+        [Argument(0, Description = "What to do with DefQed")]
         [System.ComponentModel.DataAnnotations.Required]
-        public string? FileName { get; set; }
+        public CommandType? Command { get; set; }
+
+        [Argument(1, Description = "Optional. The parameter for command.")]
+        public string? Parameter { get; set; }
 
         public static void Main(string[] args)
         {
@@ -47,7 +50,6 @@ namespace DefQed
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Common.LogConsole.Log(Common.LogLevel.Warning, "OS is not Windows. Software execution not tested. Press enter to continue.");
-                _ = Console.ReadLine();
             }
 
             CommandLineApplication.Execute<Program>(args);
@@ -81,23 +83,39 @@ namespace DefQed
                 CurrentJob.NotToTee = true;
             }
 
-            if (FileName.Length == 0)
+            switch (Command)
             {
-                Common.LogConsole.Log(Common.LogLevel.Error, "Bad filename.");
-                Environment.Exit(-1);
-            }
+                case CommandType.Version:
+                    Common.LogConsole.Log(Common.LogLevel.Information, "DefQed version 0.02 IN DEVELOPMENT.");
+                    Environment.Exit(0);
+                    break;
+                case CommandType.Prove:
+                    if (Parameter == null)
+                    {
+                        Common.LogConsole.Log(Common.LogLevel.Error, "Parameter is null.");
+                        Environment.Exit(-1);
+                    }
 
-            switch (Format.ToLower())
-            {
-                case "xml":
+                    switch (Format.ToLower())
+                    {
+                        case "xml":
+                        default:
+                            ProveXML(Parameter);
+                            break;
+                        case "js":
+                            ProveJavaScript(Parameter);
+                            break;
+                        case "qed":
+                            ProveQEDPackage(Parameter);
+                            break;
+                    }
+                    break;
+                case CommandType.Reconfigure:
+                    Common.LogConsole.Log(Common.LogLevel.Error, "Not implemented yet.");
+                    Environment.Exit(-1);
+                    break;
                 default:
-                    ProveXML(FileName);
-                    break;
-                case "js":
-                    ProveJavaScript(FileName);
-                    break;
-                case "qed":
-                    Common.LogConsole.Log(Common.LogLevel.Error, "Not implemented QED format...");
+                    Common.LogConsole.Log(Common.LogLevel.Error, "Failed to parse command.");
                     Environment.Exit(-1);
                     break;
             }
@@ -109,6 +127,11 @@ namespace DefQed
             CurrentJob.PerformProof();
         }
 
+        private static void ProveQEDPackage(string arg)
+        {
+
+        }
+
         private static void ProveXML(string arg)
         {
 #if __SERIALIZE_DEBUG_JSON__
@@ -118,6 +141,12 @@ namespace DefQed
 
             CurrentJob.LoadXML(arg);
             CurrentJob.PerformProof();
+        }
+        public enum CommandType
+        {
+            Prove,
+            Reconfigure,
+            Version
         }
     }
 }

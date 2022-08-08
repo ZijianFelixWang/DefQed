@@ -8,8 +8,17 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Data
 {
+    /// <summary>
+    /// <c>MySQLDriver</c> provides a way for the program to connect to the MySQL database.
+    /// </summary>
+    /// <remarks>
+    /// The MySql.Data package must be installed to use this class.
+    /// </remarks>
     internal static class MySQLDriver
     {
+        /// <summary>
+        /// (field) This field stores the actual MySQL connection.
+        /// </summary>
         private static MySql.Data.MySqlClient.MySqlConnection? conn;
 
 #if __USE_INLINE_CONNSTR__
@@ -18,11 +27,34 @@ namespace DefQed.Data
         // Remove this line of code when release.
         public static string connStr = @"server=127.0.0.1;uid=DefQed;pwd=oClg2%[TenbL86V+rsC3;database=defqed";
 #else
+        /// <summary>
+        /// (field) This field stores the connection string. Default is blank.
+        /// </summary>
         private static string connStr = "";
 
+        /// <summary>
+        /// This property gives access to the connection string used by the driver.
+        /// </summary>
+        /// <value>
+        /// The <c>ConnStr</c> property must be set to the connection string before connecting.
+        /// </value>
         public static string ConnStr { get => connStr; set => connStr = value; }
 #endif
 
+        /// <summary>
+        /// Initializes the connection to the MySQL server.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Note: Currently, it can only connect to MySQL servers on the local host.
+        /// </para>
+        /// <para>
+        /// However, as a TODO, remote server accessibility will be added later.
+        /// </para>
+        /// </remarks>
+        /// <returns>
+        /// A boolean representing whether the initialization is successful.
+        /// </returns>
         public static bool Initialize()
         {
             try
@@ -50,6 +82,16 @@ namespace DefQed.Data
             return true;
         }
 
+        /// <summary>
+        /// Safely closes the MySql connection.
+        /// </summary>
+        /// <remarks>
+        /// I admit that in the <c>v0.01</c> version the connections are not terminated
+        /// safely that they are all closed in the 'hard' way. (forcely)
+        /// </remarks>
+        /// <returns>
+        /// A boolean representing whether the termination is done successfully.
+        /// </returns>
         public static bool Terminate()
         {
             if (conn != null)
@@ -65,6 +107,15 @@ namespace DefQed.Data
             }
         }
 
+        /// <summary>
+        /// Get the names of all the data tables in the openned database.
+        /// </summary>
+        /// <remarks>
+        /// Pay attenetion that the returning object is a list of names, not a list of tables.
+        /// </remarks>
+        /// <returns>
+        /// A list of the names of tables in the database.
+        /// </returns>
         private static List<string> GetTables()
         {
             MySql.Data.MySqlClient.MySqlCommand cmd = new("SHOW TABLES;", conn);
@@ -82,6 +133,21 @@ namespace DefQed.Data
             return tables;
         }
 
+        /// <summary>
+        /// Performs a check of whether the DefQed data tables are created (or imported) correctly.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This method can be used to assess whether the installation is completed successfully.
+        /// </para>
+        /// <para>
+        /// To succeed, a database must have these tables: notations, reflections, registries. This will
+        /// not check the further structures and data types of the table.
+        /// </para>
+        /// </remarks>
+        /// <returns>
+        /// A boolean representing if the check is successful.
+        /// </returns>
         private static bool PerformTableCheck()
         {
             List<string> tables = GetTables();
@@ -89,6 +155,17 @@ namespace DefQed.Data
             else return false;
         }
 
+        /// <summary>
+        /// Actually perform a query of the table and get a list of a list of results.
+        /// </summary>
+        /// <param name="tableType">The type of the table.</param>
+        /// <param name="keyColumn">The known column name.</param>
+        /// <param name="keyValue">The known column's value.</param>
+        /// <param name="askedColumns">The columns to query.</param>
+        /// <returns>
+        /// A list of list of string. Each sub-list represents a row queryed. Each list-of-sub-list represents
+        /// a result from the <c>MySqlDataReader.Read()</c> method.
+        /// </returns>
         public static List<List<string>> QueryTable(TableType tableType, string keyColumn, string keyValue, List<string> askedColumns)
         {
             List<List<string>> result = new();
@@ -114,6 +191,14 @@ namespace DefQed.Data
             return result;
         }
 
+        /// <summary>
+        /// Get everything by row from an entire table.
+        /// </summary>
+        /// <param name="tableType">The type of the table.</param>
+        /// <returns>
+        /// A list of list of string. Each sub list represents a row. Each list-of-sub-list represents
+        /// a line of result of the <c>MySqlDataReader.Read()</c> method.
+        /// </returns>
         public static List<List<string>> AcquireWholeTable(TableType tableType)
         {
             List<List<string>> result = new();
@@ -137,6 +222,13 @@ namespace DefQed.Data
             return result;
         }
 
+        /// <summary>
+        /// Gets the maxi value of the <c>id</c> column of the given table.
+        /// </summary>
+        /// <param name="tableType">The type of the table.</param>
+        /// <returns>
+        /// An integer, that is, the maxi <c>id</c> of the given table's rows.
+        /// </returns>
         public static int GetMaxId(TableType tableType)
         {
             string sql = $"SELECT MAX(ID) FROM {TableType2Str(tableType)};";
@@ -177,6 +269,12 @@ namespace DefQed.Data
             return t;
         }
 
+        /// <summary>
+        /// This method inserts a new row into the targeted table.
+        /// </summary>
+        /// <param name="tableType">The type of the table to insert.</param>
+        /// <param name="columns">The list of the columns to give value to.</param>
+        /// <param name="values">The list of the values of the new row.</param>
         public static void InsertRow(TableType tableType, List<string> columns, List<string> values)
         {
             string sql = $"INSERT INTO {TableType2Str(tableType)} ({List2Str(columns)}) VALUES ({List2Str(values)});";
@@ -187,6 +285,21 @@ namespace DefQed.Data
             Console.Log(Common.LogLevel.Diagnostic, $"Insert row. SQL: {sql}");
         }
 
+        /// <summary>
+        /// Converts a list of string into a string to be used to construct the SQL.
+        /// </summary>
+        /// <param name="list">The list of strings.</param>
+        /// <param name="quotes">
+        /// <para>
+        /// Controls whether to add a pair of double quotes outside the output string.
+        /// </para>
+        /// <para>
+        /// This parameter is optional and its default value is <c>true</c>.
+        /// </para>
+        /// </param>
+        /// <returns>
+        /// A string that will be used in constructing the SQL command.
+        /// </returns>
         private static string List2Str(List<string> list, bool quotes = true)
         {
             string res = "";
@@ -210,6 +323,16 @@ namespace DefQed.Data
             return res;
         }
 
+        /// <summary>
+        /// A big switch expression to convert <c>TableType</c> to the regarding string.
+        /// </summary>
+        /// <param name="tableType">The <c>TableType</c> value.</param>
+        /// <returns>
+        /// The string regarding to the <c>TableType</c>.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// This exception occurs when an illegal value of TableType is given, for example 7.
+        /// </exception>
         private static string TableType2Str(TableType tableType) => tableType switch
         {
             TableType.Notations => "notations",
@@ -219,6 +342,9 @@ namespace DefQed.Data
         };
     }
 
+    /// <summary>
+    /// This enumeration has three types: Notations, Reflections, Registries.
+    /// </summary>
     internal enum TableType
     {
         Notations,

@@ -8,39 +8,37 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Data
 {
+    /// <summary>
+    /// <c>XMLParser</c> is a class that implements the feature of parsing the XML-form file containing specifications.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Note: <c>XMLParser</c> is deprecated. It will be REMOVED later. Please use <c>JSDriver</c> more. One reason for
+    /// this is the design of this parser increases the complexity metrics of the whole project, eg. in Codacy and VS.
+    /// </para>
+    /// <para>
+    /// The XML format does not have some feature that the JSDriver has. For instance, the left pool only contains 
+    /// <c>x==y</c> form MicroStatements.
+    /// </para>
+    /// </remarks>
     internal static class XMLParser
     {
+        /// <summary>
+        /// (field) The symbols enrolled by the <c>JSDriver.Enroll()</c> function, to be legally used later.
+        /// </summary>
         private static readonly Dictionary<string, Symbol> SymbolBank = new();
 
-        public static KBase ParseXMLAsync(string filename)
-        {
-            Console.Log(Common.LogLevel.Diagnostic, $"ParseXMLAsync() Thread {Environment.CurrentManagedThreadId}");
-            // LCMP
-            KBase k = ParseXMLTask(filename).Result;
-            return k;
-        }
-
-        private static Task<KBase> ParseXMLTask(string filename)
-        {
-            var task = Task.Run(() =>
-            {
-                Console.Log(Common.LogLevel.Diagnostic, "This is to create the xml parser task.");
-                Console.Log(Common.LogLevel.Diagnostic, $"ParseXMLTask() Thread {Environment.CurrentManagedThreadId}");
-                KBase k = new();
-                bool e = false;
-                ParseXML(filename, ref k, ref e);
-                if (!e)
-                {
-                    return k;
-                }
-                else
-                {
-                    return new();
-                }
-            });
-            return task;
-        }
-
+        /// <summary>
+        /// This function actually parses the XML specification file and gives back the <c>KBase</c>.
+        /// </summary>
+        /// <remarks>
+        /// The reference parameter <c>kbase</c> should be passed with an empty or freshly-newed KnowledgeBase
+        /// because it will be erased by a new one just created. The called should check the <c>error</c>
+        /// reference parameter to check if the method has executed successfully.
+        /// </remarks>
+        /// <param name="filename">Specifies file to be loaded.</param>
+        /// <param name="kbase">(reference) The KBase constructed by the method.</param>
+        /// <param name="error">Whether the ParseXML loading process has errored.</param>
         public static void ParseXML(string filename, ref KBase kbase, ref bool error)
         {
             XmlDocument doc = new();
@@ -113,6 +111,14 @@ namespace DefQed.Data
             }
         }
 
+        /// <summary>
+        /// This function parses the Connection tag in the XML file and connects to the database.
+        /// </summary>
+        /// <remarks>
+        /// This method calls the MySqlDriver class to connect to the database.
+        /// </remarks>
+        /// <param name="node">The node context of the encountered.</param>
+        /// <param name="error">Whether the ParseXML loading process has errored.</param>
         private static void ParseConnection(XmlNode node, ref bool error)
         {
             if (error)
@@ -157,6 +163,12 @@ namespace DefQed.Data
             }
         }
 
+        /// <summary>
+        /// This function parses the Environment tag in the XML file.
+        /// </summary>
+        /// <param name="node">The node context of the encountered.</param>
+        /// <param name="kbase">(reference) The KBase constructed by the method.</param>
+        /// <param name="error">Whether the ParseXML loading process has errored.</param>
         private static void ParseEnvironment(XmlNode node, ref KBase kbase, ref bool error)
         {
             if (error)
@@ -319,6 +331,12 @@ namespace DefQed.Data
             }
         }
 
+        /// <summary>
+        /// This function parses the Statement tag in the XML file.
+        /// </summary>
+        /// <param name="node">The node context of the encountered.</param>
+        /// <param name="kbase">(reference) The KBase constructed by the method.</param>
+        /// <param name="error">Whether the ParseXML loading process has errored.</param>
         private static void ParseStatement(XmlNode node, ref KBase kbase, ref bool error)
         {
             if (error)
@@ -391,6 +409,13 @@ namespace DefQed.Data
             return;
         }
 
+        /// <summary>
+        /// This function parses the bracket definitions in the XML file.
+        /// </summary>
+        /// <param name="node">The node context of the encountered.</param>
+        /// <param name="kbase">(reference) The KBase constructed by the method.</param>
+        /// <param name="bracket">(reference) The <c>bracket</c> constructed by the method.</param>
+        /// <param name="error">Whether the ParseXML loading process has errored.</param>
         private static void ParseProveBracket(XmlNode node, ref KBase kbase, ref Bracket bracket, ref bool error)
         {
             if (error)

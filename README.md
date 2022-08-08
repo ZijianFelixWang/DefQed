@@ -4,6 +4,9 @@
 ![](https://img.shields.io/tokei/lines/github/ZijianFelixWang/DefQed?style=flat-square)
 ![](https://img.shields.io/codacy/grade/135e566bb35047bf9c9bf07dcaa0a069?style=flat-square)
 
+**Note.** The latest documentation can be found in the Wiki Section...
+**Note.** The Wiki section is NOT finished. So you should still use this Get Started documentation...
+
 ## What's This?
 **DefQed** is a statement prover with its own algorithm for academic written in C#. It is immature and still in active (and very early) development.
 
