@@ -54,6 +54,10 @@
 		<PackageReference Include="BouncyCastle" Version="1.8.9">
 			<NoWarn>NU1701</NoWarn>
 		</PackageReference>
+		<PackageReference Include="docfx.console" Version="2.59.3">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
 		<PackageReference Include="Microsoft.ClearScript" Version="7.3.1" />
 		<PackageReference Include="Microsoft.ClearScript.linux-x64" Version="7.3.1" />

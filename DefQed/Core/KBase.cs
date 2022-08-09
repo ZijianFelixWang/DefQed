@@ -10,6 +10,17 @@ using Console = Common.LogConsole;
 
 namespace DefQed.Core
 {
+    /// <summary>
+    /// The <c>KBase</c> class describes the definition for the knowledge base.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A knowledge base, if as a database, contains three types of things:
+    /// <list type="bullet">
+    /// <item>Notations: contains the registration of all notations available for manipulation.</item>
+    /// </list>
+    /// </para>
+    /// </remarks>
     public class KBase : IDisposable
     {
         // KBase -- The knowledge base (The real core part)
