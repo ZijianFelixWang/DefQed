@@ -106,7 +106,7 @@ namespace DefQed.Data
             {
                 // this is a new notation.
                 notation.Origin = NotationOrigin.External;
-                notation.Id = kbase2.GetNextNotationId();
+                notation.Id = KBase.GetNextNotationId();
                 if (notation.Id != -1)
                 {
                     KBase.InstallNotation(ref notation);
@@ -169,7 +169,7 @@ namespace DefQed.Data
             if (!KBase.VerifyNotation(ref n))
             {
                 n.Origin = NotationOrigin.External;
-                n.Id = kbase2.GetNextNotationId();
+                n.Id = KBase.GetNextNotationId();
                 KBase.InstallNotation(ref n);
             }
 

@@ -20,6 +20,8 @@
 		<RepositoryUrl>https://github.com/ZijianFelixWang/DefQed</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile>C:\Users\felix\Documents\projects\DefQed\DefQed\Documents\doc.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -53,10 +55,6 @@
 	<ItemGroup>
 		<PackageReference Include="BouncyCastle" Version="1.8.9">
 			<NoWarn>NU1701</NoWarn>
-		</PackageReference>
-		<PackageReference Include="docfx.console" Version="2.59.3">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
 		<PackageReference Include="Microsoft.ClearScript" Version="7.3.1" />

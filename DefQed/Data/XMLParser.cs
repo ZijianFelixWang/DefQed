@@ -205,7 +205,7 @@ namespace DefQed.Data
                         {
                             // this is a new notation.
                             notation.Origin = NotationOrigin.External;
-                            notation.Id = kbase.GetNextNotationId();
+                            notation.Id = KBase.GetNextNotationId();
                             if (notation.Id != -1)
                             {
                                 KBase.InstallNotation(ref notation);
@@ -267,7 +267,7 @@ namespace DefQed.Data
                         {
                             // Gosh! The "==" doesn't exist in database.
                             situ.Connector.Origin = NotationOrigin.Internal;
-                            situ.Connector.Id = kbase.GetNextNotationId();
+                            situ.Connector.Id = KBase.GetNextNotationId();
                             KBase.InstallNotation(ref situ.Connector);
                         }
                         // connector ready now.
@@ -298,7 +298,7 @@ namespace DefQed.Data
                         if (!KBase.VerifyNotation(ref dNotation))
                         {
                             // create new notation
-                            dNotation.Id = kbase.GetNextNotationId();
+                            dNotation.Id = KBase.GetNextNotationId();
                             dNotation.Origin = NotationOrigin.External;
                             KBase.InstallNotation(ref dNotation);
                         }
@@ -383,7 +383,7 @@ namespace DefQed.Data
                     // Connector doesn't exist in KBase.
                     // Register connector now.
                     toProve.Connector.Origin = NotationOrigin.External;
-                    toProve.Connector.Id = kbase.GetNextNotationId();
+                    toProve.Connector.Id = KBase.GetNextNotationId();
                     KBase.InstallNotation(ref toProve.Connector);
                 }
 

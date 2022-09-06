@@ -1,0 +1,1447 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DefQed</name>
+    </assembly>
+    <members>
+        <member name="T:DefQed.Core.Bracket">
+            <summary>
+            The <c>Bracket</c> class stands for the minimized structure that holds something.
+            </summary>
+            <remarks>
+            <para>
+            To make the algorithm's design more general, further logics are defined using <c>Notation</c>s. Moreoever,
+            symbolization for some logical stuff is not necessary.
+            </para>
+            <para>
+            Each <c>Bracket</c> can do one of these four things:
+            <list type="number">
+            <item>Hold two brackets with a notation (origin = 0)</item>
+            <item>Hold a negated bracket</item>
+            <item>Hold a <c>MicroStatement</c></item>
+            <item>Hold a symbol</item>
+            </list>
+            </para>
+            <para>
+            The <c>Bracket</c> class implements <c>IDisposable</c> and should be disposed after use to save memory.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.Bracket.microStatement">
+            <summary>
+            (field) This field stores the micro statement held.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Bracket.symbol">
+            <summary>
+            (field) This field stores the symbol held.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Bracket.connector">
+            <summary>
+            (field) This field stores the connector when being used as Bracketolder.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Bracket.subBrackets">
+            <summary>
+            (field) This field stores the subbracket(s) when being used as BracketHolder or NegatedHolder.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Bracket.bracketType">
+            <summary>
+            (field) This field stores the type for the bracket, which is also nullable.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Bracket.satisfied">
+            <summary>
+            (field) This field is used by the Validator, with default value Unknown.
+            </summary>
+        </member>
+        <member name="P:DefQed.Core.Bracket.BracketType">
+            <summary>
+            The <c>BracketType</c> property defines the type (one in four) of the bracket.
+            </summary>
+            <value>
+            The type for the bracket, to distinguish its category.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Bracket.Satisfied">
+            <summary>
+            The <c>Satisfied</c> boolean property is used by the validator to investigate the brackets.
+            </summary>
+            <remarks>
+            <para>
+            For more information, see also <c>DefQed.Core.Formula.Validate()</c> function, where this property is
+            used for a few times.
+            </para>
+            <para>
+            The default value for this property is <c>BracketType.Unknown</c>, which explains its naming origin itself.
+            </para>
+            </remarks>
+            <value>
+            Whether the bracket's micro statement is satisfied, to be used by <c>Validator</c>.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Bracket.SubBrackets">
+            <summary>
+            The <c>SubBrackets</c> property is a two-value array holding brackets when being used as BracketHolder or 
+            NegatedHolder utilizations.
+            </summary>
+            <remarks>
+            If being used as BracketHolder, the sub brackets are correspondlingly the left bracket and the right bracket.
+            Otherwise, if being used as NegatedHolder, the first sub bracket is the bracket to negate, with the second empty.
+            </remarks>
+            <value>
+            The bracket(s) held by this bracket, on the next (sub) level.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Bracket.Connector">
+            <summary>
+            The <c>Connector</c> property is a notation defining the connector of the micro statements held.
+            </summary>
+            <value>
+            The connector of the two brackets. Should be a valid notation.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Bracket.Symbol">
+            <summary>
+            The <c>Symbol</c> property is the symbol held by this bracket when serving as SymbolHolder.
+            </summary>
+            <value>
+            The <c>Symbol</c> object held. When such, the bracket is just a wrapper for the symbol.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Bracket.MicroStatement">
+            <summary>
+            The <c>MicroStatement</c> property configures the MicroStatement held by the bracket.
+            </summary>
+            <value>
+            The <c>MicroStatement</c> object held by the bracket when existing as a <c>StatementHolder</c>.
+            </value>
+        </member>
+        <member name="M:DefQed.Core.Bracket.Dispose">
+            <summary>
+            To dispose the class, implementing the <c>IDisposable</c> interface/
+            </summary>
+            <remarks>
+            This disposal will also dispose the notation inside the symbol in a chain.
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.Bracket.Equals(System.Object)">
+            <summary>
+            This override function checks if <c>obj</c> is same as <c>this</c> as brackets.
+            </summary>
+            <remarks>
+            <para>
+            To be noted, this function does not perform a null check and the parameter object is nullable.
+            </para>
+            <para>
+            This function calls <c>GetHashCode()</c> function to implement the capability.
+            </para>
+            </remarks>
+            <param name="obj">The object to compare with.</param>
+            <returns>
+            A boolean representing whether the two are equal.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Bracket.ToString">
+            <summary>
+            Generates a string to display the bracket, used in generating proof text.
+            </summary>
+            <remarks>
+            <para>
+            This method is deprecated because its generation is too long and too complicated for humans to
+            read, ignoring the algorithm's beauty and simplicity.
+            </para>
+            <para>
+            Please use <c>Bracket.ToFriendlyString</c> for convertion, despite that this override method is
+            the default case if you do not explicitly call its replacement.
+            </para>
+            </remarks>
+            <returns>
+            A string illustrating the details of the bracket.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Bracket.ToFriendlyString">
+            <summary>
+            Generates a friendlier string to display the bracket, used in generating proof text.
+            </summary>
+            <remarks>
+            <para>
+            The string has various forms. To investigate deeper into the exact forms of the generation, you have
+            to look into the code.
+            </para>
+            <para>
+            As it is named as <c>ToFriendlyString()</c>, this method's output is much friendlier than the default 
+            converter. It utilizes a big switch expression to convert and tries to avoid useless junk data to be
+            written to the log console.
+            </para>
+            </remarks>
+            <returns>
+            A string illustrating the details of the notation.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Bracket.GetHashableBracket">
+            <summary>
+            Returns a hashable bracket in order to get its hash code for comparing.
+            </summary>
+            <remarks>
+            Normally a bracket should not be hashed because it has a property <c>Satisfied</c> which varies during
+            the process of seeking for proof. This method simply copies the current bracket's data, but keeping
+            the value of <c>Satisfied</c> its default.
+            </remarks>
+            <returns>
+            A bracket whose <c>Satisfied</c> property is kept to default.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Bracket.GetHashCode">
+            <summary>
+            Returns a int hash code which is unique for each <c>Bracket</c> created.
+            </summary>
+            <remarks>
+            <para>
+            The hash code is the HEX interpretation of a modification of the SHA3 (Secure Hash Algorithm 3)
+            of the JSON serialization of the <c>this</c> Bracket.
+            </para>
+            <para>
+            If any error occurs during the process described above, the hash code will be <c>-1</c>.
+            </para>
+            </remarks>
+            <returns>
+            The hash code for the bracket.
+            </returns>
+        </member>
+        <member name="T:DefQed.Core.BracketType">
+            <summary>
+            Defines an enumeration categoring the bracket into four holder modes.
+            </summary>
+            <remarks>
+            <para>
+            Explanations above each of the four modes are in the section for the Bracket class. Although sometimes, for
+            example the BracketHolder mode is called mode one, actually it is not associated closely with the integer just
+            like what did in the enumeration definition for Common.LogLevel.
+            </para>
+            <para>
+            Although there is do NO protection, during its lifetime a bracket should NOT change its type.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:DefQed.Core.Satisfaction">
+            <summary>
+            Defines whether a bracket is satisfied, with three possible values.
+            </summary>
+            <remarks>
+            <para>
+            This enumeration has three possibilities: <c>Unknown</c>, <c>False</c>, <c>True</c>, with <c>Unknown</c> default.
+            </para>
+            <para>
+            I do not use <c>bool</c> type because it does not support the capability of <c>Unknown</c>.
+            </para>
+            </remarks>
+        </member>
+        <member name="T:DefQed.Core.Formula">
+            <summary>
+            The <c>Formula</c> class describes the definition for a logical set of micro statements.
+            </summary>
+            <remarks>
+            <para>
+            A <c>formula</c> is basically a bracket which acts as a logical structure of micro-statements.
+            </para>
+            <para>
+            The objects declared by the Formula class is yet simple. However, most of its functionalities 
+            are put into pratice via its methods, which walk through the whole structure.
+            </para>
+            <para>
+            The <c>Formula</c> class implements <c>IDisposable</c> and should be disposed after use to save memory.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.Formula.topLevel">
+            <summary>
+            (field) This field stores the <c>topLevel</c> bracket.
+            </summary>
+        </member>
+        <member name="P:DefQed.Core.Formula.TopLevel">
+            <summary>
+            The <c>TopLevel</c> property defines the inner structure of a formula.
+            </summary>
+            <value>
+            The bracket structure of the formula as a bracket.
+            </value>
+        </member>
+        <member name="M:DefQed.Core.Formula.Dispose">
+            <summary>
+            To dispose the class, implementing the <c>IDisposable</c> interface/
+            </summary>
+            <remarks>
+            This disposal will also dispose the bracket <c>topLevel</c> inside the formula class.
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.Formula.ToString">
+            <summary>
+            Generates a string to display the bracket, used in generating proof text.
+            </summary>
+            <remarks>
+            <para>
+            This method just explicitly calls the <c>ToFriendlyString</c> method whose output is more readable.
+            </para>
+            <para>
+            The existence of this method is necessary because the <c>ToString</c> method is the default converter
+            from the formula object to the string object.
+            </para>
+            </remarks>
+            <returns>
+            A string illustrating the details of the formula.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Formula.Validate(System.Collections.Generic.List{DefQed.Core.MicroStatement},System.Collections.Generic.List{System.ValueTuple{DefQed.Core.Bracket,DefQed.Core.Bracket}}@)">
+            <summary>
+            Checks if the TopLevel can be satisfied within a fixed given set of micro statements.
+            </summary>
+            <remarks>
+            <para>
+            This method has a reference parameter: <c>transitors</c>. If the validation is successful, a dictionary of transistors is built
+            which willbe utilized by the transistors' applier method to execute the transistor pairs.
+            </para>
+            <para>
+            If the check is not successful, the output transistors will certainly be incorrect, which means it should be ignored by the caller.
+            </para>
+            <para>
+            Actually, this method is just a wrapper and driver for the private method <c>RecurseCheckMicroStatementFamily</c> and the calling hierachy is
+            actually rather complicated. Nevertheless, the count of methods designed should not decrease, making the design more readable and easier to 
+            understand.
+            </para>
+            <para>
+            It is necessary to note that the validator only checks if the formula satisfies something. It can be understood like a diff command,
+            outputing the difference of comparasion (tst) and fails if the difference is too large, although this illustration is rather not exact.
+            </para>
+            </remarks>
+            <param name="situation">A set of mico statements to be checked for satisfaction.</param>
+            <param name="transistors">The set/dictionary of transistor pairs to be built if the check is successful.</param>
+            <returns>A boolean representing whether the validation process is successful.</returns>
+            <exception cref="T:System.AccessViolationException">
+            This exception is thrown if an unexpected satisfaction type is encountered. User will never meet this exception because actually it is 
+            totally impossible for the satisfaction type to be wrong. However, if the program's memory is modified or editted or infected or damaged,
+            this exception might raise.
+            </exception>
+        </member>
+        <member name="M:DefQed.Core.Formula.RecurseCheckMicroStatementFamily(DefQed.Core.Bracket,System.Collections.Generic.List{DefQed.Core.MicroStatement},System.Collections.Generic.List{System.ValueTuple{DefQed.Core.Bracket,DefQed.Core.Bracket}}@)">
+            <summary>
+            Checks if a bracket can be satisfied by certain list of micro statements, called a situation.
+            </summary>
+            <remarks>
+            <para>
+            This method is private and is called by <c>Validator</c>. The validator gives this method the stuff to check and this methods performs 
+            the check.
+            </para>
+            <para>
+            This methods recurese during the checking workflow if a bracket holder or negated holder is encounter being the parameter.
+            </para>
+            <para>
+            For some type of more technical checking, the method explicitly turns to <c>ValidateMicroStatement</c> to complete the task assigned.
+            </para>
+            </remarks>
+            <param name="br">The bracket to check.</param>
+            <param name="situation">A set of mico statements to be checked for satisfaction.</param>
+            <param name="transistors">The set/dictionary of transistor pairs to be built if the check is successful.</param>
+            <exception cref="T:System.AccessViolationException">
+            This exception is thrown if an unexpected satisfaction type is encountered. User will never meet this exception because actually it is 
+            totally impossible for the satisfaction type to be wrong. However, if the program's memory is modified or editted or infected or damaged,
+            this exception might raise.
+            </exception>
+        </member>
+        <member name="M:DefQed.Core.Formula.ValidateMicroStatement(DefQed.Core.MicroStatement,System.Collections.Generic.List{DefQed.Core.MicroStatement},System.Collections.Generic.List{System.ValueTuple{DefQed.Core.Bracket,DefQed.Core.Bracket}}@)">
+            <summary>
+            Validates if a micro statement is a subtree of one of the situation.
+            </summary>
+            <remarks>
+            <para>
+            A subtree of a bracket means a 'part' of the bracket. This methods tries to find a place inside the bracket's tree data structure 
+            where the income micro statement <c>req</c> is exactly the structure.
+            </para>
+            <para>
+            This method will call itself as well as its variations in order to perform the inspection.
+            </para>
+            </remarks>
+            <param name="req">The micro statement to check</param>
+            <param name="situation">A list of micro statements serving as the resource to inspect.</param>
+            <param name="transistors">The set/dictionary of transistor pairs to be built if the check is successful.</param>
+            <returns></returns>
+        </member>
+        <member name="M:DefQed.Core.Formula.ValidateMicroStatement(DefQed.Core.MicroStatement,DefQed.Core.MicroStatement,System.Collections.Generic.List{System.ValueTuple{DefQed.Core.Bracket,DefQed.Core.Bracket}}@)">
+            <summary>
+            Checks whether some part of the <c>situ</c> can be seen as the requirement micro statement.
+            </summary>
+            <remarks>
+            Here comes an example, which used to be a test code.
+            <para>
+            Example: req: A==B,      situ x==y       (ok)
+                     req: A==B,      situ x+2==y+1   (ok)
+                     req: A==B+C,    situ x==2       (fail)
+                     req: A==B+C,    situ x-4==y+z+p (ok)
+            </para>
+            <para>
+            No need to transform any because some doesn't follow certain arithmatic laws they must be defined.
+            </para>
+            </remarks>
+            <param name="req">The micro statement to check</param>
+            <param name="situ">The micro statement serving as the resource of inspection.</param>
+            <param name="transistors">The set/dictionary of transistor pairs to be built if the check is successful.</param>
+            <returns></returns>
+        </member>
+        <member name="M:DefQed.Core.Formula.ValidateMicroStatement(DefQed.Core.Bracket,DefQed.Core.Bracket,System.Collections.Generic.List{System.ValueTuple{DefQed.Core.Bracket,DefQed.Core.Bracket}}@)">
+            <summary>
+            This function checks whether some part of situ can be 'seen as' req directly!
+            </summary>
+            <remarks>
+            <para>
+            I strongly recommend you to view the source code of the function for furthur understanding because the comments are clear.
+            </para>
+            <para>
+            This is called by the validate micro statement function to actually performs the checking procedure.
+            </para>
+            </remarks>
+            <param name="req">The bracket to check.</param>
+            <param name="situ">The bracket serving as the resource of inspection.</param>
+            <param name="transistors">The set/dictionary of transistor pairs to be built if the check is successful.</param>
+            <returns></returns>
+        </member>
+        <member name="T:DefQed.Core.Job">
+            <summary>
+            <c>Job</c> is the class that stores everything related to a DefQed utilization.
+            </summary>
+            <remarks>
+            <para>
+            Significantly, the <c>Job</c> data structure enables the capacity to deal with
+            multiple proof jobs at a same time. However, this awesome feature has not yet
+            been implemented by me.
+            </para>
+            <para>
+            This part also contains the main proof loop of the program.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.Job.KnowledgeBase">
+            <summary>
+            (field) This field stores the KnowledgeBase used by the proof.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Job.timeOut">
+            <summary>
+            (field) This field stores the value for the <c>TimeOut</c> property.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Job.proofOutput">
+            <summary>
+            (field) This field stores the proof text (as output) in a string.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Job.notToTee">
+            <summary>
+            (field) This field stores the value for the switch controlling to tee the proof text or to not.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Job.ProofTask">
+            <summary>
+            (field) This is the <c>Task</c> of proving, to be called by execution, enabling multitasking again.
+            </summary>
+        </member>
+        <member name="P:DefQed.Core.Job.NotToTee">
+            <summary>
+            Whether to tee the proof text to a file or not.
+            </summary>
+            <value>
+            The <c>NotToTee</c> property, if set to <c>true</c> will show the proof steps to console instead of a file.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Job.ProofOutput">
+            <summary>
+            The detailed proof steps to present to the user. This should NOT be modified by the caller.
+            </summary>
+            <value>
+            The <c>ProofOutput</c> property stores the detailed proof steps to present to the user.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Job.TimeOut">
+            <summary>
+            The time limit of proving the problem. The default value is a whole year, nearly infinity for computers.
+            </summary>
+            <value>
+            This <c>TimeOut</c> property configures the time limit of solving, as default value equals to a year.
+            </value>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DefQed.Core.Job.PerformProof" -->
+        <member name="M:DefQed.Core.Job.PerformProof(System.Int32)">
+            <summary>
+            The entry method of performing the proof, including the main loop.
+            </summary>
+            <remarks>
+            This method does these things:
+            <list type="bullet">
+            <item>
+            Load reflections with method <c>KBase.LoadReflections()</c>
+            </item>
+            <item>
+            Define a <c>ProofTask</c> and execute it, including the main <c>while</c> loop.
+            </item>
+            <item>
+            Measure the time used by the <c>ProofTask</c> execution and terminate it with <c>timeout</c>.
+            </item>
+            <item>
+            Tee the proof steps into a file based on user's configuration.
+            </item>
+            </list>
+            </remarks>
+            <param name="TimeOut">The custom value for <c>TimeOut</c>.</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:DefQed.Core.Job.LoadJS(System.String)" -->
+        <member name="M:DefQed.Core.Job.LoadXML(System.String)">
+            <summary>
+            Utilizes the <c>XMLParser.ParseXML</c> method (or internal API) to load information from XML.
+            </summary>
+            <remarks>
+            <para>
+            This method will also measure the time used by the parser.
+            </para>
+            <para>
+            Note: the database will be connected if the parser does its job successfully.
+            </para>
+            </remarks>
+            <param name="filename">The XML file to be parsed.</param>
+        </member>
+        <member name="M:DefQed.Core.Job.TeeProofText">
+            <summary>
+            This method outputs the proof text (steps) to a file by asking the user for its location.
+            </summary>
+            <remarks>
+            The asking is done by prompting a question inside the console. Therefore, no GUI file
+            selector will be shown or displayed in this version. However, it may be added as another
+            option later in version next.
+            </remarks>
+        </member>
+        <member name="T:DefQed.Core.KBase">
+            <summary>
+            The <c>KBase</c> class describes the definition for the knowledge base.
+            </summary>
+            <remarks>
+            <para>
+            A knowledge base, if as a database, contains three types of things:
+            <list type="bullet">
+            <item>Notations: contains the registration of all notations available for manipulation.</item>
+            <item>Reflections: contains the registration of all reflections, referencing to registries.</item>
+            <item>Registries: storing the inner data structures of reflections.</item>
+            </list>
+            </para>
+            <para>
+            A knowledge base stores everything that the algorithm 'knows' in its mind. All of the working pools are
+            content of this instance. This also contains methods concerning the proof's conduction, to be more specific,
+            scanning pools, reflection loading and tst applier.
+            </para>
+            <para>
+            The MySQL connection should be initialized before this class to be built.
+            </para>
+            <para>
+            The <c>KBase</c> class implements <c>IDisposable</c> and should be disposed after use to save memory.</para>
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.KBase.Dispose">
+            <summary>
+            To dispose the class, implementing the <c>IDisposable</c> interface/
+            </summary>
+            <remarks>
+            This disposal will also dispose the notation inside the symbol in a chain.
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.KBase.LeftPool">
+            <summary>
+            (field) The pool generated by conditions
+            </summary>
+            <remarks>
+            This is a field, not a property so that there is no value tag in the document xml.
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.KBase.RightPool">
+            <summary>
+            (field) The pool generated by conclusions
+            </summary>
+            <remarks>
+            This is a field, not a property so that there is no value tag in the document xml.
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.KBase.Reflections">
+            <summary>
+            (field) The reflections loaded by the knowledge base, to be used to conduct proofs.
+            </summary>
+            <remarks>
+            This is a field, not a property so that there is no value tag in the document xml.
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.KBase.ReflectionHistory">
+            <summary>
+            (field) The reflection history generated by the algorithm, can be understood as the steps generated.
+            </summary>
+            <remarks>
+            This is a field, not a property so that there is no value tag in the document xml.
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.KBase.GenerateReport">
+            <summary>
+            To get the reflection history from the class
+            </summary>
+            <remarks>
+            The reflection history string is a private field and cannot be read outside the class directly.
+            Therefore, here is a <c>GenerateReport</c> function, returning the field's content directly.
+            </remarks>
+            <returns>
+            The reflection history string, serving as the proof steps.
+            </returns>
+        </member>
+        <member name="F:DefQed.Core.KBase.SymbolIdRecord">
+            <summary>
+            (field) The symbol identifier record of the currently installed symbols.
+            </summary>
+            <remarks>
+            This field is used and only used by this class's <c>GetNextSymbolId()</c> method and cannot be read or
+            accessed outside this class.
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.KBase.GetNextSymbolId">
+            <summary>
+            Returns the symbol id to be used by the symbol bank installer, from the parsers or loaders.
+            </summary>
+            <remarks>
+            <para>
+            This method is called by the <c>JSDriver</c> class and the <c>XMLParser</c> class.
+            </para>
+            <para>
+            This method will also cause the <c>SymbolIdRecord</c> field to self-increase.
+            </para>
+            </remarks>
+            <returns>
+            The next symbol id to be used by the installers.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.KBase.GetNextNotationId">
+            <summary>
+            Returns next notation id to be used by the calleds.
+            </summary>
+            <remarks>
+            There is a ugly virtual exception handling system defined here... It will be changed later.
+            </remarks>
+            <returns>
+            Next notation id to be used by the parser, loaders, installers.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.KBase.ScanPools">
+            <summary>
+            This method overviews the two pools and then check if they can satisfy some reflections.
+            </summary>
+            <remarks>
+            This method utilizes the <c></c>
+            </remarks>
+        </member>
+        <member name="T:DefQed.Core.Notation">
+            <summary>
+            The <c>Notaion</c> class describes a <c>Notation</c> object, for symbols to instance.
+            </summary>
+            <remarks>
+            <para>
+            Each notation has three properties: <c>Name</c>, <c>Id</c> and <c>Origin</c> and will be further
+            described detailly below.
+            </para>
+            <para>
+            The <c>Notation</c> class implements <c>IDisposable</c> and should be disposed after use to save memory.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.Notation.name">
+            <summary>
+            (field) This field stores the name for the notation, with default value blank.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Notation.id">
+            <summary>
+            (field) This field stores the formal identifier.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Notation.origin">
+            <summary>
+            (field) This field stores the origin for the notation, indicating where it comes from.
+            </summary>
+        </member>
+        <member name="P:DefQed.Core.Notation.Name">
+            <summary>
+            The <c>Name</c> property is used to identify the notation in most cases.
+            </summary>
+            <value>
+            To be used to identify a notation easily, like finding a citizen with his or her name.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Notation.Id">
+            <summary>
+            The <c>Id</c> property is used by the program to identify the notation.
+            </summary>
+            <value>
+            Each notation has a unique id, to distinguish it more precisely.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Notation.Origin">
+            <summary>
+            The <c>Origin</c> property shows where does the <c>Notation</c> comes from.
+            </summary>
+            <remarks>
+            Most of the notations are <c>External</c>, eg, Triangle and Function. However, there are
+            a few notations <c>Internal</c>, such as the foundamental == and Item ones.
+            </remarks>
+            <value>
+            Describes whether the notation is <c>Internal</c> or <c>External</c>.
+            </value>
+        </member>
+        <member name="M:DefQed.Core.Notation.ToString">
+            <summary>
+            Generates a string to display the notation, used in generating proof text.
+            </summary>
+            <remarks>
+            The string has form: <c>([Id]Name)</c>
+            </remarks>
+            <returns>
+            A string illustrating the details of the notation.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Notation.Dispose">
+            <summary>
+            To dispose the class, implementing the <c>IDisposable</c> interface/
+            </summary>
+            <remarks>
+            This disposal will also dispose the notation inside the symbol in a chain.
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.Notation.Equals(System.Object)">
+            <summary>
+            This override function checks if <c>obj</c> is same as <c>this</c> as notations.
+            </summary>
+            <remarks>
+            <para>
+            To begin with, the function performs a null check towards the <c>object</c>. That is, if
+            the object to compare with is null itself, the output is always <c>false</c>, although the
+            <c>this</c> may be newly created itself.
+            </para>
+            <para>
+            This function calls <c>GetHashCode()</c> function to implement the capability.
+            </para>
+            </remarks>
+            <param name="obj">The object to compare with.</param>
+            <returns>
+            A boolean representing whether the two are equal.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Notation.GetHashCode">
+            <summary>
+            Returns a int hash code which is unique for each <c>Notation</c> created.
+            </summary>
+            <remarks>
+            <para>
+            The hash code is the HEX interpretation of a modification of the SHA3 (Secure Hash Algorithm 3)
+            of the JSON serialization of the <c>this</c> Notation.
+            </para>
+            <para>
+            If any error occurs during the process described above, the hash code will be <c>-1</c>.
+            </para>
+            </remarks>
+            <returns>
+            The hash code for the notation.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Notation.op_Inequality(DefQed.Core.Notation,DefQed.Core.Notation)">
+            <summary>
+            This is an overload of operator <c>!=</c> used to compare two notations.
+            </summary>
+            <param name="n1">Left side of the compare operator.</param>
+            <param name="n2">RIght side of the compare operator.</param>
+            <returns>
+            A boolean representing whether the two notations are the same.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Notation.op_Equality(DefQed.Core.Notation,DefQed.Core.Notation)">
+            <summary>
+            This is an overload of operator <c>==</c> used to compare two notations.
+            </summary>
+            <remarks>
+            <para>
+            First, the operator applies a null check to the two notations. That is, if one or two of the 
+            notations compared is or are null, the result will be <c>false</c> even if both null.
+            </para>
+            <para>
+            Thd Id and Name of the notations are takin into consideration. If at least of the two properties
+            is same, the two notations are thought to be same.
+            </para>
+            </remarks>
+            <param name="n1">Left side of the compare operator.</param>
+            <param name="n2">RIght side of the compare operator.</param>
+            <returns>
+            A boolean representing whether the two notations are the same.
+            </returns>
+        </member>
+        <member name="T:DefQed.Core.NotationOrigin">
+            <summary>
+            Defines and enumeration type describing where the notation comes from.
+            </summary>
+            <remarks>
+            Most of the notations are <c>External</c>, eg, Triangle and Function. However, there are
+            a few notations <c>Internal</c>, such as the foundamental == and Item ones.
+            </remarks>
+        </member>
+        <member name="T:DefQed.Core.Symbol">
+            <summary>
+            The <c>Symbol</c> class describes a <c>Symbol</c> object, as an instance of a <c>Notation</c>.
+            </summary>
+            <remarks>
+            <para>
+            Each <c>Symbol</c> is an instance of a <c>Notation</c>. Eg, symbol "x" belongs to notation "item".
+            </para>
+            <para>
+            Every symbol has its <c>id</c>, <c>name</c> and <c>notation</c>. Normally, a symbol is distinguished
+            by its name while symbols with the same name do can coexist.
+            </para>
+            <para>
+            The <c>Symbol</c> class implements <c>IDisposable</c> and should be disposed after use to save memory.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Core.Symbol.name">
+            <summary>
+            (field) This field stores the name of the symbol, intending to distinguish it.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Symbol.id">
+            <summary>
+            (field) This field stores the formal identifier, with default value -2.
+            </summary>
+        </member>
+        <member name="F:DefQed.Core.Symbol.notation">
+            <summary>
+            (field) This field stores the notation of the symbol, with default value blank.
+            </summary>
+        </member>
+        <member name="P:DefQed.Core.Symbol.Name">
+            <summary>
+            The <c>Name</c> property is used to identify the symbol in most cases.
+            </summary>
+            <value>
+            To be used to identify a symbol easily, like finding a citizen with his or her name.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Symbol.Id">
+            <summary>
+            The <c>Id</c> property is used by the program to identify the symbol.
+            </summary>
+            <value>
+            Each symbol has a unique id, to distinguish it more precisely.
+            </value>
+        </member>
+        <member name="P:DefQed.Core.Symbol.Notation">
+            <summary>
+            The <c>Notation</c> property controls the "type" of the symbol.
+            </summary>
+            <value>
+            The type of the symbol. Must be a valid <c>Notation</c>. Eg, the type of "123" is "Number".
+            </value>
+        </member>
+        <member name="M:DefQed.Core.Symbol.ToString">
+            <summary>
+            Generates a string to display the symbol, used in generating proof text.
+            </summary>
+            <remarks>
+            The string has form: <c>(Notation/[Id]Name)</c>
+            </remarks>
+            <returns>
+            A string illustrating the details of the symbol.
+            </returns>
+        </member>
+        <member name="M:DefQed.Core.Symbol.#ctor">
+            <summary>
+            Default constructor of the <c>Symbol</c> class.
+            </summary>
+            <remarks>
+            <para>
+            This constructor will name the symbol as <c>UntitledSymbol</c>. This may be an indicator for
+            unutilized. However, although not much possible, user may still just name the symbol as
+            <c>UntitledSymbol</c> or other strange stuff.
+            </para>
+            <para>
+            This constructor also makes deserialization for it easier.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:DefQed.Core.Symbol.#ctor(System.Int32,DefQed.Core.Notation,System.String)">
+            <summary>
+            This is the standard constructor of the symbol.
+            </summary>
+            <remarks>
+            Normally, a symbol is constructed using this constructor, although it is not essential.
+            </remarks>
+            <param name="id">Identifier for this symbol.</param>
+            <param name="notation">The notation for this symbol to instance.</param>
+            <param name="name">(optional) Name of this symbol, with default value blank.</param>
+        </member>
+        <member name="M:DefQed.Core.Symbol.#ctor(DefQed.Core.Notation,System.Double)">
+            <summary>
+            This is the constructor for symbols like numbers and decimals.
+            </summary>
+            <remarks>
+            For example, the symbol name for 12.74 is "12.74". It should be noted that irrational constants
+            such as Pi or E are not supported by this, because this feature is purely numerical. To be more
+            specific, Pi should be named as "Pi" exactly.
+            </remarks>
+            <param name="notation">The notation for this symbol to instance.</param>
+            <param name="dVal">The numerical value for this symbol.</param>
+        </member>
+        <member name="M:DefQed.Core.Symbol.Dispose">
+            <summary>
+            To dispose the class, implementing the <c>IDisposable</c> interface/
+            </summary>
+            <remarks>
+            This disposal will also dispose the notation inside the symbol in a chain.
+            </remarks>
+        </member>
+        <member name="T:DefQed.Data.JSDriver">
+            <summary>
+            <c>JSDriver</c> provides a way for DefQed to get the two pools from a JavaScript file.
+            </summary>
+            <remarks>
+            <para>
+            This class uses MicroSoft.ClearScript API and is tested to be practical on Windows and GNU/Linux.
+            </para>
+            <para>
+            A strange thing is that when configuring the exposure of JSDriver, aliasing will cause the function 
+            call from the script to fail. I don't know the reason for now.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Data.JSDriver.errored">
+            <summary>
+            (field) Whether the JSDriver loading process has errored.
+            </summary>
+        </member>
+        <member name="F:DefQed.Data.JSDriver.kbase2">
+            <summary>
+            (field) The KBase constructed by the <c>JSDriver</c> class, to be copied to <c>kbase</c> to return.
+            </summary>
+        </member>
+        <member name="F:DefQed.Data.JSDriver.SymbolBank">
+            <summary>
+            (field) The symbols enrolled by the <c>JSDriver.Enroll()</c> function, to be legally used later.
+            </summary>
+        </member>
+        <member name="F:DefQed.Data.JSDriver.LeftPool">
+            <summary>
+            (field) The left pool constructed by the <c>JSDriver</c> class.
+            </summary>
+        </member>
+        <member name="F:DefQed.Data.JSDriver.RigtPool">
+            <summary>
+            (field) The right pool constructed by the <c>JSDriver</c> class.
+            </summary>
+        </member>
+        <member name="P:DefQed.Data.JSDriver.Errored">
+            <summary>
+            Whether the JSDriver loading process has errored.
+            </summary>
+            <value>
+            The <c>Errored</c> property represents whether the process has finished successfully. If so, should be <c>false</c>.
+            </value>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.Connect(System.String,System.String,System.String)">
+            <summary>
+            Connects to the MySQL database specified by its parameters.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="user">User of the database.</param>
+            <param name="passwd">Password of the user.</param>
+            <param name="db">Database to connect to.</param>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.Enroll(System.String,System.String)">
+            <summary>
+            Enrolls a <c>Symbol</c> to the <c>SymbolBank</c>.
+            </summary>
+            <remarks>
+            <para>
+            A <c>Symbol</c> must be enrolled before being used by other functions.
+            </para>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="type">The type of the symboll to enroll. Should be a valid notation name.</param>
+            <param name="name">The name to identify the symbol.</param>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.MicroStatement(DefQed.Core.Bracket,DefQed.Core.Notation,DefQed.Core.Bracket)">
+            <summary>
+            Returns a <c>MicroStatement</c> data structure.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="b0">The left bracket.</param>
+            <param name="c">The connector of the two brackets. Should be a valid notation.</param>
+            <param name="b1">The right bracket.</param>
+            <returns>
+            Returns the constructed MicroStatement.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.Notation(System.String)">
+            <summary>
+            Returns a <c>Notation</c> data structure.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="name">
+            The name of the notation. If not exists in the database, will be created.
+            </param>
+            <returns>
+            Returns the constructed Notation.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.Symbol(System.String)">
+            <summary>
+            Returns a <c>Symbol</c> data structure.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="name">
+            The name of the symbol. Must be enrolled before using the <c>Enroll()</c> method.
+            </param>
+            <returns>
+            The constructed symbol.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.SymbolHolder(DefQed.Core.Symbol)">
+            <summary>
+            Returns a <c>Bracket</c> with type <c>SymbolHolder</c>.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="sym">The symbol to hold.</param>
+            <returns>
+            The constructed bracket.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.NegatedHolder(DefQed.Core.Bracket)">
+            <summary>
+            Returns a <c>Bracket</c> with type <c>NegatedHolder</c>.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            <para>
+            Note: the negated holder 'negates' the bracket inside. (Just like adding a 'NOT').
+            </para>
+            </remarks>
+            <param name="sub">The bracket to negate.</param>
+            <returns>
+            The constructed bracket.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.StatementHolder(DefQed.Core.MicroStatement)">
+            <summary>
+            Returns a <c>Bracket</c> with type <c>StatementHolder</c>.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="m">The MicroStatement to hold.</param>
+            <returns>
+            The constructed bracket.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.BracketHolder(DefQed.Core.Bracket,DefQed.Core.Notation,DefQed.Core.Bracket)">
+            <summary>
+            Returns a <c>Bracket</c> with type <c>BracketHolder</c>.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="b0">The left bracket.</param>
+            <param name="connector">The connector of the two brackets. Should be a valid notation.</param>
+            <param name="b1">The right bracket.</param>
+            <returns>
+            The constructed bracket.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.Left(DefQed.Core.MicroStatement)">
+            <summary>
+            Adds a <c>MicroStatement</c> to the left pool.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="m">
+            The <c>MicroStatement</c> to be added to the left pool.
+            </param>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.Right(DefQed.Core.MicroStatement)">
+            <summary>
+            Adds a <c>MicroStatement</c> to the right pool.
+            </summary>
+            <remarks>
+            This functions should be called by the JavaScript file.
+            </remarks>
+            <param name="m">
+            The <c>MicroStatement</c> to be added to the right pool.
+            </param>
+        </member>
+        <member name="M:DefQed.Data.JSDriver.LoadJS(System.String,DefQed.Core.KBase@)">
+            <summary>
+            This function should be called by <c>DefQed.Program</c>, executes the targeted JavaScript and
+            saves to the referenced <c>KBase</c>.
+            </summary>
+            <remarks>
+            <para>
+            The reference parameter <c>kbase</c> should be passed with an empty or freshly-newed KnowledgeBase
+            because it will be erased by a new one, <c>kbase2</c>. The called should check the <c>Errored</c>
+            property to check if the method has executed successfully.
+            </para>
+            <para>
+            Note: if the program is built using 'DEBUG' profile, Console API is also available in the script.
+            </para>
+            The JavaScript should NOT call this method.
+            </remarks>
+            <param name="filename">Specifies file to be loaded.</param>
+            <param name="kbase">(reference) The KBase constructed by the method.</param>
+        </member>
+        <member name="T:DefQed.Data.MySQLDriver">
+            <summary>
+            <c>MySQLDriver</c> provides a way for the program to connect to the MySQL database.
+            </summary>
+            <remarks>
+            The MySql.Data package must be installed to use this class.
+            </remarks>
+        </member>
+        <member name="F:DefQed.Data.MySQLDriver.conn">
+            <summary>
+            (field) This field stores the actual MySQL connection.
+            </summary>
+        </member>
+        <member name="F:DefQed.Data.MySQLDriver.connStr">
+            <summary>
+            (field) This field stores the connection string. Default is blank.
+            </summary>
+        </member>
+        <member name="P:DefQed.Data.MySQLDriver.ConnStr">
+            <summary>
+            This property gives access to the connection string used by the driver.
+            </summary>
+            <value>
+            The <c>ConnStr</c> property must be set to the connection string before connecting.
+            </value>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.Initialize">
+            <summary>
+            Initializes the connection to the MySQL server.
+            </summary>
+            <remarks>
+            <para>
+            Note: Currently, it can only connect to MySQL servers on the local host.
+            </para>
+            <para>
+            However, as a TODO, remote server accessibility will be added later.
+            </para>
+            </remarks>
+            <returns>
+            A boolean representing whether the initialization is successful.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.Terminate">
+            <summary>
+            Safely closes the MySql connection.
+            </summary>
+            <remarks>
+            I admit that in the <c>v0.01</c> version the connections are not terminated
+            safely that they are all closed in the 'hard' way. (forcely)
+            </remarks>
+            <returns>
+            A boolean representing whether the termination is done successfully.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.GetTables">
+            <summary>
+            Get the names of all the data tables in the openned database.
+            </summary>
+            <remarks>
+            Pay attenetion that the returning object is a list of names, not a list of tables.
+            </remarks>
+            <returns>
+            A list of the names of tables in the database.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.PerformTableCheck">
+            <summary>
+            Performs a check of whether the DefQed data tables are created (or imported) correctly.
+            </summary>
+            <remarks>
+            <para>
+            This method can be used to assess whether the installation is completed successfully.
+            </para>
+            <para>
+            To succeed, a database must have these tables: notations, reflections, registries. This will
+            not check the further structures and data types of the table.
+            </para>
+            </remarks>
+            <returns>
+            A boolean representing if the check is successful.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.QueryTable(DefQed.Data.TableType,System.String,System.String,System.Collections.Generic.List{System.String})">
+            <summary>
+            Actually perform a query of the table and get a list of a list of results.
+            </summary>
+            <param name="tableType">The type of the table.</param>
+            <param name="keyColumn">The known column name.</param>
+            <param name="keyValue">The known column's value.</param>
+            <param name="askedColumns">The columns to query.</param>
+            <returns>
+            A list of list of string. Each sub-list represents a row queryed. Each list-of-sub-list represents
+            a result from the <c>MySqlDataReader.Read()</c> method.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.AcquireWholeTable(DefQed.Data.TableType)">
+            <summary>
+            Get everything by row from an entire table.
+            </summary>
+            <param name="tableType">The type of the table.</param>
+            <returns>
+            A list of list of string. Each sub list represents a row. Each list-of-sub-list represents
+            a line of result of the <c>MySqlDataReader.Read()</c> method.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.GetMaxId(DefQed.Data.TableType)">
+            <summary>
+            Gets the maxi value of the <c>id</c> column of the given table.
+            </summary>
+            <param name="tableType">The type of the table.</param>
+            <returns>
+            An integer, that is, the maxi <c>id</c> of the given table's rows.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.InsertRow(DefQed.Data.TableType,System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String})">
+            <summary>
+            This method inserts a new row into the targeted table.
+            </summary>
+            <param name="tableType">The type of the table to insert.</param>
+            <param name="columns">The list of the columns to give value to.</param>
+            <param name="values">The list of the values of the new row.</param>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.List2Str(System.Collections.Generic.List{System.String},System.Boolean)">
+            <summary>
+            Converts a list of string into a string to be used to construct the SQL.
+            </summary>
+            <param name="list">The list of strings.</param>
+            <param name="quotes">
+            <para>
+            Controls whether to add a pair of double quotes outside the output string.
+            </para>
+            <para>
+            This parameter is optional and its default value is <c>true</c>.
+            </para>
+            </param>
+            <returns>
+            A string that will be used in constructing the SQL command.
+            </returns>
+        </member>
+        <member name="M:DefQed.Data.MySQLDriver.TableType2Str(DefQed.Data.TableType)">
+            <summary>
+            A big switch expression to convert <c>TableType</c> to the regarding string.
+            </summary>
+            <param name="tableType">The <c>TableType</c> value.</param>
+            <returns>
+            The string regarding to the <c>TableType</c>.
+            </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            This exception occurs when an illegal value of TableType is given, for example 7.
+            </exception>
+        </member>
+        <member name="T:DefQed.Data.TableType">
+            <summary>
+            This enumeration has three types: Notations, Reflections, Registries.
+            </summary>
+        </member>
+        <member name="T:DefQed.Data.XMLParser">
+            <summary>
+            <c>XMLParser</c> is a class that implements the feature of parsing the XML-form file containing specifications.
+            </summary>
+            <remarks>
+            <para>
+            Note: <c>XMLParser</c> is deprecated. It will be REMOVED later. Please use <c>JSDriver</c> more. One reason for
+            this is the design of this parser increases the complexity metrics of the whole project, eg. in Codacy and VS.
+            </para>
+            <para>
+            The XML format does not have some feature that the JSDriver has. For instance, the left pool only contains 
+            <c>x==y</c> form MicroStatements.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:DefQed.Data.XMLParser.SymbolBank">
+            <summary>
+            (field) The symbols enrolled by the <c>JSDriver.Enroll()</c> function, to be legally used later.
+            </summary>
+        </member>
+        <member name="M:DefQed.Data.XMLParser.ParseXML(System.String,DefQed.Core.KBase@,System.Boolean@)">
+            <summary>
+            This function actually parses the XML specification file and gives back the <c>KBase</c>.
+            </summary>
+            <remarks>
+            The reference parameter <c>kbase</c> should be passed with an empty or freshly-newed KnowledgeBase
+            because it will be erased by a new one just created. The called should check the <c>error</c>
+            reference parameter to check if the method has executed successfully.
+            </remarks>
+            <param name="filename">Specifies file to be loaded.</param>
+            <param name="kbase">(reference) The KBase constructed by the method.</param>
+            <param name="error">Whether the ParseXML loading process has errored.</param>
+        </member>
+        <member name="M:DefQed.Data.XMLParser.ParseConnection(System.Xml.XmlNode,System.Boolean@)">
+            <summary>
+            This function parses the Connection tag in the XML file and connects to the database.
+            </summary>
+            <remarks>
+            This method calls the MySqlDriver class to connect to the database.
+            </remarks>
+            <param name="node">The node context of the encountered.</param>
+            <param name="error">Whether the ParseXML loading process has errored.</param>
+        </member>
+        <member name="M:DefQed.Data.XMLParser.ParseEnvironment(System.Xml.XmlNode,DefQed.Core.KBase@,System.Boolean@)">
+            <summary>
+            This function parses the Environment tag in the XML file.
+            </summary>
+            <param name="node">The node context of the encountered.</param>
+            <param name="kbase">(reference) The KBase constructed by the method.</param>
+            <param name="error">Whether the ParseXML loading process has errored.</param>
+        </member>
+        <member name="M:DefQed.Data.XMLParser.ParseStatement(System.Xml.XmlNode,DefQed.Core.KBase@,System.Boolean@)">
+            <summary>
+            This function parses the Statement tag in the XML file.
+            </summary>
+            <param name="node">The node context of the encountered.</param>
+            <param name="kbase">(reference) The KBase constructed by the method.</param>
+            <param name="error">Whether the ParseXML loading process has errored.</param>
+        </member>
+        <member name="M:DefQed.Data.XMLParser.ParseProveBracket(System.Xml.XmlNode,DefQed.Core.KBase@,DefQed.Core.Bracket@,System.Boolean@)">
+            <summary>
+            This function parses the bracket definitions in the XML file.
+            </summary>
+            <param name="node">The node context of the encountered.</param>
+            <param name="kbase">(reference) The KBase constructed by the method.</param>
+            <param name="bracket">(reference) The <c>bracket</c> constructed by the method.</param>
+            <param name="error">Whether the ParseXML loading process has errored.</param>
+        </member>
+        <member name="T:Common.LogConsole">
+            <summary>
+            The <c>LogConsole</c> class provides the program a way to display logs into files and screens.
+            </summary>
+            <remarks>
+            Currently it only supports to show logs on the console. However, feature enabling logging to 
+            other terminals will be added later.
+            </remarks>
+        </member>
+        <member name="F:Common.LogConsole.logLevel">
+            <summary>
+            (field) This field stores logLevel, with default level Diagnostic.
+            </summary>
+        </member>
+        <member name="P:Common.LogConsole.LogLevel">
+            <summary>
+            The <c>LogLevel</c> property is the enterance and interface to configure and check
+            logLevel, controlling how many logs will the displayed.
+            </summary>
+            <remarks>
+            If the build is executed under <c>DEBUG</c> profile, the default is <c>Diagnostic</c>. On the
+            other hand, if the build is executed under <c>RELEASE</c> profile, <c>Information</c> is default.
+            </remarks>
+            <value>
+            Controls how many logs are shown to the user.
+            </value>
+        </member>
+        <member name="M:Common.LogConsole.Log(Common.LogLevel,System.String)">
+            <summary>
+            To display a line of log on the console to the user, in various levels.
+            </summary>
+            <remarks>
+            If the information to log has level lower than the level configured before, the log will
+            be ignored. Otherwise, it will be displayed.
+            </remarks>
+            <param name="level">The level to log.</param>
+            <param name="info">The string to log.</param>
+        </member>
+        <member name="M:Common.LogConsole.LogLevel2Str(Common.LogLevel)">
+            <summary>
+            This is a utility to convert a loglevel to its corresponding string.
+            </summary>
+            <remarks>
+            Based on a big switch structure, if the level is illegal, the returning output string is
+            blank. Additionally, the output string is aligned at center.
+            </remarks>
+            <param name="lev">The log level to convert to string.</param>
+            <returns>
+            A string representing the log level.
+            </returns>
+        </member>
+        <member name="M:Common.LogConsole.WriteLine">
+            <summary>
+            Writes the current line terminator to the standard output stream.
+            </summary>
+            <remarks>
+            <para>
+            This method just simply calls <c>System.Console.WriteLine()</c> method to terminate the 
+            current line.
+            </para>
+            <para>
+            I know people will ask that if just <c>: System.Console</c> it would be better but based on
+            my personal experiments, it is not practical.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Common.LogConsole.WriteLine(System.String)">
+            <summary>
+            Writes the specified string value, followed by the current line terminator, to the standard 
+            output stream.
+            </summary>
+            <param name="str">The string to write.</param>
+        </member>
+        <member name="M:Common.LogConsole.WriteLine(System.Object)">
+            <summary>
+            Writes the text representation of the specified object, followed by the current line terminator,
+            to the standard output stream.
+            </summary>
+            <remarks>
+            This method first performs a null check that if the object is null, the method's effect is the
+            same as the effect of <c>LogConsole.WriteLine()</c>.
+            </remarks>
+            <param name="obj">The value to write.</param>
+        </member>
+        <member name="M:Common.LogConsole.ReadLine">
+            <summary>
+            Reads a line from the standard input stream and returns the value.
+            </summary>
+            <returns>
+            The value just got from the user's input.
+            </returns>
+        </member>
+        <member name="T:Common.LogLevel">
+            <summary>
+            Defines an enumeration type describing the log level of the current log console.
+            </summary>
+            <remarks>
+            The log level can be compared with and converted with integers. Defined between the brackets, there
+            exists the following relationships.
+            <list type="bullet">
+            <item><c>Diagnostic</c> = 0</item>
+            <item><c>Information</c> = 1</item>
+            <item><c>Warning</c> = 2</item>
+            <item><c>Error</c> = 3</item>
+            </list>
+            The lower the value is, the more log will be shown to the user.
+            </remarks>
+        </member>
+    </members>
+</doc>
