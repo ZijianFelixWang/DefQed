@@ -1,0 +1,58 @@
+%% Copyright 2022 Zijian Wang. All rights reserved.
+%% Email: felix_wzj@yahoo.com
+%% The newest version can be obtained from GitHub.
+
+\documentclass[preprint]{elsarticle}
+
+\hfuzz=2pt
+%% \special{dvipdfmx:config z 0} %% speed boost
+
+%% The commands below, learnt from TeX stack exchange can cancel the hbox overfull warning...
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\ps@pprintTitle
+{\fi\fi\fi\fi}
+{\fi\fi\fi\fi
+	\afterassignment\fix@elsarticle\let\@tempa}
+{}{\FailedToPatch}
+\def\fix@elsarticle{\iffalse{\fi}\romannumeral-`0}
+\makeatother
+
+%% \usepackage[letterpaper, total={5.3in, 9in}]{geometry}	%% set paper size & margin
+\usepackage{amsmath}	%% math part 1
+\usepackage{flexisym, breqn}	%% math part 2
+\usepackage{amssymb, graphics, setspace}	%% math part 3
+\usepackage{tikz, tikz-cd}	%% for commutative diagrams
+\usepackage{flowchart}	%% for flowchart
+\usepackage{float, booktabs}	%% for table & alignment
+\usepackage{algorithmicx, algorithm, algpseudocode}	%% for pseudo code composition
+\usepackage{blindtext}	%% overfull hbox solution
+\usepackage{setspace}	%% double spacing
+
+\usetikzlibrary{positioning, cd, arrows}	%% for comutative diagram & flowchart drawing
+
+\doublespacing
+
+\begin{document}
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}[commutative diagrams/every diagram]
+			\node (K0) at (90:2.3cm) {$\mathcal{K}_0$};
+			\node (K1) at (90+72:2cm) {$\mathcal{K}_1$};
+			\node (K2) at (90+2*72:2cm) {$\mathcal{K}_2$};
+			\node (K3) at (90+3*72:2cm) {$\mathcal{K}_3$};
+			\node (Kn) at (90+4*72:2cm) {$\mathcal{K}_N$};
+			
+			\path[commutative diagrams/.cd, every arrow, every label]
+			(K0) edge node {$k_0$} (K1)
+			(K1) edge node {$K_1$} (K2)
+			(K2) edge node {$k_2$} (K3);
+			
+			\path[commutative diagrams/.cd, every arrow, every label, dashed]
+			(K3) edge node {$K_3$} (Kn)
+			(Kn) edge node {$k_N$} (K0);
+		\end{tikzpicture}
+		\caption{The initial map.}
+		\label{figure-1}
+	\end{figure}
+\end{document}

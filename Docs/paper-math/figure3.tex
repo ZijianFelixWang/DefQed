@@ -1,0 +1,129 @@
+%% Copyright 2022 Zijian Wang. All rights reserved.
+%% Email: felix_wzj@yahoo.com
+%% The newest version can be obtained from GitHub.
+
+\documentclass[preprint]{elsarticle}
+
+\hfuzz=2pt
+%% \special{dvipdfmx:config z 0} %% speed boost
+
+%% The commands below, learnt from TeX stack exchange can cancel the hbox overfull warning...
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\ps@pprintTitle
+{\fi\fi\fi\fi}
+{\fi\fi\fi\fi
+	\afterassignment\fix@elsarticle\let\@tempa}
+{}{\FailedToPatch}
+\def\fix@elsarticle{\iffalse{\fi}\romannumeral-`0}
+\makeatother
+
+%% \usepackage[letterpaper, total={5.3in, 9in}]{geometry}	%% set paper size & margin
+\usepackage{amsmath}	%% math part 1
+\usepackage{flexisym, breqn}	%% math part 2
+\usepackage{amssymb, graphics, setspace}	%% math part 3
+\usepackage{tikz, tikz-cd}	%% for commutative diagrams
+\usepackage{flowchart}	%% for flowchart
+\usepackage{float, booktabs}	%% for table & alignment
+\usepackage{algorithmicx, algorithm, algpseudocode}	%% for pseudo code composition
+\usepackage{blindtext}	%% overfull hbox solution
+\usepackage{setspace}	%% double spacing
+
+\usetikzlibrary{positioning, cd, arrows}	%% for comutative diagram & flowchart drawing
+
+\doublespacing
+
+\begin{document}
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}[>=latex', font={\sf \small}]
+			\def\smbwd{1cm}
+			
+			\node (start) at (0,0) [draw, terminal,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {Start};
+			
+			\node (parse) at (0,-1.5) [draw, process,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {Get task from user};
+			
+			\node (l-pool) at (-2,-3) [draw, storage,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$\mathcal{M}_t$};
+			
+			\node (r-pool) at (2,-3) [draw, storage,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$\mathcal{R}$};
+			
+			\node (rec-functor) at (-2,-4.5) [draw, predproc,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$\mathcal{F}_t$};
+			
+			\node (random) at (-4,-4.5) [draw, process,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$\mathit{r}$};
+			
+			\node (k-base) at (2,-4.5) [draw, storage,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {KBase $\mathcal{Q}$};
+			
+			\node (success-val) at (0,-6) [draw, process,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$s = {\exists n\in [0,\omega ), \mathcal{R}\subseteq \text{Ob}\left(\mathcal{M}_n\right)}$};
+			
+			\node (success-check) at (0,-7.5) [draw, decision,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$s$};
+			
+			\node (reinforcement) at (2,-9) [draw, predproc,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {Reinforcement};
+			
+			\node (write-rh) at (-2,-9) [draw, process,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {Generate steps};
+			
+			\node (steps) at (-4,-9) [draw, storage,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {Steps};
+			
+			\node (forgetful-para) at (2,-7.5) [draw, process,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {$E(\mathit{t})$};
+			
+			\node (end) at (0,-10.5) [draw, terminal,
+			minimum width = \smbwd,
+			minimum height = 0.5cm] {End};
+			
+			\coordinate (point1) at (-4.8,-7.5);
+			\coordinate (point2) at (3.2,-4.5);
+			\coordinate (point3) at (3.2,-8);
+			%% \coordinate (point2) at (-7,-3);
+			
+			\draw[->] (start) -- (parse);
+			\draw[->] (parse) |- (l-pool);
+			\draw[->] (parse) |- (r-pool);
+			\draw[->] (random) -- (rec-functor);
+			\draw[->] (l-pool) -- (rec-functor);
+			\draw[->] (k-base) -- (rec-functor);
+			\draw[->] (l-pool) -| (success-val);
+			\draw[->] (r-pool) -| (success-val);
+			\draw[->] (success-val) -- (success-check);
+			%% \draw[->] (success-check) -| node[above]{No} (l-pool);
+			\draw[->] (success-check) -- node[above]{No} (point1);
+			\draw[->] (point1) |- (l-pool);
+			\draw[->] (success-check) |- node[below]{Yes} (write-rh);
+			\draw[->] (success-check) |- node[below]{Yes} (reinforcement);
+			\draw[->] (write-rh) -- (steps);
+			\draw[->] (write-rh) |- (end);
+			\draw[->] (forgetful-para) -- (reinforcement);
+			%% \draw[->] (reinforcement) -- (k-base);
+			\draw[->] (point2) -- (k-base);
+			\draw[->] (point3) -- (point2);
+			\draw[->] (reinforcement) |- (point3);
+			\draw[->] (reinforcement) |- (end);
+		\end{tikzpicture}
+		\caption{The flowchart of the entire algorithm.}
+		\label{figure-3}
+	\end{figure}
+\end{document}

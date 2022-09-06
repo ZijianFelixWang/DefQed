@@ -1,0 +1,53 @@
+\begin{thebibliography}{1}
+\expandafter\ifx\csname url\endcsname\relax
+  \def\url#1{\texttt{#1}}\fi
+\expandafter\ifx\csname urlprefix\endcsname\relax\def\urlprefix{URL }\fi
+\expandafter\ifx\csname href\endcsname\relax
+  \def\href#1#2{#2} \def\path#1{#1}\fi
+
+\bibitem{Wolfram2019}
+S.~Wolfram, Wolfram Language \& System Documentation Center, Wolfram Research
+  Inc., Champaign, IL, US, 12th Edition (2019).
+
+\bibitem{Gao1998}
+X.~S. Gao, Geoexpert, http://www.mmrc.iss.ac.cn/gex/, Beijing (1998).
+
+\bibitem{Moura2021}
+L.~D. Moura, S.~Ullrich, The lean 4 theorem prover and programming language,
+  Automated Deduction - CADE (2021) 625--235\href
+  {https://doi.org/10.1007/978-3-030-79876-5_37}
+  {\path{doi:10.1007/978-3-030-79876-5_37}}.
+
+\bibitem{Moura2008}
+L.~D. Moura, N.~Bjørner, Z3: An efficient smt solver, Tools and Algorithms for
+  the Construction and Analysis of Systems 4963 (2008) 337--340.
+\newblock \href {https://doi.org/10.1007/978-3-540-78800-3_24}
+  {\path{doi:10.1007/978-3-540-78800-3_24}}.
+
+\bibitem{Li2019}
+W.~W. Li, Daishuxue Fangfa, 1st Edition, Vol.~1, High Education Press, Beijing,
+  2019.
+
+\bibitem{Ebbinghaus1913}
+H.~Ebbinghaus,
+  \href{https://archive.org/details/memorycontributi00ebbiuoft/page/n5/mode/2up}{Memory:
+  A contribution to experimental psychology}, Teachers College, Columbia
+  University, New York City, 1913.
+\newline\urlprefix\url{https://archive.org/details/memorycontributi00ebbiuoft/page/n5/mode/2up}
+
+\bibitem{Entacher1997}
+K.~Entacher,
+  \href{https://www.semanticscholar.org/paper/6ae5fe88d296e70f188b0d12207d468c8f36e262}{A
+  collection of selected pseudorandom number generators with linear structures}
+  (1997).
+\newline\urlprefix\url{https://www.semanticscholar.org/paper/6ae5fe88d296e70f188b0d12207d468c8f36e262}
+
+\bibitem{Tanenbaum2015}
+A.~S. Tanenbaum, Operating Systems: Design and Implementation, 3rd Edition,
+  Vol.~1, Publishing House of Electronics Industry, Beijing, 2015.
+
+\bibitem{Wang2022}
+Z.~Wang, The defqed repository, \url{https://github.com/ZijianFelixWang/DefQed}
+  (Aug. 2022).
+
+\end{thebibliography}

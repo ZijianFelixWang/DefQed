@@ -1,0 +1,49 @@
+%% Copyright 2022 Zijian Wang. All rights reserved.
+%% Email: felix_wzj@yahoo.com
+%% The newest version can be obtained from GitHub.
+
+\documentclass[preprint]{elsarticle}
+
+\hfuzz=2pt
+%% \special{dvipdfmx:config z 0} %% speed boost
+
+%% The commands below, learnt from TeX stack exchange can cancel the hbox overfull warning...
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\ps@pprintTitle
+{\fi\fi\fi\fi}
+{\fi\fi\fi\fi
+	\afterassignment\fix@elsarticle\let\@tempa}
+{}{\FailedToPatch}
+\def\fix@elsarticle{\iffalse{\fi}\romannumeral-`0}
+\makeatother
+
+%% \usepackage[letterpaper, total={5.3in, 9in}]{geometry}	%% set paper size & margin
+\usepackage{amsmath}	%% math part 1
+\usepackage{flexisym, breqn}	%% math part 2
+\usepackage{amssymb, graphics, setspace}	%% math part 3
+\usepackage{tikz, tikz-cd}	%% for commutative diagrams
+\usepackage{flowchart}	%% for flowchart
+\usepackage{float, booktabs}	%% for table & alignment
+\usepackage{algorithmicx, algorithm, algpseudocode}	%% for pseudo code composition
+\usepackage{blindtext}	%% overfull hbox solution
+\usepackage{setspace}	%% double spacing
+
+\usetikzlibrary{positioning, cd, arrows}	%% for comutative diagram & flowchart drawing
+
+\doublespacing
+
+\begin{document}
+	\begin{table}
+		\centering
+		\label{table-1}
+		\caption{The table for $\mathit{p}(\mathcal{N})$}
+		\begin{tabular}{ccccccccccc}
+			\toprule
+			$\mathcal{N}$ & int & num & inf & $\sum$ & $=$ & $/$ & - & abs & $<$ & for \\
+			\midrule
+			$\mathit{p}$ & $0$ & $0$ & $0$ & $3$ & $2$ & $2$ & $2$ & $1$ & $2$ & $2$ \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+\end{document}
