@@ -1,7 +1,6 @@
 # DefQed
 ![](https://img.shields.io/github/license/ZijianFelixWang/DefQed?style=flat-square)
 ![](https://img.shields.io/github/languages/code-size/ZijianFelixWang/DefQed?style=flat-square)
-![](https://img.shields.io/tokei/lines/github/ZijianFelixWang/DefQed?style=flat-square)
 ![](https://img.shields.io/codacy/grade/135e566bb35047bf9c9bf07dcaa0a069?style=flat-square)
 
 **Note.** The latest documentation can be found in the Wiki Section...
