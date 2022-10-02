@@ -164,6 +164,7 @@ namespace DefQed.Core
                 {
                     TeeProofText();
                 }
+
             }
             else
             {
