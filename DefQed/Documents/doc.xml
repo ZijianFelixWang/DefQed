@@ -470,7 +470,19 @@
             This <c>TimeOut</c> property configures the time limit of solving, as default value equals to a year.
             </value>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:DefQed.Core.Job.PerformProof" -->
+        <member name="M:DefQed.Core.Job.PerformProof">
+            <summary>
+            This method is a wrapper for method <c>PerformProof(int TimeOut), using the default timeout.</c>
+            </summary>
+            <remarks>
+            <para>
+            I admit that if the method is designed using an optional parameter, it will be more beautiful.
+            </para>
+            <para>
+            The design will be fixed and improved later.
+            </para>
+            </remarks>
+        </member>
         <member name="M:DefQed.Core.Job.PerformProof(System.Int32)">
             <summary>
             The entry method of performing the proof, including the main loop.
@@ -494,7 +506,20 @@
             </remarks>
             <param name="TimeOut">The custom value for <c>TimeOut</c>.</param>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:DefQed.Core.Job.LoadJS(System.String)" -->
+        <member name="M:DefQed.Core.Job.LoadJS(System.String)">
+            <summary>
+            Utilizes the <c>JSDriver.LoadJS()</c> method (or internal API) to load and execute JavaScript.
+            </summary>
+            <remarks>
+            <para>
+            This method will also measure the time used by the loading process and show it to the user.
+            </para>
+            <para>
+            Note: the database will be connected if loading is successful.
+            </para>
+            </remarks>
+            <param name="filename">The file containing JavaScript related, to be executed.</param>
+        </member>
         <member name="M:DefQed.Core.Job.LoadXML(System.String)">
             <summary>
             Utilizes the <c>XMLParser.ParseXML</c> method (or internal API) to load information from XML.
@@ -637,7 +662,7 @@
             This method overviews the two pools and then check if they can satisfy some reflections.
             </summary>
             <remarks>
-            This method utilizes the <c></c>
+            This method utilizes the <c>Reflection.Scan</c> method to overview the two pools and then check 
             </remarks>
         </member>
         <member name="T:DefQed.Core.Notation">

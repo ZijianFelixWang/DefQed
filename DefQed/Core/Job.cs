@@ -90,7 +90,7 @@ namespace DefQed.Core
         /// I admit that if the method is designed using an optional parameter, it will be more beautiful.
         /// </para>
         /// <para>
-        /// The design will be fixed & improved later.
+        /// The design will be fixed and improved later.
         /// </para>
         /// </remarks>
         public void PerformProof()
@@ -337,7 +337,7 @@ namespace DefQed.Core
 #endif
 
         /// <summary>
-        /// Utilizes the <c>JSDriver.LoadJS()</c> method (or internal API) to load & execute JavaScript.
+        /// Utilizes the <c>JSDriver.LoadJS()</c> method (or internal API) to load and execute JavaScript.
         /// </summary>
         /// <remarks>
         /// <para>

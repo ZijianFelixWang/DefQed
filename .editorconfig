@@ -25,6 +25,9 @@ dotnet_diagnostic.CS8602.severity = silent
 # CA1051: Do not declare visible instance fields
 dotnet_diagnostic.CA1051.severity = silent
 
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = silent
+
 [*.{cs,vb}]
 #### Naming styles ####
 

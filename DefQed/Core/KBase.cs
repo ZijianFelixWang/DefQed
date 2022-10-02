@@ -180,6 +180,8 @@ namespace DefQed.Core
             Console.Log(Common.LogLevel.Diagnostic, $"ScanPools: ReflectionHistory is hiden. RH size is {ReflectionHistory.Length}");
         }
 
+        // TODO: fill up all xml comments.
+
         // HowTo: Update reflections from just done. This is the principle for the self learning procedure.
         // This includes two parts: Compose [multiple available] all routes -> Insert into reflection records.
         // UNDONE: Self-learning

@@ -96,6 +96,12 @@ namespace DefQed
                         Environment.Exit(-1);
                     }
 
+
+                    if (Format == null)
+                    {
+                        Format = "xml";
+                    }
+
                     switch (Format.ToLower())
                     {
                         case "xml":
@@ -129,7 +135,8 @@ namespace DefQed
 
         private static void ProveQEDPackage(string arg)
         {
-
+            Common.LogConsole.Log(Common.LogLevel.Error, "Not impleented yet..");
+            Environment.Exit(-1);
         }
 
         private static void ProveXML(string arg)
