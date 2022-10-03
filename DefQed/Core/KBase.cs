@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using DefQed.Data;
 using Console = Common.LogConsole;
@@ -113,6 +114,10 @@ namespace DefQed.Core
         /// </remarks>
         private int SymbolIdRecord = 0;
 
+        private Reflection summarizedWork = new();
+
+        public Reflection SummarizedWork { get => summarizedWork; set => summarizedWork = value; }
+
         /// <summary>
         /// Returns the symbol id to be used by the symbol bank installer, from the parsers or loaders.
         /// </summary>
@@ -214,7 +219,7 @@ namespace DefQed.Core
         {
             Console.Log(Common.LogLevel.Information, "Loading reflections.");
 
-            List<List<string>> query = DefQed.Data.MySQLDriver.AcquireWholeTable(TableType.Reflections);
+            List<List<string>> query = MySQLDriver.AcquireWholeTable(TableType.Reflections);
             foreach (List<string> row in query)
             {
                 if (row.Count < 4)
@@ -285,6 +290,58 @@ namespace DefQed.Core
 
                 Console.Log(Common.LogLevel.Information, $"Reflection {Reflections.Count} loaded.");
             }
+        }
+
+        // should be put into a try expression in case of possible exceptions.
+        public static void InsertReflection(Reflection reflection)
+        {
+            if (reflection == null)
+            {
+                throw new ArgumentNullException(nameof(reflection));
+            }
+
+            JsonSerializerOptions op = new()
+            {
+                IncludeFields = true,
+                MaxDepth = 1024
+            };
+
+            string condition = JsonSerializer.Serialize(reflection.Condition, op);
+            string conclusion = JsonSerializer.Serialize(reflection.Conclusion, op);
+
+            Console.Log(Common.LogLevel.Diagnostic, "Reflection serialization done.");
+
+            // first insert into registries table.
+            int registriesId = MySQLDriver.GetMaxId(TableType.Registries) + 1;
+            string[] cols = new string[] { "id", "content" };
+            string[] vals = new string[] { registriesId.ToString(), condition };
+            MySQLDriver.InsertRow(TableType.Registries,
+                cols.ToList(), vals.ToList());
+            Console.Log(Common.LogLevel.Diagnostic, "Registry 1 of 2 inserted.");
+
+            registriesId++;
+            vals = new string[] { registriesId.ToString(), conclusion };
+            MySQLDriver.InsertRow(TableType.Registries,
+                cols.ToList(), vals.ToList());
+            Console.Log(Common.LogLevel.Diagnostic, "Registry 2 of 2 inserted.");
+
+            // next we insert into reflections table.
+            registriesId--;
+
+            int reflectionsId = MySQLDriver.GetMaxId(TableType.Reflections) + 1;
+            cols = new string[] { "id", "cases", "thuses", "opacity" };
+            vals = new string[]
+            {
+                reflectionsId.ToString(),
+                registriesId.ToString(),
+                (registriesId + 1).ToString(),
+                1.ToString()
+            };
+
+            MySQLDriver.InsertRow(TableType.Reflections,
+                cols.ToList(), vals.ToList());
+            Console.Log(Common.LogLevel.Diagnostic, "Reflection inserted into databases.");
+            Console.Log(Common.LogLevel.Information, "New knowledge has been installed into database.");
         }
 
         // Check notation via name, and give notation id back.

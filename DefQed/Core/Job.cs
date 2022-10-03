@@ -11,6 +11,7 @@ using System.IO;
 using DefQed.Data;
 using Console = Common.LogConsole;
 using TimeSpan = System.TimeSpan;
+using System;
 #if __ALLOW_SERIALIZE_DIAGNOSTIC_BRACKETS
 using System.Collections.Generic;
 #endif
@@ -137,6 +138,22 @@ namespace DefQed.Core
                 
             });
 
+            Console.Log(Common.LogLevel.Information, "Summarizing proof contents...");
+            // make the Summarized Work not empty.
+            KnowledgeBase.SummarizedWork = new Reflection()
+            {
+                Condition = new()
+                {
+                    TopLevel = new()
+                    {
+                        BracketType = BracketType.StatementHolder,
+                        Satisfied = Satisfaction.Unknown,
+                        MicroStatement = KnowledgeBase.LeftPool[0]
+                    }
+                },
+                Conclusion = KnowledgeBase.RightPool
+            };
+
             Console.Log(Common.LogLevel.Information, "PerformProof called: Start proving");
 
             ProofTask.Start();
@@ -148,15 +165,15 @@ namespace DefQed.Core
                 Console.Log(Common.LogLevel.Information, $"Proof process has finished in {w2.ElapsedMilliseconds} ms.");
 
 #if DEBUG
-                Console.Log(Common.LogLevel.Diagnostic, "Below is proof:");
+                Console.Log(Common.LogLevel.Information, "Below is proof:");
                 Console.WriteLine(KnowledgeBase.GenerateReport());
-                Console.Log(Common.LogLevel.Diagnostic, "----------------------");
+                Console.Log(Common.LogLevel.Information, "----------------------");
 #else
                 if (NotToTee)
                 {
-                    Console.Log(Common.LogLevel.Diagnostic, "Below is proof:");
+                    Console.Log(Common.LogLevel.Information, "Below is proof:");
                     Console.WriteLine(KnowledgeBase.GenerateReport());
-                    Console.Log(Common.LogLevel.Diagnostic, "----------------------");
+                    Console.Log(Common.LogLevel.Information, "----------------------");
                 }
 #endif
 
@@ -165,6 +182,19 @@ namespace DefQed.Core
                     TeeProofText();
                 }
 
+                Console.Log(Common.LogLevel.Information, "----------------------");
+                Console.Log(Common.LogLevel.Information, "Now trying to update the reflection database.");
+
+                try
+                {
+                    // call KBase.InsertReflection() to do. first build reflection.
+                    KBase.InsertReflection(KnowledgeBase.SummarizedWork);
+                }
+                catch (Exception ex)
+                {
+                    Console.Log(Common.LogLevel.Warning, $"Failed to insert the new knowledge. Detailes comes below: {ex.Message}");
+                }
+                
             }
             else
             {
