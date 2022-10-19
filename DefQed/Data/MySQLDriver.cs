@@ -277,7 +277,9 @@ namespace DefQed.Data
         /// <param name="values">The list of the values of the new row.</param>
         public static void InsertRow(TableType tableType, List<string> columns, List<string> values)
         {
-            string sql = $"INSERT INTO {TableType2Str(tableType)} ({List2Str(columns)}) VALUES ({List2Str(values)});";
+            string sql = $"INSERT INTO {TableType2Str(tableType)} ({List2Str(columns, false)}) VALUES ({List2Str(values)});";
+
+            Console.WriteLine(sql);
 
             MySql.Data.MySqlClient.MySqlCommand cmd = new(sql, conn);
             _ = cmd.ExecuteNonQuery();

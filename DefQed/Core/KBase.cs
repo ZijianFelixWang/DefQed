@@ -309,6 +309,9 @@ namespace DefQed.Core
             string condition = JsonSerializer.Serialize(reflection.Condition, op);
             string conclusion = JsonSerializer.Serialize(reflection.Conclusion, op);
 
+            condition = condition.Replace("\"", "\\\"");
+            conclusion = conclusion.Replace("\"", "\\\"");
+
             Console.Log(Common.LogLevel.Diagnostic, "Reflection serialization done.");
 
             // first insert into registries table.

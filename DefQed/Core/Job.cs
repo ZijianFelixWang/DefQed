@@ -161,7 +161,6 @@ namespace DefQed.Core
             if (ProofTask.Wait(new TimeSpan(0, 0, 0, 0, TimeOut)))
             {
                 w2.Stop();
-                _ =     MySQLDriver.Terminate();
                 Console.Log(Common.LogLevel.Information, $"Proof process has finished in {w2.ElapsedMilliseconds} ms.");
 
 #if DEBUG
@@ -194,7 +193,7 @@ namespace DefQed.Core
                 {
                     Console.Log(Common.LogLevel.Warning, $"Failed to insert the new knowledge. Detailes comes below: {ex.Message}");
                 }
-                
+                _ = MySQLDriver.Terminate();
             }
             else
             {
